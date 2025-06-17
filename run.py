@@ -2,6 +2,7 @@ from flask import Flask
 from app import create_app
 import os
 import numpy as np
+import json
 class ImprovedRBFNN:
     def __init__(self, n_centers, sigma=1.0, reg_lambda=1e-6):
         self.n_centers = n_centers  # 隐藏层神经元数量

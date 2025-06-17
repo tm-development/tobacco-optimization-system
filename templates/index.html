@@ -317,7 +317,64 @@ select.param-input:focus {
   
   .prediction-results-container {
     position: static !important; /* 移除粘性定位 */
-    max-height: none !important; /* 移除最大高度限制 */
+    max-height: none !important; /* 秷除最大高度限制 */
+  }
+}
+
+/* 操作按钮样式增强 */
+.btn-primary, .btn-secondary {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary::before, .btn-secondary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before, .btn-secondary:hover::before {
+  left: 100%;
+}
+
+/* 按钮状态样式 */
+.btn-primary:disabled, .btn-secondary:disabled {
+  background-color: rgba(55, 55, 55, 0.5) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+.btn-primary:disabled:hover, .btn-secondary:disabled:hover {
+  transform: none !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 操作区域样式 */
+.operation-buttons-container {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.05), rgba(30, 30, 30, 0.8));
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .operation-buttons-container .flex {
+    flex-direction: column !important;
+    space-y: 4 !important;
+  }
+  
+  .operation-buttons-container .space-x-8 > * + * {
+    margin-left: 0 !important;
+    margin-top: 1rem !important;
+  }
+  
+  .operation-buttons-container .hidden.md\\:block {
+    display: none !important;
   }
 }
   </style>
@@ -481,10 +538,11 @@ select.param-input:focus {
             <div class="file-upload-area" id="data-upload-area">
               <span class="material-icons text-5xl text-green-500 mb-4">cloud_upload</span>
               <h3 class="text-lg font-bold mb-2">上传数据文件</h3>
-              <p class="text-gray-400 mb-4">拖放文件到此处或点击选择文件</p>              <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg" onclick="document.getElementById('data-file-input').click()">选择文件</button>
+              <p class="text-gray-400 mb-4">拖放文件到此处或点击选择文件</p>
+              <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg" onclick="document.getElementById('data-file-input').click()">选择文件</button>
               <input type="file" class="hidden" id="data-file-input" accept=".csv,.xlsx,.xls">
             </div>
-              <div>
+            <div>
               <h3 class="text-lg font-bold mb-4">已上传文件</h3>
               <div id="uploaded-files-list" class="border border-gray-700 rounded-lg divide-y divide-gray-800">
                 <!-- 文件列表将通过JavaScript动态加载 -->
@@ -497,63 +555,63 @@ select.param-input:focus {
           </div>
         </div>
         
+        <!-- 数据导入页面的模型管理部分 -->
+        <div class="card mb-8">
+          <h2 class="section-title text-xl font-bold">模型管理</h2>
+          <p class="text-gray-400 mb-6">上传或选择预测模型，支持.pkl格式文件</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="file-upload-area" id="model-upload-area">
+              <span class="material-icons text-5xl text-green-500 mb-4">model_training</span>
+              <h3 class="text-lg font-bold mb-2">上传模型文件</h3>
+              <p class="text-gray-400 mb-4">仅支持.pkl格式的模型文件</p>
+              <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg" onclick="document.getElementById('model-file-input').click()">选择文件</button>
+              <input type="file" accept=".pkl" class="hidden" id="model-file-input">
+            </div>
+            <div>
+              <h3 class="text-lg font-bold mb-4">可用模型</h3>
+              <!-- 添加正确的ID，与模型管理页面区分 -->
+              <div id="data-page-models-list" class="space-y-4">
+                <!-- 模型列表将通过JavaScript动态加载 -->
+                <div class="param-card p-4 rounded-lg text-center text-gray-500">
+                  <span class="material-icons text-3xl mb-2">model_training</span>
+                  <p>正在加载模型列表...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 新增：操作按钮区域 -->
         <div class="card">
-          <h2 class="section-title text-xl font-bold">参数预览</h2>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-700">
-              <thead>
-                <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">待加工原烟数据记录_水份（%）</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">待加工原烟数据记录_温度（℃）</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">铺叶工段数据记录_流量（kg/h)</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">一润工段数据记录_润前水份（%）</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">一润工段数据记录_润前温度（℃）</th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">其他</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-800">
-                <tr>
-                  <td class="px-4 py-3">13.26</td>
-                  <td class="px-4 py-3">20.2</td>
-                  <td class="px-4 py-3">15450</td>
-                  <td class="px-4 py-3">16.25</td>
-                  <td class="px-4 py-3">39.44</td>
-                  <td class="px-4 py-3 text-green-400">...</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-3">14.56</td>
-                  <td class="px-4 py-3">20.1</td>
-                  <td class="px-4 py-3">15450</td>
-                  <td class="px-4 py-3">16.18</td>
-                  <td class="px-4 py-3">40.1</td>
-                  <td class="px-4 py-3 text-green-400">...</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-3">13.98</td>
-                  <td class="px-4 py-3">19.5</td>
-                  <td class="px-4 py-3">15450</td>
-                  <td class="px-4 py-3">16.31</td>
-                  <td class="px-4 py-3">40.3</td>
-                  <td class="px-4 py-3 text-yellow-400">...</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-3">13.55</td>
-                  <td class="px-4 py-3">20.3</td>
-                  <td class="px-4 py-3">15450</td>
-                  <td class="px-4 py-3">16.33</td>
-                  <td class="px-4 py-3">40.2</td>
-                  <td class="px-4 py-3 text-yellow-400">...</td>
-                </tr>
-                <tr>
-                  <td class="px-4 py-3">13.96</td>
-                  <td class="px-4 py-3">17</td>
-                  <td class="px-4 py-3">16000</td>
-                  <td class="px-4 py-3">16.14</td>
-                  <td class="px-4 py-3">37.25</td>
-                  <td class="px-4 py-3 text-green-400">...</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="flex justify-center items-center space-x-8">
+            <!-- 开始预测按钮 -->
+            <button id="start-prediction-btn" 
+                    class="btn-primary flex items-center justify-center px-8 py-4 text-lg font-semibold min-w-48 transition-all duration-300 hover:scale-105"
+                    onclick="startDataPrediction()">
+              <span class="material-icons mr-3 text-xl">play_arrow</span>
+              开始预测
+            </button>
+            
+            <!-- 分隔线（可选的视觉分隔） -->
+            <div class="hidden md:block w-px h-12 bg-gray-600"></div>
+            
+            <!-- 结果下载按钮 -->
+            <button id="download-results-btn" 
+                    class="btn-secondary flex items-center justify-center px-8 py-4 text-lg font-semibold min-w-48 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onclick="downloadPredictionResults()"
+                    disabled>
+              <span class="material-icons mr-3 text-xl">download</span>
+              结果下载
+            </button>
+          </div>
+          
+          <!-- 操作状态提示 -->
+          <div id="prediction-status-info" class="mt-6 text-center text-gray-400 text-sm hidden">
+            <div class="flex items-center justify-center">
+              <span class="material-icons mr-2 text-lg">info</span>
+              <span id="status-text">请先上传数据文件和选择模型</span>
+            </div>
           </div>
         </div>
       </div>
@@ -574,13 +632,13 @@ select.param-input:focus {
             </div>
               <div>
               <h3 class="text-lg font-bold mb-4">可用模型</h3>
-              <div id="models-list" class="space-y-4">
-                <!-- 模型列表将通过JavaScript动态加载 -->
-                <div class="param-card p-4 rounded-lg text-center text-gray-500">
-                  <span class="material-icons text-3xl mb-2">model_training</span>
-                  <p>正在加载模型列表...</p>
-                </div>
-              </div>
+              <div id="model-management-models-list" class="space-y-4">
+  <!-- 模型列表将通过JavaScript动态加载 -->
+  <div class="param-card p-4 rounded-lg text-center text-gray-500">
+    <span class="material-icons text-3xl mb-2">model_training</span>
+    <p>正在加载模型列表...</p>
+  </div>
+</div>
             </div>
           </div>
         </div>
@@ -971,19 +1029,19 @@ select.param-input:focus {
               <div class="text-lg font-bold mb-4">优化前参数</div>
               <div class="space-y-3">
                 <div class="flex justify-between">
-                  <span>大中片率</span>
-                  <span>77</span>
+                  <span class="text-gray-300">大中片率</span>
+                  <span class="text-white">77</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>叶含梗率</span>
-                  <span>1.2</span>
+                  <span class="text-gray-300">叶含梗率</span>
+                  <span class="text-white">1.2</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>梗含叶率</span>
-                  <span>0.6</span>
+                  <span class="text-gray-300">梗含叶率</span>
+                  <span class="text-white">0.6</span>
                 </div>
                 <div class="flex justify-between mt-4 pt-4 border-t border-gray-700">
-                  <span class="font-bold">质量评分</span>
+                  <span class="font-bold text-gray-400">质量评分</span>
                   <span class="font-bold text-green-400">86.7</span>
                 </div>
               </div>
@@ -993,19 +1051,19 @@ select.param-input:focus {
               <div class="text-lg font-bold mb-4">优化后参数</div>
               <div class="space-y-3">
                 <div class="flex justify-between">
-                  <span>大中片率</span>
+                  <span class="text-gray-300">大中片率</span>
                   <span class="text-yellow-400">78</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>叶含梗率</span>
+                  <span class="text-gray-300">叶含梗率</span>
                   <span class="text-yellow-400">1.1</span>
                 </div>
                 <div class="flex justify-between">
-                  <span>梗含叶率</span>
+                  <span class="text-gray-300">梗含叶率</span>
                   <span class="text-yellow-400">0.5</span>
                 </div>
                 <div class="flex justify-between mt-4 pt-4 border-t border-gray-700">
-                  <span class="font-bold">质量评分</span>
+                  <span class="font-bold text-gray-400">质量评分</span>
                   <span class="font-bold text-yellow-400">93.4</span>
                 </div>
               </div>
@@ -1303,34 +1361,48 @@ select.param-input:focus {
         }
     }
 
-    // 加载文件和模型列表
-    async function loadFilesAndModels() {
-        try {
-            console.log('开始加载文件和模型...');
-            
-            // 并行加载文件列表和模型列表
-            const promises = [];
-            
-            // 只有在相应的元素存在时才加载
-            if (document.getElementById('files-list')) {
-                promises.push(loadFileList());
-            }
-            
-            if (document.getElementById('models-list')) {
-                promises.push(loadModelList());
-            }
-            
-            await Promise.all(promises);
-            console.log('文件和模型加载完成');
-            
-        } catch (error) {
-            console.error('加载文件和模型时出错:', error);
-            showMessage('加载数据失败: ' + error.message, 'error');
+    // 加载文件和模型列表 - 修复版
+async function loadFilesAndModels() {
+    console.log('🔄 开始加载文件和模型列表...');
+    
+    try {
+        // 并行加载文件列表和模型列表
+        const promises = [];
+        
+        // 检查文件列表容器是否存在
+        const fileListContainer = document.getElementById('uploaded-files-list');
+        if (fileListContainer) {
+            console.log('✅ 发现文件列表容器，添加文件列表加载任务');
+            promises.push(loadFileList());
+        } else {
+            console.log('⚠️ 未发现文件列表容器');
         }
+        
+        // 检查模型列表容器是否存在
+        const modelListContainer = document.getElementById('model-management-models-list');
+        if (modelListContainer) {
+            console.log('✅ 发现模型列表容器，添加模型列表加载任务');
+            promises.push(loadModelList());
+        } else {
+            console.log('⚠️ 未发现模型列表容器');
+        }
+        
+        if (promises.length === 0) {
+            console.log('⚠️ 没有找到需要加载的容器');
+            return;
+        }
+        
+        await Promise.all(promises);
+        console.log('✅ 所有列表加载完成');
+        
+    } catch (error) {
+        console.error('❌ 加载文件和模型时出错:', error);
+        showMessage('加载数据失败: ' + error.message, 'error');
     }
+}
 
-    // 加载文件列表
-    async function loadFileList() {
+// 加载文件列表
+async function loadFileList() {
         try {
             const response = await fetch('/api/get_uploaded_files');
             const data = await response.json();
@@ -1348,160 +1420,98 @@ select.param-input:focus {
         }
     }
 
-    // 加载模型列表
-    async function loadModelList() {
-        try {
-            console.log('正在加载模型列表...');
-            
-            const response = await fetch('/api/models');
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            console.log('模型列表响应:', data);
-            
-            if (data.success) {
-                updateModelListDisplay(data.models || []);
-                console.log(`加载了 ${data.models ? data.models.length : 0} 个模型`);
-            } else {
-                console.error('加载模型列表失败:', data.message);
-                showMessage('加载模型列表失败: ' + data.message, 'error');
-                updateModelListDisplay([]);
-            }
-        } catch (error) {
-            console.error('加载模型列表错误:', error);
-            showMessage('加载模型列表失败: ' + error.message, 'error');
-            updateModelListDisplay([]);
-        }
+    // 更新文件列表显示 - 修改为单选框格式
+function updateFileListDisplay() {
+    const fileListContainer = document.getElementById('uploaded-files-list');
+    
+    if (!fileListContainer) {
+        console.error('找不到文件列表容器');
+        return;
     }
 
-    // 更新文件列表显示
-    function updateFileListDisplay() {
-        const fileListContainer = document.getElementById('uploaded-files-list');
-        
-        if (!fileListContainer) {
-            console.error('找不到文件列表容器');
-            return;
-        }
+    if (currentFiles.length === 0) {
+        fileListContainer.innerHTML = `
+            <div class="p-4 text-center text-gray-500">
+                <span class="material-icons text-3xl mb-2">folder_open</span>
+                <p>暂无上传的文件</p>
+                <div class="text-sm mt-2">请上传CSV或Excel格式的数据文件</div>
+            </div>
+        `;
+        return;
+    }
 
-        if (currentFiles.length === 0) {
-            fileListContainer.innerHTML = `
-                <div class="p-4 text-center text-gray-500">
-                    <span class="material-icons text-3xl mb-2">folder_open</span>
-                    <p>暂无上传的文件</p>
-                </div>
-            `;
-            return;
-        }        fileListContainer.innerHTML = currentFiles.map(file => `
-            <div class="p-4 hover:bg-gray-800 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <span class="material-icons text-green-400 mr-3">
-                            ${file.file_type === 'Excel' ? 'table_chart' : 'description'}
-                        </span>
-                        <div>
-                            <h4 class="font-medium text-white">${file.display_name}</h4>
-                            <p class="text-sm text-gray-400">
-                                ${file.file_type} • ${(file.file_size / (1024 * 1024)).toFixed(2)} MB • 
-                                ${new Date(file.upload_time).toLocaleString('zh-CN')}
-                            </p>
+    // 使用单选框格式显示文件列表
+    fileListContainer.innerHTML = currentFiles.map((file, index) => `
+        <div class="file-item bg-gray-800 rounded-lg border border-gray-700 p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center flex-1">
+                    <!-- 单选框 -->
+                    <input type="radio" 
+                           name="selected-file" 
+                           value="${file.filename}"
+                           id="file-${index}"
+                           class="mr-4 w-4 h-4 text-green-600 bg-gray-700 border-gray-600 focus:ring-green-500"
+                           ${index === 0 ? 'checked' : ''}
+                           onchange="onFileSelectionChange('${file.filename}', '${file.display_name}')">
+                    
+                    <div class="flex-1">
+                        <label for="file-${index}" class="font-medium text-white cursor-pointer">
+                            ${file.display_name}
+                        </label>
+                        <div class="text-sm text-gray-400 mt-1">
+                            ${file.file_type} • ${(file.file_size / (1024 * 1024)).toFixed(2)} MB • 
+                            ${new Date(file.upload_time).toLocaleString('zh-CN')}
+                        </div>
+                        <div class="text-sm text-blue-400 mt-1">
+                            行数: ${file.rows || '未知'} | 列数: ${file.columns || '未知'}
                         </div>
                     </div>
-                    <div class="flex space-x-2">
-                        <button onclick="previewFile('${file.filename}')" 
-                                class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
-                            预览
-                        </button>
-                        <button onclick="startPredictionWithFile('${file.filename}', '${file.display_name}')" 
-                                class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
-                            开始预测
-                        </button>
-                        <button onclick="deleteFile('${file.filename}')" 
-                                class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition">
-                            删除
-                        </button>
-                    </div>
+                </div>
+                <div class="flex items-center space-x-2 ml-4">
+                    <button onclick="previewFile('${file.filename}')" 
+                            class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
+                        预览
+                    </button>
+                    <button onclick="deleteFile('${file.filename}')" 
+                            class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition">
+                        删除
+                    </button>
                 </div>
             </div>
-        `).join('');
-    }    // 更新模型列表显示函数
-    function updateModelListDisplay(models) {
-        const modelsList = document.getElementById('models-list');
-        
-        if (!models || models.length === 0) {
-            modelsList.innerHTML = `
-                <div class="text-center py-8 text-gray-500">
-                    <div class="text-4xl mb-4">📊</div>
-                    <div class="text-lg mb-2">暂无模型文件</div>
-                    <div class="text-sm">请上传模型文件到 uploads/models/ 目录</div>
-                </div>
-            `;
-            return;
-        }
-        
-        // 使用单选框格式
-        modelsList.innerHTML = models.map((model, index) => `
-            <div class="model-item bg-gray-800 rounded-lg border border-gray-700 p-4 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center flex-1">
-                        <!-- 单选框 -->
-                        <input type="radio" 
-                               name="selected-model" 
-                               value="${model.filename}"
-                               id="model-${index}"
-                               class="mr-4 w-4 h-4 text-green-600 bg-gray-700 border-gray-600 focus:ring-green-500"
-                               ${index === 0 ? 'checked' : ''}
-                               onchange="onModelSelectionChange('${model.filename}')">
-                        
-                        <div class="flex-1">
-                            <label for="model-${index}" class="font-medium text-white cursor-pointer">
-                                ${model.display_name || model.filename}
-                            </label>
-                            <div class="text-sm text-gray-400 mt-1">
-                                文件大小: ${model.size_mb || '0'} MB | 
-                                上传时间: ${model.upload_time ? new Date(model.upload_time).toLocaleString() : '未知'}
-                            </div>
-                            ${model.accuracy ? `<div class="text-sm text-green-400 mt-1">准确率: ${model.accuracy}%</div>` : ''}
-                            ${model.model_type && model.model_type !== 'unknown' ? `<div class="text-sm text-blue-400 mt-1">类型: ${model.model_type}</div>` : ''}
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2 ml-4">
-                        ${model.is_active ? 
-                            '<span class="px-2 py-1 bg-green-600 text-green-100 text-xs rounded">激活中</span>' : 
-                            ''
-                        }
-                        <button onclick="deleteModel('${model.filename}')" 
-                                class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
-                            删除
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
+        </div>
+    `).join('');
+}
 
-    // 模型选择变化处理函数
-    function onModelSelectionChange(selectedModelFilename) {
-        console.log('选择的模型:', selectedModelFilename);
-        
-        // 可以在这里添加额外的处理逻辑，比如显示模型详细信息
-        showMessage(`已选择模型: ${selectedModelFilename}`, 'info');
-    }
+// 文件选择变化处理函数
+function onFileSelectionChange(selectedFilename, displayName) {
+    console.log('选择的文件:', selectedFilename, displayName);
+    showMessage(`已选择数据文件: ${displayName}`, 'info');
+    checkOperationConditions(); // 检查操作条件
+}
 
-    // 获取当前选择的模型
-    function getSelectedModel() {
-        const selectedRadio = document.querySelector('input[name="selected-model"]:checked');
-        if (!selectedRadio) {
-            return null;
-        }
-        
-        return {
-            filename: selectedRadio.value,
-            displayName: selectedRadio.nextElementSibling?.textContent?.trim() || selectedRadio.value
-        };
+// 获取当前选择的文件
+function getSelectedFile() {
+    const selectedRadio = document.querySelector('input[name="selected-file"]:checked');
+    if (!selectedRadio) {
+        return null;
     }
+    
+    // 从文件列表中找到完整的文件信息
+    const filename = selectedRadio.value;
+    const selectedFile = currentFiles.find(file => file.filename === filename);
+    
+    return selectedFile ? {
+        filename: selectedFile.filename,
+        displayName: selectedFile.display_name,
+        fileType: selectedFile.file_type,
+        fileSize: selectedFile.file_size,
+        rows: selectedFile.rows,
+        columns: selectedFile.columns
+    } : {
+        filename: filename,
+        displayName: selectedRadio.nextElementSibling?.querySelector('label')?.textContent?.trim() || filename
+    };
+}
 
     // 激活模型函数
 async function activateModel(filename) {
@@ -1514,7 +1524,10 @@ async function activateModel(filename) {
         
         if (data.success) {
             showMessage(data.message, 'success');
-            loadModelList(); // 重新加载模型列表
+            
+            // 重新加载所有模型列表，确保同步
+            console.log('🔄 模型激活成功，同步更新所有模型列表');
+            loadModelList(); // 不指定容器ID，会更新所有容器
         } else {
             showMessage('激活模型失败: ' + data.message, 'error');
         }
@@ -1533,7 +1546,6 @@ async function deleteModel(filename) {
     try {
         console.log(`正在删除模型: ${filename}`);
         
-        // 使用正确的URL格式
         const response = await fetch(`/api/models/${filename}`, {
             method: 'DELETE'
         });
@@ -1549,7 +1561,10 @@ async function deleteModel(filename) {
         
         if (data.success) {
             showMessage(data.message, 'success');
-            loadModelList(); // 重新加载模型列表
+            
+            // 重新加载所有模型列表，确保同步
+            console.log('🔄 模型删除成功，同步更新所有模型列表');
+            loadModelList(); // 不指定容器ID，会更新所有容器
         } else {
             showMessage('删除模型失败: ' + data.message, 'error');
         }
@@ -1561,72 +1576,77 @@ async function deleteModel(filename) {
 
 // 文件上传处理
 function handleFileUpload(inputElement, uploadType) {
-        const file = inputElement.files[0];
-        if (!file) {
-            console.log('没有选择文件');
-            return;
-        }
-
-        console.log(`开始上传${uploadType}文件:`, file.name);
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const uploadUrl = uploadType === 'data' ? '/api/upload_data' : '/api/models/upload';
-        
-        // 查找正确的按钮元素
-        let uploadButton;
-        if (uploadType === 'data') {
-            uploadButton = document.querySelector('#data-upload-area button');
-        } else {
-            uploadButton = document.querySelector('#model-upload-area button');
-        }
-        
-        // 显示上传进度
-        if (uploadButton) {
-            uploadButton.textContent = '上传中...';
-            uploadButton.disabled = true;
-        }        fetch(uploadUrl, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            console.log('上传响应状态:', response.status);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('上传响应数据:', data);
-            if (data.success) {
-                showMessage(data.message, 'success');
-                // 重新加载文件列表
-                if (uploadType === 'data') {
-                    loadFileList();
-                } else {
-                    loadModelList();
-                }
-                               // 清空文件输入
-                inputElement.value = '';
-            } else {
-                showMessage('上传失败: ' + data.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('上传错误:', error);
-            showMessage('上传失败: ' + error.message, 'error');
-        })
-        .finally(() => {
-            // 恢复按钮状态
-            if (uploadButton) {
-                uploadButton.textContent = uploadType === 'data' ? '选择文件' : '选择文件';
-                uploadButton.disabled = false;
-            }
-        });
+    const file = inputElement.files[0];
+    if (!file) {
+        console.log('没有选择文件');
+        return;
     }
 
-    // 预览文件
+    console.log(`开始上传${uploadType}文件:`, file.name);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const uploadUrl = uploadType === 'data' ? '/api/upload_data' : '/api/models/upload';
+    
+    // 查找正确的按钮元素
+    let uploadButton;
+    if (uploadType === 'data') {
+        uploadButton = document.querySelector('#data-upload-area button');
+    } else {
+        uploadButton = document.querySelector('#model-upload-area button');
+    }
+    
+    // 显示上传进度
+    if (uploadButton) {
+        uploadButton.textContent = '上传中...';
+        uploadButton.disabled = true;
+    }
+
+    fetch(uploadUrl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('上传响应状态:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('上传响应数据:', data);
+        if (data.success) {
+            showMessage(data.message, 'success');
+            
+            // 重新加载相应的列表
+            if (uploadType === 'data') {
+                loadFileList();
+            } else {
+                console.log('📤 模型上传成功，同步更新所有模型列表');
+                loadModelList(); // 不指定容器ID，会更新所有容器
+            }
+            
+            // 清空文件输入
+            inputElement.value = '';
+        } else {
+            showMessage('上传失败: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('上传错误:', error);
+        showMessage('上传失败: ' + error.message, 'error');
+    })
+    .finally(() => {
+        // 恢复按钮状态
+        if (uploadButton) {
+            uploadButton.textContent = uploadType === 'data' ? '选择文件' : '选择文件';
+            uploadButton.disabled = false;
+        }
+    });
+}
+
+// 预览文件
     async function previewFile(filename) {
         try {
             const response = await fetch(`/api/preview_file/${filename}`);
@@ -1681,43 +1701,21 @@ function handleFileUpload(inputElement, uploadType) {
 
     // 删除文件
     async function deleteFile(filename) {
-        if (!confirm('确定要删除这个文件吗？')) return;
-
-        try {
-            const response = await fetch('/api/delete_file', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ filename: filename })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                showMessage('文件删除成功', 'success');
-                loadFileList(); // 重新加载文件列表
-            } else {
-                showMessage('删除失败: ' + data.message, 'error');
-            }
-        } catch (error) {
-            console.error('删除文件错误:', error);
-            showMessage('删除文件失败', 'error');
-        }
-    }
-
-    // 删除模型
-    async function deleteModel(filename) {
-        if (!confirm(`确定要删除模型 "${filename}" 吗？此操作不可恢复。`)) {
+        if (!confirm(`确定要删除文件 "${filename}" 吗？此操作不可恢复。`)) {
             return;
         }
         
         try {
-            console.log(`正在删除模型: ${filename}`);
+            console.log(`正在删除文件: ${filename}`);
             
-            // 使用正确的URL格式
-            const response = await fetch(`/api/models/${filename}`, {
-                method: 'DELETE'
+            const response = await fetch('/api/delete_file', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    filename: filename
+                })
             });
             
             console.log('删除响应状态:', response.status);
@@ -1731,13 +1729,16 @@ function handleFileUpload(inputElement, uploadType) {
             
             if (data.success) {
                 showMessage(data.message, 'success');
-                loadModelList(); // 重新加载模型列表
+                
+                // 重新加载文件列表
+                console.log('🔄 文件删除成功，重新加载文件列表');
+                loadFileList();
             } else {
-                showMessage('删除模型失败: ' + data.message, 'error');
+                showMessage('删除文件失败: ' + data.message, 'error');
             }
         } catch (error) {
-            console.error('删除模型错误:', error);
-            showMessage('删除模型失败: ' + error.message, 'error');
+            console.error('删除文件错误:', error);
+            showMessage('删除文件失败: ' + error.message, 'error');
         }
     }
 
@@ -1783,178 +1784,604 @@ function handleFileUpload(inputElement, uploadType) {
                 document.body.removeChild(messageDiv);
             }, 300);
         }, 3000);
-    }    // 页面加载完成后的初始化
+    }    // 页面加载完成后的初始化 - 修复版
     window.addEventListener('DOMContentLoaded', function() {
-        // 初始化标签页
-        initializeTabs();
-        
-        // 加载文件和模型列表
-        loadFilesAndModels();
-        
-        // 绑定文件上传事件
-        setupFileUpload();
-        
-        // 定期刷新文件列表（每10秒）
-        setInterval(() => {
-            if (currentTab === 'data' || currentTab === 'model') {
-                loadFilesAndModels();
-            }
-        }, 10000);
-    });
-
+    console.log('DOM加载完成，开始初始化...');
+    
     // 初始化标签页
-    function initializeTabs() {
-        // 显示默认标签页
-        switchTab('home');
+    initializeTabs();
+    
+    // 绑定文件上传事件
+    setupFileUpload();
+    
+    // 初始化下载按钮状态
+    setTimeout(() => {
+        resetDownloadButton();
+    }, 100);
+    
+    // 延迟加载，确保DOM完全渲染
+    setTimeout(() => {
+        console.log('开始加载初始数据...');
         
-        // 绑定标签按钮事件
-        document.querySelectorAll('[data-tab]').forEach(element => {
-            element.addEventListener('click', function() {
-                const tabName = this.getAttribute('data-tab');
-                if (tabName) {
-                    switchTab(tabName);
-                }
-            });
-        });
-    }    // 设置文件上传
-    function setupFileUpload() {
-        console.log('初始化文件上传事件绑定');
+        // 加载文件列表
+        loadFileList();
         
-        const dataFileInput = document.getElementById('data-file-input');
-        const modelFileInput = document.getElementById('model-file-input');
+        // 加载所有模型列表容器，确保内容一致
+        loadModelList();
         
-        if (dataFileInput) {
-            console.log('找到数据文件输入元素');
-            dataFileInput.addEventListener('change', function() {
-                console.log('数据文件选择事件触发');
-                handleFileUpload(this, 'data');
-            });
-        } else {
-            console.error('未找到数据文件输入元素');
+        // 初始检查操作条件
+        checkOperationConditions();
+        
+        // 检查是否有历史预测结果
+        loadBatchPredictionHistory();
+    }, 500);
+    
+    // 定期刷新列表（每30秒）
+    setInterval(() => {
+        console.log('定期刷新数据列表...');
+        if (currentTab === 'data' || currentTab === 'model') {
+            loadFileList();
+            loadModelList();
         }
-        
-        if (modelFileInput) {
-            console.log('找到模型文件输入元素');
-            modelFileInput.addEventListener('change', function() {
-                console.log('模型文件选择事件触发');
-                handleFileUpload(this, 'model');
-            });
-        } else {
-            console.error('未找到模型文件输入元素');
-        }
-        
-        // 添加拖拽上传功能
-        const dataUploadArea = document.getElementById('data-upload-area');
-        const modelUploadArea = document.getElementById('model-upload-area');
-        
-        if (dataUploadArea) {
-            setupDragAndDrop(dataUploadArea, dataFileInput, 'data');
-        }
-        
-        if (modelUploadArea) {
-            setupDragAndDrop(modelUploadArea, modelFileInput, 'model');
-        }
-    }
+    }, 30000);
+});
 
-    // 设置拖拽上传
-    function setupDragAndDrop(dropArea, fileInput, uploadType) {
-        if (!dropArea || !fileInput) return;
-        
-        // 防止浏览器默认行为
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-            document.body.addEventListener(eventName, preventDefaults, false);
+// 添加调试函数 - 检查两个模型列表的同步状态
+window.debugModelListSync = function() {
+    console.log('🔧 检查模型列表同步状态...');
+    
+    const dataPageContainer = document.getElementById('models-list');
+    const managementPageContainer = document.getElementById('model-management-models-list');
+    
+    console.log('数据页面模型容器:', dataPageContainer);
+    console.log('数据页面模型容器内容:', dataPageContainer ? dataPageContainer.innerHTML.length : '容器不存在');
+    
+    console.log('管理页面模型容器:', managementPageContainer);
+    console.log('管理页面模型容器内容:', managementPageContainer ? managementPageContainer.innerHTML.length : '容器不存在');
+    
+    console.log('当前模型数据:', currentModels);
+    
+    // 强制同步
+    syncAllModelLists();
+};
+
+// 调试函数 - 强制重新加载所有模型列表
+window.forceReloadAllModels = function() {
+    console.log('🔄 强制重新加载所有模型列表...');
+    currentModels = []; // 清空当前数据
+    loadModelList(); // 重新加载所有容器
+};
+
+// 初始化标签页功能
+function initializeTabs() {
+    console.log('🔄 初始化标签页...');
+    
+    // 绑定所有标签按钮的点击事件
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            if (tabName) {
+                switchTab(tabName);
+            }
         });
-        
-        // 高亮拖拽区域
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => {
-                dropArea.classList.add('drag-over');
-            }, false);
+    });
+    
+    // 设置默认标签页
+    const firstTab = document.querySelector('.tab-button.active');
+    if (firstTab) {
+        const defaultTab = firstTab.getAttribute('data-tab');
+        console.log('默认标签页:', defaultTab);
+        currentTab = defaultTab;
+    } else {
+        // 如果没有默认活跃标签，设置为首页
+        switchTab('home');
+    }
+}
+
+// 设置文件上传事件
+function setupFileUpload() {
+    console.log('🔄 设置文件上传事件...');
+    
+    // 数据文件上传
+    const dataFileInput = document.getElementById('data-file-input');
+    if (dataFileInput) {
+        dataFileInput.addEventListener('change', function() {
+            handleFileUpload(this, 'data');
         });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => {
-                dropArea.classList.remove('drag-over');
-            }, false);
+    }
+    
+    // 模型文件上传
+    const modelFileInput = document.getElementById('model-file-input');
+    if (modelFileInput) {
+        modelFileInput.addEventListener('change', function() {
+            handleFileUpload(this, 'model');
         });
+    }
+    
+    // 拖拽上传支持
+    setupDragAndDrop();
+}
+
+// 设置拖拽上传功能
+function setupDragAndDrop() {
+    // 数据文件上传区域
+    const dataUploadArea = document.getElementById('data-upload-area');
+    if (dataUploadArea) {
+        setupDragDropForElement(dataUploadArea, 'data');
+    }
+    
+    // 模型文件上传区域
+    const modelUploadArea = document.getElementById('model-upload-area');
+    if (modelUploadArea) {
+        setupDragDropForElement(modelUploadArea, 'model');
+    }
+}
+
+// 为特定元素设置拖拽功能
+function setupDragDropForElement(element, uploadType) {
+    element.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        element.classList.add('drag-over');
+    });
+    
+    element.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        element.classList.remove('drag-over');
+    });
+    
+    element.addEventListener('drop', function(e) {
+        e.preventDefault();
+        element.classList.remove('drag-over');
         
-        // 处理文件放置
-        dropArea.addEventListener('drop', handleDrop, false);
-        
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const fileInput = uploadType === 'data' ? 
+                document.getElementById('data-file-input') : 
+                document.getElementById('model-file-input');
             
-            if (files.length > 0) {
-                const file = files[0];
-                
-                // 验证文件类型
-                const allowedTypes = uploadType === 'data' 
-                    ? ['.csv', '.xlsx', '.xls'] 
-                    : ['.pkl'];
-                
-                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-                if (!allowedTypes.includes(fileExtension)) {
-                    const allowedTypesStr = allowedTypes.join(', ');
-                    showMessage(`只支持以下格式的文件: ${allowedTypesStr}`, 'error');
-                    return;
-                }
-                
-                // 模拟文件输入选择
-                const fakeEvent = {
-                    target: fileInput,
-                    files: [file]
-                };
-                
-                // 手动设置文件到input
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                fileInput.files = dataTransfer.files;
-                
-                // 触发上传
+            if (fileInput) {
+                fileInput.files = files;
                 handleFileUpload(fileInput, uploadType);
             }
         }
+    });
+}
+
+// 修复 loadModelList 函数 - 统一加载所有模型列表容器
+async function loadModelList(containerId = null) {
+    console.log('🔄 开始加载模型列表...');
+    console.log('指定容器ID:', containerId);
+    
+    // 定义所有模型列表容器ID
+    const allContainerIds = [
+        'data-page-models-list',        // 数据导入页面
+        'model-management-models-list'  // 模型管理页面
+    ];
+    
+    // 查找实际存在的容器
+    const existingContainerIds = allContainerIds.filter(id => {
+        const container = document.getElementById(id);
+        return container !== null;
+    });
+    
+    console.log('找到的容器:', existingContainerIds);
+    
+    // 确定要更新的容器
+    let targetContainerIds;
+    if (containerId && existingContainerIds.includes(containerId)) {
+        targetContainerIds = [containerId];
+    } else {
+        // 更新所有存在的容器，确保内容一致
+        targetContainerIds = existingContainerIds;
+    }
+    
+    if (targetContainerIds.length === 0) {
+        console.error('❌ 找不到任何模型列表容器');
+        return;
+    }
+    
+    console.log('✅ 将更新以下模型列表容器:', targetContainerIds);
+    
+    try {
+        console.log('📡 发送请求到 /api/models');
+        
+        const response = await fetch('/api/models', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('📡 模型列表响应状态:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('📋 模型列表响应数据:', data);
+        
+        if (data.success) {
+            currentModels = data.models || [];
+            console.log(`✅ 成功加载 ${currentModels.length} 个模型`);
+            
+            // 同时更新所有容器，确保内容一致
+            targetContainerIds.forEach(id => {
+                console.log(`🔄 正在更新容器: ${id}`);
+                updateModelListDisplay(currentModels, id);
+            });
+            
+            checkOperationConditions();
+            
+            if (currentModels.length === 0) {
+                showMessage('暂无可用模型，请上传模型文件', 'info');
+            } else {
+                showMessage(`已加载 ${currentModels.length} 个模型到所有列表`, 'success');
+            }
+        } else {
+            console.error('❌ 后端返回失败:', data.message);
+            showMessage('加载模型列表失败: ' + data.message, 'error');
+            
+            // 同时清空所有容器
+            targetContainerIds.forEach(id => {
+                updateModelListDisplay([], id);
+            });
+        }
+    } catch (error) {
+        console.error('❌ 加载模型列表错误:', error);
+        showMessage('加载模型列表失败: ' + error.message, 'error');
+        
+        // 同时清空所有容器
+        targetContainerIds.forEach(id => {
+            updateModelListDisplay([], id);
+        });
+    }
+}
+
+// 修复 updateModelListDisplay 函数 - 支持多个容器
+function updateModelListDisplay(models, containerId = 'data-page-models-list') {
+    console.log('🔄 开始更新模型列表显示...');
+    console.log('目标容器ID:', containerId);
+    console.log('接收到的模型数据:', models);
+    
+    const modelListContainer = document.getElementById(containerId);
+    
+    if (!modelListContainer) {
+        console.error(`❌ 找不到模型列表容器 #${containerId}`);
+        return;
     }
 
-    // 运行模型预测
-async function runModelPrediction() {
-    console.log('开始运行模型预测...');
+    console.log('✅ 找到模型列表容器，开始更新内容');
+
+    if (!models || models.length === 0) {
+        console.log('📝 显示空模型列表提示');
+        modelListContainer.innerHTML = `
+            <div class="param-card p-4 rounded-lg text-center text-gray-500">
+                <span class="material-icons text-3xl mb-2">model_training</span>
+                <p>暂无可用模型</p>
+                <div class="text-sm mt-2">请上传.pkl格式的模型文件</div>
+            </div>
+        `;
+        return;
+    }
+
+    console.log(`📝 显示 ${models.length} 个模型`);
+
+    // 为不同容器生成不同的name属性，避免单选框冲突
+    const radioName = containerId === 'model-management-models-list' ? 'management-selected-model' : 'data-selected-model';
+
+    // 使用单选框格式显示模型列表
+    const modelsHtml = models.map((model, index) => {
+        console.log(`处理模型 ${index + 1}:`, model);
+        
+        const displayName = model.display_name || model.filename || `模型${index + 1}`;
+        const fileSize = model.file_size ? (model.file_size / (1024 * 1024)).toFixed(2) : '未知';
+        const uploadTime = model.upload_time ? new Date(model.upload_time).toLocaleString('zh-CN') : '未知';
+        const fileType = model.file_type || 'PKL';
+        const isActive = model.is_active || false;
+        
+        return `
+            <div class="model-item bg-gray-800 rounded-lg border border-gray-700 p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center flex-1">
+                        <!-- 单选框 -->
+                        <input type="radio" 
+                               name="${radioName}" 
+                               value="${model.filename}"
+                               id="${containerId}-model-${index}"
+                               data-display-name="${displayName}"
+                               class="mr-4 w-4 h-4 text-green-600 bg-gray-700 border-gray-600 focus:ring-green-500"
+                               ${index === 0 ? 'checked' : ''}
+                               onchange="onModelSelectionChange('${model.filename}', '${displayName}')">
+                        
+                        <div class="flex-1">
+                            <label for="${containerId}-model-${index}" class="font-medium text-white cursor-pointer">
+                                ${displayName}
+                            </label>
+                            <div class="text-sm text-gray-400 mt-1">
+                                ${fileType} • ${fileSize} MB • ${uploadTime}
+                            </div>
+                            <div class="text-sm text-blue-400 mt-1">
+                                ${isActive ? '✅ 当前激活' : '⚪ 未激活'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 ml-4">
+                        ${!isActive ? `
+                            <button onclick="activateModel('${model.filename}')" 
+                                    class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition">
+                                激活
+                            </button>
+                        ` : ''}
+                        <button onclick="deleteModel('${model.filename}')" 
+                                class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition">
+                            删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    modelListContainer.innerHTML = modelsHtml;
+    console.log('✅ 模型列表显示更新完成');
+}
+
+// 修复模型选择变化处理 - 同步两个列表的选择状态
+function onModelSelectionChange(selectedModelFilename, displayName) {
+    console.log('选择的模型:', selectedModelFilename, displayName);
+    
+    // 同步两个列表中的选择状态
+    const allRadios = document.querySelectorAll(`input[type="radio"][value="${selectedModelFilename}"]`);
+    allRadios.forEach(radio => {
+        if (radio.name === 'data-selected-model' || radio.name === 'management-selected-model') {
+            radio.checked = true;
+        }
+    });
+    
+    showMessage(`已选择模型: ${displayName || selectedModelFilename}`, 'info');
+    checkOperationConditions();
+}
+
+// 修复 getSelectedModel 函数 - 从任何一个列表获取选中的模型
+function getSelectedModel() {
+    // 尝试从所有模型列表获取选中的模型
+    const selectedRadios = [
+        document.querySelector('input[name="data-selected-model"]:checked'),
+        document.querySelector('input[name="management-selected-model"]:checked')
+    ].filter(radio => radio !== null);
+    
+    if (selectedRadios.length === 0) {
+        return null;
+    }
+    
+    // 返回第一个找到的选中模型
+    const selectedRadio = selectedRadios[0];
+    
+    return {
+        filename: selectedRadio.value,
+        displayName: selectedRadio.getAttribute('data-display-name') || selectedRadio.value
+    };
+}
+
+// 强制同步所有模型列表容器
+function syncAllModelLists() {
+    console.log('🔄 强制同步所有模型列表容器...');
+    
+    const containerIds = ['data-page-models-list', 'model-management-models-list'];
+    
+    containerIds.forEach(id => {
+        const container = document.getElementById(id);
+        if (container) {
+            console.log(`同步容器: ${id}`);
+            updateModelListDisplay(currentModels, id);
+        } else {
+            console.warn(`⚠️ 容器 #${id} 不存在，跳过同步`);
+        }
+    });
+}
+
+// 修复标签页切换逻辑 - 确保加载时同步两个列表
+function switchTab(tabName) {
+    console.log(`🔄 切换到标签页: ${tabName}`);
+    
+    // 隐藏所有内容
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    
+    // 移除所有按钮的活跃状态
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 显示选中的内容
+    const targetTab = document.getElementById(tabName + '-tab');
+    if (targetTab) {
+        targetTab.classList.remove('hidden');
+        console.log(`✅ 显示标签页: ${tabName}-tab`);
+    } else {
+        console.error(`❌ 找不到标签页: ${tabName}-tab`);
+    }
+    
+    // 激活对应按钮
+    const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeButton) {
+        activeButton.classList.add('active');
+        console.log(`✅ 激活按钮: ${tabName}`);
+    } else {
+        console.error(`❌ 找不到按钮: [data-tab="${tabName}"]`);
+    }
+    
+    currentTab = tabName;
+    
+    // 延迟加载数据，确保DOM已经显示
+    setTimeout(() => {
+        if (tabName === 'data') {
+            console.log(`📂 数据导入页面需要加载数据`);
+            loadFileList();
+            loadModelList(); // 加载所有模型列表容器
+        } else if (tabName === 'model') {
+            console.log(`📂 模型管理页面需要加载模型`);
+            loadModelList(); // 加载所有模型列表容器
+        }
+    }, 100);
+}
+
+// 修复模型操作后的同步更新
+async function deleteModel(filename) {
+    if (!confirm(`确定要删除模型 "${filename}" 吗？此操作不可恢复。`)) {
+        return;
+    }
+    
+    try {
+        console.log(`正在删除模型: ${filename}`);
+        
+        const response = await fetch(`/api/models/${filename}`, {
+            method: 'DELETE'
+        });
+        
+        console.log('删除响应状态:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('删除响应数据:', data);
+        
+        if (data.success) {
+            showMessage(data.message, 'success');
+            
+            // 重新加载所有模型列表，确保同步
+            console.log('🔄 模型删除成功，同步更新所有模型列表');
+            loadModelList(); // 不指定容器ID，会更新所有容器
+        } else {
+            showMessage('删除模型失败: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('删除模型错误:', error);
+        showMessage('删除模型失败: ' + error.message, 'error');
+    }
+}
+
+async function activateModel(filename) {
+    try {
+        const response = await fetch(`/api/models/${filename}/activate`, {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showMessage(data.message, 'success');
+            
+            // 重新加载所有模型列表，确保同步
+            console.log('🔄 模型激活成功，同步更新所有模型列表');
+            loadModelList(); // 不指定容器ID，会更新所有容器
+        } else {
+            showMessage('激活模型失败: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('激活模型错误:', error);
+        showMessage('激活模型失败: ' + error.message, 'error');
+    }
+}
+
+// 检查操作条件
+function checkOperationConditions() {
+    console.log('🔍 检查操作条件...');
+    
+    const selectedFile = getSelectedFile();
+    const selectedModel = getSelectedModel();
+    
+    console.log('选中的文件:', selectedFile);
+    console.log('选中的模型:', selectedModel);
+    
+    // 检查是否满足预测条件
+    const canPredict = selectedFile && selectedModel;
+    
+    // 更新预测按钮状态
+    const predictButton = document.getElementById('start-prediction-btn');
+    if (predictButton) {
+        predictButton.disabled = !canPredict;
+        if (canPredict) {
+            predictButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            predictButton.title = '准备就绪，可以开始预测';
+        } else {
+            predictButton.classList.add('opacity-50', 'cursor-not-allowed');
+            predictButton.title = '请先选择数据文件和模型';
+        }
+    }
+    
+    // 如果没有最近的预测结果，检查历史预测结果
+    if (!window.lastPredictionResults) {
+        loadBatchPredictionHistory();
+    } else {
+        enableDownloadButton();
+    }
+    
+    // 显示状态信息
+    if (canPredict) {
+        const statusMessage = `已选择数据文件: ${selectedFile.displayName} | 已选择模型: ${selectedModel.displayName} | 可以开始预测操作`;
+        updatePredictionStatus(statusMessage, 'success');
+    } else {
+        const statusMessage = `${selectedFile ? '✅' : '❌'} 数据文件: ${selectedFile ? selectedFile.displayName : '未选择'} | ${selectedModel ? '✅' : '❌'} 模型: ${selectedModel ? selectedModel.displayName : '未选择'} | 请完成选择后进行操作`;
+        updatePredictionStatus(statusMessage, 'info');
+    }
+    
+    return { canPredict, selectedFile, selectedModel };
+}
+
+// 修复 startDataPrediction 函数中的状态更新
+async function startDataPrediction() {
+    console.log('开始数据预测...');
+    
+    // 检查是否有选择的数据文件
+    const selectedFile = getSelectedFile();
+    if (!selectedFile) {
+        showMessage('请先选择一个数据文件！', 'error');
+        updatePredictionStatus('请先选择数据文件', 'error');
+        return;
+    }
     
     // 检查是否选择了模型
     const selectedModel = getSelectedModel();
     if (!selectedModel) {
         showMessage('请先选择一个模型！', 'error');
+        updatePredictionStatus('请先选择模型', 'error');
         return;
     }
     
-    console.log('使用模型:', selectedModel);
+    console.log('选择的文件:', selectedFile.filename);
+    console.log('选择的模型:', selectedModel.filename);
     
-    // 显示加载状态
-    showPredictionLoading();
+    // 显示预测状态
+    updatePredictionStatus('正在进行批量预测...', 'processing');
+    
+    // 禁用开始预测按钮
+    const startBtn = document.getElementById('start-prediction-btn');
+    if (startBtn) {
+        startBtn.disabled = true;
+        startBtn.innerHTML = `<span class="material-icons mr-3 text-xl animate-spin">refresh</span>预测中...`;
+    }
+    
+    // 禁用下载按钮
+    updateDownloadButtonStatus('预测中...', true);
     
     try {
-        // 收集所有输入参数
-        const parameters = collectModelParameters();
-        console.log('收集到的参数:', parameters);
-        
-        // 构建请求数据，包含模型信息
+        // 构建请求数据
         const requestData = {
-            ...parameters,
-            selected_model: selectedModel.filename,  // 添加选择的模型文件名
-            model_display_name: selectedModel.displayName  // 添加模型显示名称
+            data_filename: selectedFile.filename,           // 数据文件名
+            model_filename: selectedModel.filename,         // 模型文件名
+            data_display_name: selectedFile.displayName,   // 数据文件显示名称
+            model_display_name: selectedModel.displayName  // 模型显示名称
         };
         
         console.log('发送到后端的数据:', requestData);
         
-        // 发送预测请求
-        const response = await fetch('/api/predict', {
+        // 发送批量预测请求
+        const response = await fetch('/api/batch_predict', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1962,157 +2389,364 @@ async function runModelPrediction() {
             body: JSON.stringify(requestData)
         });
         
+        console.log('请求已发送，响应状态:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
-        console.log('后端响应:', data);
+        console.log('预测响应数据:', data);
         
         if (data.success) {
-            displayPredictionResults(data.predictions, data.confidence);
-            showMessage(`使用模型 "${selectedModel.displayName}" 预测完成！`, 'success');
-        } else {
-            showMessage('预测失败: ' + data.message, 'error');
-            showPredictionPlaceholder();
-        }
-    } catch (error) {
-        console.error('预测错误:', error);
-        showMessage('预测失败: ' + error.message, 'error');
-        showPredictionPlaceholder();
-    }
-}
-
-// 收集模型参数
-function collectModelParameters() {
-    const parameters = {};
-    
-    console.log('开始收集参数...');
-    
-    // 收集所有输入框的值
-    const inputs = document.querySelectorAll('#model-tab .param-input');
-    console.log(`找到 ${inputs.length} 个输入控件`);
-    
-    inputs.forEach((input, index) => {
-        const label = input.closest('div').querySelector('label');
-        if (label) {
-            const paramName = label.textContent.trim();
-            let paramValue;
+            // 保存预测结果到全局变量，供下载使用
+            window.lastPredictionResults = {
+                data_filename: data.data_filename,
+                model_used: data.model_used,
+                model_display_name: data.model_display_name,
+                processed_rows: data.processed_rows,
+                predictions: data.predictions,
+                result_file: data.result_file,  // 从服务器返回的文件名
+                timestamp: new Date().toISOString()
+            };
             
-            if (input.type === 'number' || input.type === 'range') {
-                paramValue = parseFloat(input.value) || 0;
-            } else if (input.tagName === 'SELECT') {
-                paramValue = input.value;
+            showMessage(`批量预测完成！处理了 ${data.processed_rows} 行数据`, 'success');
+            
+            // 启用下载按钮
+            enableDownloadButton();
+            
+            // 显示下载信息
+            if (data.download_info) {
+                const downloadInfo = `预测完成，共处理 ${data.processed_rows} 行数据。文件大小: ${(data.download_info.file_size / 1024).toFixed(1)} KB | 总列数: ${data.download_info.total_columns} | 预测列数: ${data.download_info.prediction_columns}`;
+                updatePredictionStatus(downloadInfo, 'success');
             } else {
-                paramValue = input.value;
+                updatePredictionStatus(`预测完成，共处理 ${data.processed_rows} 行数据，文件已准备好下载`, 'success');
             }
             
-            parameters[paramName] = paramValue;
-            console.log(`参数 ${index + 1}: ${paramName} = ${paramValue}`);
-        }
-    });
-    
-    // 收集单选按钮的值
-    const radioGroups = document.querySelectorAll('input[type="radio"]:checked');
-    console.log(`找到 ${radioGroups.length} 个选中的单选按钮`);
-    
-    radioGroups.forEach((radio, index) => {
-        const radioName = radio.name;
-        const radioValue = radio.value;
-        const radioText = radio.nextElementSibling?.textContent?.trim() || radioValue;
-        
-        // 根据radio name找到对应的label
-        let paramName = '';
-        if (radioName === 'quality-attribute') {
-            paramName = '待加工原烟数据记录_质量属性（稍差、合格、稍强）';
-        } else if (radioName === 'moistening-method') {
-            paramName = '二润工段数据记录_润叶方式（蒸汽、加水、混合）';
-        } else if (radioName === 'flow-rate') {
-            paramName = '铺叶工段数据记录_流量（kg/h)';
+        } else {
+            showMessage('预测失败: ' + data.message, 'error');
+            updatePredictionStatus('预测失败: ' + data.message, 'error');
+            
+            // 预测失败时禁用下载按钮
+            updateDownloadButtonStatus('预测失败', true);
         }
         
-        if (paramName) {
-            parameters[paramName] = radioText;
-            console.log(`单选按钮 ${index + 1}: ${paramName} = ${radioText}`);
-        }
-    });
-    
-    console.log(`总共收集到 ${Object.keys(parameters).length} 个参数`);
-    return parameters;
-}
-
-// 显示预测结果
-function displayPredictionResults(predictions, confidence) {
-    // 隐藏加载状态
-    const statusElement = document.getElementById('prediction-status');
-    if (statusElement) {
-        statusElement.classList.add('hidden');
-    }
-    
-    // 更新结果
-    if (predictions.big_medium_rate !== undefined) {
-        const element = document.getElementById('result-big-medium-rate');
-        if (element) element.textContent = predictions.big_medium_rate.toFixed(1);
+    } catch (error) {
+        console.error('发送预测请求错误:', error);
+        updatePredictionStatus('发送预测请求失败: ' + error.message, 'error');
+        showMessage('发送预测请求失败: ' + error.message, 'error');
         
-        const confidenceElement = document.getElementById('confidence-big-medium-rate');
-        if (confidenceElement) {
-            confidenceElement.textContent = `预测置信度: ${confidence?.big_medium_rate_confidence || 92.4}%`;
-        }
-    }
-    
-    if (predictions.leaf_stem_rate !== undefined) {
-        const element = document.getElementById('result-leaf-stem-rate');
-        if (element) element.textContent = predictions.leaf_stem_rate.toFixed(1);
+        // 出错时禁用下载按钮
+        updateDownloadButtonStatus('预测失败', true);
         
-        const confidenceElement = document.getElementById('confidence-leaf-stem-rate');
-        if (confidenceElement) {
-            confidenceElement.textContent = `预测置信度: ${confidence?.leaf_stem_rate_confidence || 89.6}%`;
-        }
-    }
-    
-    if (predictions.stem_leaf_rate !== undefined) {
-        const element = document.getElementById('result-stem-leaf_rate');
-        if (element) element.textContent = predictions.stem_leaf_rate.toFixed(1);
-        
-        const confidenceElement = document.getElementById('confidence-stem-leaf-rate');
-        if (confidenceElement) {
-            confidenceElement.textContent = `预测置信度: ${confidence?.stem_leaf_rate_confidence || 91.3}%`;
+    } finally {
+        // 恢复开始预测按钮
+        if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.innerHTML = `<span class="material-icons mr-3 text-xl">play_arrow</span>开始预测`;
         }
     }
 }
 
-// 显示预测加载状态
-function showPredictionLoading() {
-    const statusElement = document.getElementById('prediction-status');
-    if (statusElement) {
-        statusElement.innerHTML = `
-            <div class="text-2xl mb-2">⏳</div>
-            <div class="text-lg">正在预测中...</div>
-            <div class="mt-2 text-gray-400">请稍候</div>
-        `;
-        statusElement.classList.remove('hidden');
+// 启用下载按钮
+function enableDownloadButton() {
+    const downloadBtn = document.getElementById('download-results-btn');
+    if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        downloadBtn.innerHTML = `<span class="material-icons mr-3 text-xl">download</span>结果下载`;
+        console.log('✅ 下载按钮已启用');
+    } else {
+        console.warn('⚠️ 找不到下载按钮元素');
     }
 }
 
-// 显示预测占位符
-function showPredictionPlaceholder() {
-    const statusElement = document.getElementById('prediction-status');
-    if (statusElement) {
-        statusElement.innerHTML = `
-            <div class="text-2xl mb-2">🔮</div>
-            <div class="text-lg">等待预测</div>
-            <div class="mt-2 text-gray-400">点击"运行预测"按钮开始</div>
-        `;
-        statusElement.classList.remove('hidden');
+// 禁用下载按钮
+function disableDownloadButton() {
+    const downloadBtn = document.getElementById('download-results-btn');
+    if (downloadBtn) {
+        downloadBtn.disabled = true;
+        downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        downloadBtn.innerHTML = `<span class="material-icons mr-3 text-xl">download</span>暂无结果`;
+        console.log('❌ 下载按钮已禁用');
     }
 }
 
-// 添加缺少的getSelectedFileInfo函数
-function getSelectedFileInfo() {
-    const selectedRadio = document.querySelector('input[name="data-file"]:checked');
-    if (!selectedRadio) {
-        return null;
+// 更新下载按钮状态
+function updateDownloadButtonStatus(text, disabled) {
+    const downloadBtn = document.getElementById('download-results-btn');
+    if (downloadBtn) {
+        downloadBtn.disabled = disabled;
+        
+        if (disabled) {
+            downloadBtn.innerHTML = `<span class="material-icons mr-3 text-xl animate-spin">refresh</span>${text}`;
+            downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            downloadBtn.innerHTML = `<span class="material-icons mr-3 text-xl">download</span>${text}`;
+            downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        
+        console.log(`🔄 下载按钮状态更新: ${text}, 禁用: ${disabled}`);
+    } else {
+        console.warn('⚠️ 找不到下载按钮元素');
+    }
+}
+
+// 重置下载按钮到初始状态
+function resetDownloadButton() {
+    updateDownloadButtonStatus('结果下载', true);
+}
+
+// 更新预测状态
+function updatePredictionStatus(message, status) {
+    const statusInfo = document.getElementById('prediction-status-info');
+    const statusText = document.getElementById('status-text');
+    
+    if (statusInfo && statusText) {
+        statusInfo.classList.remove('hidden');
+        
+        // 根据状态设置不同的样式和图标
+        let iconHtml = '';
+        let colorClass = '';
+        
+        switch (status) {
+            case 'processing':
+                iconHtml = '<span class="material-icons animate-spin mr-2">refresh</span>';
+                colorClass = 'text-yellow-400';
+                break;
+            case 'success':
+                iconHtml = '<span class="material-icons mr-2">check_circle</span>';
+                colorClass = 'text-green-400';
+                break;
+            case 'error':
+                iconHtml = '<span class="material-icons mr-2">error</span>';
+                colorClass = 'text-red-400';
+                break;
+            case 'info':
+                iconHtml = '<span class="material-icons mr-2">info</span>';
+                colorClass = 'text-blue-400';
+                break;
+            default:
+                iconHtml = '<span class="material-icons mr-2">info</span>';
+                colorClass = 'text-gray-400';
+        }
+        
+        statusInfo.className = `mt-6 text-center text-sm flex items-center justify-center ${colorClass}`;
+        statusText.innerHTML = iconHtml + message;
+        
+        console.log(`📊 状态更新: ${status} - ${message}`);
+    } else {
+        console.warn('⚠️ 找不到状态显示元素');
+    }
+}
+
+// 获取批量预测历史结果列表
+async function loadBatchPredictionHistory() {
+    try {
+        console.log('获取批量预测历史结果列表...');
+        
+        const response = await fetch('/api/get_latest_batch_result');
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log(`找到 ${data.total_files} 个批量预测历史文件`);
+            
+            // 在UI中显示历史文件列表
+            const historyContainer = document.getElementById('batch-history-container');
+            if (historyContainer && data.recent_files && data.recent_files.length > 0) {
+                const historyHtml = `
+                    <div class="mb-4">
+                        <h4 class="text-lg font-bold text-white mb-2">批量预测历史 (${data.total_files} 个文件)</h4>
+                        <div class="text-sm text-gray-400 mb-4">
+                            最新文件: ${data.latest_file.filename}<br>
+                            预测时间: ${data.latest_file.formatted_time} (${data.latest_file.size_mb} MB)
+                        </div>
+                    </div>
+                `;
+                
+                historyContainer.innerHTML = historyHtml;
+            }
+            
+            // 启用下载按钮
+            enableDownloadButton();
+            
+            // 在状态栏显示最新文件信息
+            const statusInfo = `最新批量预测: ${data.latest_file.formatted_time} (${data.latest_file.size_mb} MB)`;
+            updatePredictionStatus(statusInfo, 'success');
+            
+        } else {
+            console.log('没有找到批量预测历史文件');
+            updateDownloadButtonStatus('暂无结果', true);
+            updatePredictionStatus('暂无批量预测历史记录', 'info');
+        }
+        
+    } catch (error) {
+        console.error('获取批量预测历史失败:', error);
+        
+        // 出错时禁用下载按钮
+        updateDownloadButtonStatus('获取失败', true);
+        updatePredictionStatus('获取批量预测历史失败', 'error');
+    }
+}
+
+// 下载批量预测结果函数
+async function downloadPredictionResults() {
+    console.log('开始下载批量预测结果...');
+    
+    try {
+        // 显示下载状态
+        updateDownloadButtonStatus('正在准备下载...', true);
+        
+        // 获取最新的批量预测结果文件
+        console.log('获取最新的批量预测结果文件...');
+        const latestResponse = await fetch('/api/get_latest_batch_result');
+        const latestData = await latestResponse.json();
+        
+        if (latestData.success) {
+            console.log('找到最新批量预测结果文件:', latestData.latest_file.filename);
+            
+            // 直接下载最新文件
+            const downloadResponse = await fetch('/api/download_latest_batch_result');
+            
+            if (downloadResponse.ok) {
+                await handleFileDownload(downloadResponse, latestData.latest_file.filename);
+                showMessage(`最新批量预测结果下载成功！`, 'success');
+                
+                const fileInfo = latestData.latest_file;
+                const infoMessage = `文件: ${fileInfo.filename} | 预测时间: ${fileInfo.formatted_time} | 文件大小: ${fileInfo.size_mb} MB`;
+                updatePredictionStatus(`下载完成！${infoMessage}`, 'success');
+                
+            } else {
+                throw new Error(`下载失败: HTTP ${downloadResponse.status}`);
+            }
+        } else {
+            showMessage('没有找到批量预测结果文件，请先进行批量预测！', 'error');
+            updatePredictionStatus('请先进行批量预测，然后再下载结果', 'error');
+        }
+        
+    } catch (error) {
+        console.error('下载错误:', error);
+        showMessage('下载失败: ' + error.message, 'error');
+        updatePredictionStatus('下载失败: ' + error.message, 'error');
+    } finally {
+        updateDownloadButtonStatus('结果下载', false);
+    }
+}
+
+// 处理文件下载的通用函数
+async function handleFileDownload(response, defaultFilename) {
+    // 获取文件名
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = defaultFilename || 'batch_prediction_results.csv';
+    
+    if (contentDisposition) {
+        const matches = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (matches && matches[1]) {
+            filename = matches[1].replace(/['"]/g, '');
+        }
     }
     
-    return {
-        filename: selectedRadio.value,
-        displayName: selectedRadio.getAttribute('data-display-name') || selectedRadio.value
+    // 创建下载链接
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    console.log(`文件已下载: ${filename}`);
+}
+
+// 运行模型预测（模型测试页面）
+function runModelPrediction() {
+    console.log('🔮 运行模型预测...');
+    
+    // 模拟预测结果
+    const results = {
+        bigMediumRate: (85 + Math.random() * 5).toFixed(1),
+        leafStemRate: (1.0 + Math.random() * 0.5).toFixed(1),
+        stemLeafRate: (0.4 + Math.random() * 0.4).toFixed(1)
     };
+    
+    // 更新显示
+    const bigMediumElement = document.getElementById('result-big-medium-rate');
+    const leafStemElement = document.getElementById('result-leaf-stem-rate');
+    const stemLeafElement = document.getElementById('result-stem-leaf-rate');
+    
+    if (bigMediumElement) bigMediumElement.textContent = results.bigMediumRate;
+    if (leafStemElement) leafStemElement.textContent = results.leafStemRate;
+    if (stemLeafElement) stemLeafElement.textContent = results.stemLeafRate;
+    
+    showMessage('模型预测完成！', 'success');
+}
+
+// 下载批量预测历史文件
+async function downloadBatchHistoryFile(filename) {
+    try {
+        console.log(`下载批量预测历史文件: ${filename}`);
+        
+        const response = await fetch(`/api/download_batch_result/${filename}`);
+        
+        if (response.ok) {
+            await handleFileDownload(response, filename);
+            showMessage(`文件 ${filename} 下载成功！`, 'success');
+        } else {
+            throw new Error(`下载失败: HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        console.error('下载批量预测历史文件错误:', error);
+        showMessage('下载失败: ' + error.message, 'error');
+    }
+}
+
+// 初始化优化页面
+function initializeOptimization() {
+    console.log('📊 初始化参数优化页面...');
+}
+
+// 初始化结果分析页面
+function initializeResults() {
+    console.log('📈 初始化结果分析页面...');
+}
+
+// 初始化首页
+function initializeHome() {
+    console.log('🏠 初始化首页...');
+}
+
+// 开始优化
+function startOptimization() {
+    console.log('🚀 开始参数优化...');
+}
+
+// 模拟优化过程
+function simulateOptimization() {
+    console.log('⚙️ 模拟优化过程...');
+}
+
+// 初始化粒子动画
+function initializeParticleAnimation() {
+    console.log('✨ 初始化粒子动画...');
+}
+
+// 初始化图表
+function initializeCharts() {
+    console.log('📊 初始化图表...');
+}
+
+// 绑定调整滑块事件
+function bindAdjustmentSliders() {
+    console.log('🎛️ 绑定调整滑块事件...');
+}
+
+// 更新系统状态
+function updateSystemStatus() {
+    console.log('📊 更新系统状态...');
 }
   </script>
+</body>
+</html>
