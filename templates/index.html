@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>烟草生产优化系统</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-dark: #1B5E20;
+      --primary-light: #4CAF50;
+      --secondary: #FF9800;
+      --dark-bg: #121212;
+      --card-bg: #1E1E1E;
+      --text-primary: #E0E0E0;
+      --text-secondary: #9E9E9E;
+    }
+    
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      padding: 24px;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+    
+    .tab-button {
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: rgba(46, 125, 50, 0.2);
+    }
+    
+    .tab-button.active {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .file-upload-area {
+      border: 2px dashed var(--text-secondary);
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      background-color: rgba(46, 125, 50, 0.05);
+    }
+    .param-input {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;}
+    .file-upload-area:hover {
+      border-color: var(--primary);
+      background-color: rgba(46, 125, 50, 0.1);
+    }
+    
+    .file-upload-area.drag-over {
+      border-color: var(--primary);
+      background-color: rgba(46, 125, 50, 0.2);
+      transform: scale(1.02);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-value {
+      height: 100%;
+      background-color: var(--primary);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    .result-card {
+      background: linear-gradient(135deg, rgba(46, 125, 50, 0.1), rgba(30, 30, 30, 0.8));
+      border-left: 4px solid var(--primary);
+      min-height: 500px;
+    }
+    
+    .param-input {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      color: white;
+      width: 100%;
+    }
+    
+    .param-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    /* 下拉选择框样式 */
+.param-input select,
+select.param-input {
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.param-input select option,
+select.param-input option {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 8px;
+}
+
+.param-input select:focus,
+select.param-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: #ffffff;
+  color: #000000;
+}
+    
+    .param-card {
+      background-color: rgba(46, 125, 50, 0.05);
+      border: 1px solid rgba(46, 125, 50, 0.2);
+    }
+    
+    .optimization-animation {
+      position: relative;
+      height: 120px;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--secondary);
+      opacity: 0.7;
+      animation: moveParticle 3s infinite linear;
+    }
+    
+    @keyframes moveParticle {
+      0% {
+        transform: translate(0, 0);
+        opacity: 0.7;
+      }
+      50% {
+        transform: translate(100px, 50px);
+        opacity: 0.3;
+      }
+      100% {
+        transform: translate(0, 0);
+        opacity: 0.7;
+      }
+    }
+    
+    .section-title {
+      position: relative;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+
+    /* 强制两列布局 - 增强版本 */
+.model-test-grid {
+  display: grid !important;
+  /* 使用更稳健的方式定义两列，确保它们均分空间 */
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+  gap: 2rem !important;
+  align-items: start !important;
+  min-height: 600px;
+}
+
+/* 移除了 @media (min-width: 768px) 中重复的 .model-test-grid 规则，
+   因为基础规则已经使用了 !important */
+
+/* 确保左侧输入区域正确显示在第一列 */
+.model-test-grid > div:first-child {
+  grid-column: 1 / span 1 !important; /* 明确指定在第一列 */
+  width: 100% !important;
+  max-width: none !important;
+  overflow: hidden; /* 防止内容溢出破坏布局 */
+}
+
+/* 确保右侧预测结果区域正确显示在第二列 */
+.model-test-grid > div:last-child {
+  grid-column: 2 / span 1 !important; /* 明确指定在第二列 */
+  width: 100% !important;
+  max-width: none !important;
+  overflow: hidden; /* 防止内容溢出破坏布局 */
+}
+
+/* 输入参数容器样式 (之前移除了滚动条样式) */
+.input-params-container {
+  padding-right: 1rem; /* 保留一些内边距 */
+  /* 如果需要左侧内容可滚动，可以恢复 max-height 和 overflow-y: auto */
+  /* max-height: 600px; */
+  /* overflow-y: auto; */
+}
+
+/* 预测结果容器样式 */
+.prediction-results-container {
+  position: sticky !important; /* 保持粘性定位 */
+  top: 1rem !important;
+  height: fit-content !important; /* 高度适应内容 */
+  max-height: 600px !important; /* 最大高度，超出可滚动（如果内容多） */
+  /* overflow-y: auto; /* 如果预测结果内容可能很多，可以启用此行 */
+}
+
+/* 预测结果卡片样式 */
+.result-card {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.1), rgba(30, 30, 30, 0.8));
+  border-left: 4px solid var(--primary);
+  min-height: 500px; /* 确保有足够的高度 */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 预测结果网格 */
+#prediction-results {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* 预测结果项样式 */
+#prediction-results > div {
+  background-color: rgba(55, 55, 55, 0.8);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+#prediction-results > div:hover {
+  background-color: rgba(70, 70, 70, 0.9);
+  transform: translateY(-2px);
+}
+
+/* 移动端适配 - 只在很小的屏幕上使用单列 */
+@media (max-width: 640px) {
+  .model-test-grid {
+    display: block !important; /* 切换为块级布局，实现单列 */
+    /* grid-template-columns: none !important; /* 在 display: block 时不需要 */
+  }
+  
+  .model-test-grid > div:first-child,
+  .model-test-grid > div:last-child {
+    grid-column: auto !important; /* 重置网格列设置 */
+    width: 100% !important; /* 确保占满宽度 */
+  }
+  
+  .model-test-grid > div:last-child {
+    margin-top: 2rem; /* 在堆叠时添加上边距 */
+  }
+  
+  .prediction-results-container {
+    position: static !important; /* 移除粘性定位 */
+    max-height: none !important; /* 移除最大高度限制 */
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 顶部导航 -->
+    <div class="flex justify-between items-center mb-10">
+      <div class="flex items-center">
+        <div class="w-12 h-12 rounded-full bg-green-700 flex items-center justify-center mr-4">
+          <span class="material-icons text-white">local_florist</span>
+        </div>
+        <h1 class="text-2xl font-bold">烟草生产优化系统</h1>
+      </div>
+      <div class="flex space-x-4">
+        <button class="px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700 transition flex items-center">
+          <span class="material-icons mr-2">settings</span> 系统设置
+        </button>
+        <button class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition flex items-center">
+          <span class="material-icons mr-2">account_circle</span> 用户账号
+        </button>
+      </div>
+    </div>
+    
+    <!-- 标签导航 -->
+    <div class="flex space-x-4 mb-8">
+      <div class="tab-button active" data-tab="home">首页</div>
+      <div class="tab-button" data-tab="data">数据导入</div>
+      <div class="tab-button" data-tab="model">模型管理</div>
+      <div class="tab-button" data-tab="optimization">参数优化</div>
+      <div class="tab-button" data-tab="results">结果分析</div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div id="content-area">
+      <!-- 首页 -->
+      <div id="home-tab" class="tab-content">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="card">
+            <h2 class="text-xl font-bold mb-4">数据导入</h2>
+            <p class="text-gray-400 mb-4">导入烟草生产参数数据表格，支持CSV、Excel格式</p>
+            <button class="btn-primary flex items-center justify-center" data-tab="data">
+              <span class="material-icons mr-2">cloud_upload</span> 导入数据
+            </button>
+          </div>
+          
+          <div class="card">
+            <h2 class="text-xl font-bold mb-4">模型管理</h2>
+            <p class="text-gray-400 mb-4">上传或选择预测模型，支持.pkl格式</p>
+            <button class="btn-primary flex items-center justify-center" data-tab="model">
+              <span class="material-icons mr-2">model_training</span> 管理模型
+            </button>
+          </div>
+          
+          <div class="card">
+            <h2 class="text-xl font-bold mb-4">参数优化</h2>
+            <p class="text-gray-400 mb-4">使用粒子群算法优化烟草生产参数</p>
+            <button class="btn-primary flex items-center justify-center" data-tab="optimization">
+              <span class="material-icons mr-2">tune</span> 开始优化
+            </button>
+          </div>
+        </div>
+        
+        <div class="card mb-8">
+          <h2 class="text-xl font-bold mb-4">最近分析</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+              <thead>
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">日期</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">模型</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">参数数量</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">优化结果</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">状态</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-800">
+                <tr>
+                  <td class="px-4 py-3">2025-5-15</td>
+                  <td class="px-4 py-3">RBFNN预测模型 v3.2</td>
+                  <td class="px-4 py-3">12</td>
+                  <td class="px-4 py-3 text-green-400">+7.2% 预测效果提升</td>
+                  <td class="px-4 py-3"><span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">已完成</span></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">2025-5-12</td>
+                  <td class="px-4 py-3">Lasso预测模型 v2.5</td>
+                  <td class="px-4 py-3">8</td>
+                  <td class="px-4 py-3 text-green-400">+5.8% 预测效果提升</td>
+                  <td class="px-4 py-3"><span class="px-2 py-1 bg-green-900 text-green-300 rounded-full text-xs">已完成</span></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">2025-5-10</td>
+                  <td class="px-4 py-3">效率优化模型 v1.7</td>
+                  <td class="px-4 py-3">10</td>
+                  <td class="px-4 py-3 text-yellow-400">+3.1% 效率提升</td>
+                  <td class="px-4 py-3"><span class="px-2 py-1 bg-yellow-900 text-yellow-300 rounded-full text-xs">进行中</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="card">
+            <h2 class="text-xl font-bold mb-4">系统状态</h2>
+            <div class="mb-4">
+              <div class="flex justify-between mb-1">
+                <span>CPU 使用率</span>
+                <span>42%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-value" style="width: 42%"></div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="flex justify-between mb-1">
+                <span>内存使用</span>
+                <span>64%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-value" style="width: 64%"></div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="flex justify-between mb-1">
+                <span>存储空间</span>
+                <span>28%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-value" style="width: 28%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <h2 class="text-xl font-bold mb-4">通知公告</h2>
+            <div class="border-l-2 border-green-600 pl-4 py-2 mb-3">
+              <div class="text-sm text-gray-400">2025-5-16</div>
+              <p>系统将于本周六凌晨2点进行维护升级，预计耗时2小时</p>
+            </div>
+            <div class="border-l-2 border-yellow-600 pl-4 py-2 mb-3">
+              <div class="text-sm text-gray-400">2025-5-14</div>
+              <p>新版本预测模型 v3.2 已上线，优化了参数预测精度</p>
+            </div>
+            <div class="border-l-2 border-blue-600 pl-4 py-2">
+              <div class="text-sm text-gray-400">2025-5-10</div>
+              <p>新增数据导出功能，支持导出优化后的参数配置</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 数据导入 -->
+      <div id="data-tab" class="tab-content hidden">
+        <div class="card mb-8">
+          <h2 class="section-title text-xl font-bold">数据导入</h2>
+          <p class="text-gray-400 mb-6">导入烟草生产参数数据表格，系统支持CSV、Excel等格式</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="file-upload-area" id="data-upload-area">
+              <span class="material-icons text-5xl text-green-500 mb-4">cloud_upload</span>
+              <h3 class="text-lg font-bold mb-2">上传数据文件</h3>
+              <p class="text-gray-400 mb-4">拖放文件到此处或点击选择文件</p>              <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg" onclick="document.getElementById('data-file-input').click()">选择文件</button>
+              <input type="file" class="hidden" id="data-file-input" accept=".csv,.xlsx,.xls">
+            </div>
+              <div>
+              <h3 class="text-lg font-bold mb-4">已上传文件</h3>
+              <div id="uploaded-files-list" class="border border-gray-700 rounded-lg divide-y divide-gray-800">
+                <!-- 文件列表将通过JavaScript动态加载 -->
+                <div class="p-4 text-center text-gray-500">
+                  <span class="material-icons text-3xl mb-2">folder_open</span>
+                  <p>正在加载文件列表...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2 class="section-title text-xl font-bold">参数预览</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-700">
+              <thead>
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">待加工原烟数据记录_水份（%）</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">待加工原烟数据记录_温度（℃）</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">铺叶工段数据记录_流量（kg/h)</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">一润工段数据记录_润前水份（%）</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">一润工段数据记录_润前温度（℃）</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">其他</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-800">
+                <tr>
+                  <td class="px-4 py-3">13.26</td>
+                  <td class="px-4 py-3">20.2</td>
+                  <td class="px-4 py-3">15450</td>
+                  <td class="px-4 py-3">16.25</td>
+                  <td class="px-4 py-3">39.44</td>
+                  <td class="px-4 py-3 text-green-400">...</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">14.56</td>
+                  <td class="px-4 py-3">20.1</td>
+                  <td class="px-4 py-3">15450</td>
+                  <td class="px-4 py-3">16.18</td>
+                  <td class="px-4 py-3">40.1</td>
+                  <td class="px-4 py-3 text-green-400">...</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">13.98</td>
+                  <td class="px-4 py-3">19.5</td>
+                  <td class="px-4 py-3">15450</td>
+                  <td class="px-4 py-3">16.31</td>
+                  <td class="px-4 py-3">40.3</td>
+                  <td class="px-4 py-3 text-yellow-400">...</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">13.55</td>
+                  <td class="px-4 py-3">20.3</td>
+                  <td class="px-4 py-3">15450</td>
+                  <td class="px-4 py-3">16.33</td>
+                  <td class="px-4 py-3">40.2</td>
+                  <td class="px-4 py-3 text-yellow-400">...</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">13.96</td>
+                  <td class="px-4 py-3">17</td>
+                  <td class="px-4 py-3">16000</td>
+                  <td class="px-4 py-3">16.14</td>
+                  <td class="px-4 py-3">37.25</td>
+                  <td class="px-4 py-3 text-green-400">...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 模型管理 -->
+      <div id="model-tab" class="tab-content hidden">
+        <div class="card mb-8">
+          <h2 class="section-title text-xl font-bold">模型管理</h2>
+          <p class="text-gray-400 mb-6">上传或选择预测模型，支持.pkl格式文件</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="file-upload-area" id="model-upload-area">
+              <span class="material-icons text-5xl text-green-500 mb-4">model_training</span>
+              <h3 class="text-lg font-bold mb-2">上传模型文件</h3>
+              <p class="text-gray-400 mb-4">仅支持.pkl格式的模型文件</p>
+              <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg" onclick="document.getElementById('model-file-input').click()">选择文件</button>
+              <input type="file" accept=".pkl" class="hidden" id="model-file-input">
+            </div>
+              <div>
+              <h3 class="text-lg font-bold mb-4">可用模型</h3>
+              <div id="models-list" class="space-y-4">
+                <!-- 模型列表将通过JavaScript动态加载 -->
+                <div class="param-card p-4 rounded-lg text-center text-gray-500">
+                  <span class="material-icons text-3xl mb-2">model_training</span>
+                  <p>正在加载模型列表...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2 class="section-title text-xl font-bold">模型测试</h2>
+          <div class="model-test-grid">
+            <!-- 左侧：输入测试参数 -->
+            <div>
+              <h3 class="text-lg font-bold mb-4">输入测试参数</h3>
+              <div class="input-params-container space-y-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">待加工原烟数据记录_水份（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">待加工原烟数据记录_温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">待加工原烟数据记录_烟碱含量（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">待加工原烟数据记录_质量属性（稍差、合格、稍强）</label>
+                  <select class="param-input">
+                    <option>稍差</option>
+                    <option>合格</option>
+                    <option>稍强</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">待加工原烟数据记录_叶梗比（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">待加工原烟数据记录_环境温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">待加工原烟数据记录_环境湿度（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">铺叶工段数据记录_流量（kg/h）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">铺叶工段数据记录_环境温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">铺叶工段数据记录_环境湿度（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">回潮工段数据记录_潮后水份（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">回潮工段数据记录_潮后温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">回潮工段数据记录_回潮方式</label>
+                  <select class="param-input">
+                    <option>半回</option>
+                    <option>全回</option>
+                 </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">回潮工段数据记录_环境温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">回潮工段数据记录_环境湿度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">一润工段数据记录_润前水份（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">一润工段数据记录_润前温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">一润工段数据记录_润叶方式（蒸汽、加水、混合）</label>
+                <select class="param-input">
+                    <option>蒸汽</option>
+                    <option>加水</option>
+                    <option>混合</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">一润工段数据记录_润后水份（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">一润工段数据记录_润后温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">一润工段数据记录_环境温度（℃）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">一润工段数据记录_环境湿度（%）</label>
+                  <input type="number" class="param-input" value="20.2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">二润工段数据记录_润前水份（%）</label>
+                  <input type="number" class="param-input" value="18.91">
+                </div>
+                 <div>
+                  <label class="block text-sm font-medium mb-2">二润工段数据记录_润前温度（℃）</label>
+                  <input type="number" class="param-input" value="18.91">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">二润工段数据记录_润叶方式（蒸汽、加水、混合）</label>
+                  <select class="param-input">
+                    <option>蒸汽</option>
+                    <option>加水</option>
+                    <option>混合</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">二润工段数据记录_润后水份（%）</label>
+                  <input type="number" class="param-input" value="18.91">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">二润工段数据记录_润后温度（℃）</label>
+                  <input type="number" class="param-input" value="54.5">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">二润工段数据记录_环境温度（℃）</label>
+                  <input type="number" class="param-input" value="54.5">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">二润工段数据记录_环境湿度（%）</label>
+                  <input type="number" class="param-input" value="54.5">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_打前水份（%）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_打前温度（℃）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                 <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_一打_打辊参数（hz）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_二打_打辊参数（hz）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_三打_打辊参数（hz）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_四打_打辊参数（hz）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_一分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_二分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_三分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_四分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_五分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_六分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_七分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_八分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_九分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_十分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_风分参数（hz）_十一分</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_环境温度（℃）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">打叶工段数据记录_环境湿度（%）</label>
+                  <input type="number" step="0.1" class="param-input" value="15.8">
+                </div>
+                <button class="btn-primary w-full mt-4" onclick="runModelPrediction()">运行预测</button>
+            </div>
+            
+            
+            <!-- 右侧：预测结果 -->
+            <div>
+              <h3 class="text-lg font-bold mb-4">预测结果</h3>
+              <div class="prediction-results-container">
+                <div class="result-card p-6 rounded-lg">
+                  <div class="grid grid-cols-1 gap-6" id="prediction-results">
+                    <!-- 大中片率 -->
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                      <div class="text-4xl font-bold text-green-400 mb-2" id="result-big-medium-rate">86.7</div>
+                      <div class="text-lg">大中片率 (%)</div>
+                      <div class="mt-2 text-gray-400" id="confidence-big-medium-rate">预测置信度: 92.4%</div>
+                    </div>
+                    
+                    <!-- 叶含梗率 -->
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                      <div class="text-4xl font-bold text-green-400 mb-2" id="result-leaf-stem-rate">1.2</div>
+                      <div class="text-lg">叶含梗率 (%)</div>
+                      <div class="mt-2 text-gray-400" id="confidence-leaf-stem-rate">预测置信度: 89.6%</div>
+                    </div>
+                    
+                    <!-- 梗含叶率 -->
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                      <div class="text-4xl font-bold text-green-400 mb-2" id="result-stem-leaf-rate">0.6</div>
+                      <div class="text-lg">梗含叶率 (%)</div>
+                      <div class="mt-2 text-gray-400" id="confidence-stem-leaf-rate">预测置信度: 91.3%</div>
+                    </div>
+                    
+                    
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 参数优化 -->
+      <div id="optimization-tab" class="tab-content hidden">
+        <div class="card mb-8">
+          <h2 class="section-title text-xl font-bold">参数优化设置</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div>
+              <h3 class="text-lg font-bold mb-4">模型选择</h3>
+              <select class="param-input">
+                <option>RBFNN预测模型 v3.2</option>
+                <option>Lasso预测模型 v2.5</option>
+                <option>效率优化模型 v1.7</option>
+              </select>
+            </div>
+            
+            <div>
+              <h3 class="text-lg font-bold mb-4">优化目标</h3>
+              <select class="param-input">
+                <option>最大化质量评分</option>
+                <option>最大化产量</option>
+                <option>最小化成本</option>
+                <option>平衡质量与产量</option>
+              </select>
+            </div>
+            
+            <div>
+              <h3 class="text-lg font-bold mb-4">算法选择</h3>
+              <select class="param-input">
+                <option selected>粒子群优化 (PSO)</option>
+                <option>遗传算法 (GA)</option>
+                <option>模拟退火 (SA)</option>
+                <option>梯度下降 (GD)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <h3 class="text-lg font-bold mb-4">参数范围设置</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-700">
+                <thead>
+                  <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">参数</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">最小值</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">最大值</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">当前值</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                  <tr>
+                    <td class="px-4 py-3">大中片率</td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="77"></td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="79"></td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="78"></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3">叶含梗率</td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="1.1"></td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="1.5"></td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="1.2"></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3">梗含叶率</td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="0.5"></td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="0.7"></td>
+                    <td class="px-4 py-3"><input type="number" class="param-input w-20" value="0.6"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div class="flex justify-center">
+            <button class="btn-secondary px-8 py-3 text-lg flex items-center" id="start-optimization">
+              <span class="material-icons mr-2">play_arrow</span> 开始优化
+            </button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2 class="section-title text-xl font-bold">优化进度</h2>
+          <div id="optimization-progress" class="hidden">
+            <div class="optimization-animation mb-6" id="particle-animation">
+              <!-- 粒子会通过JS动态添加 -->
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex justify-between mb-1">
+                <span>优化进度</span>
+                <span id="progress-percent">0%</span>
+              </div>
+              <div class="progress-bar h-4">
+                <div class="progress-value h-4" id="progress-value" style="width: 0%"></div>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 bg-gray-800 rounded-lg">
+                <div class="text-sm text-gray-400">迭代次数</div>
+                <div class="text-xl font-bold" id="iteration-count">0/100</div>
+              </div>
+              <div class="p-4 bg-gray-800 rounded-lg">
+                <div class="text-sm text-gray-400">当前最优值</div>
+                <div class="text-xl font-bold text-green-400" id="current-best">0.00</div>
+              </div>
+              <div class="p-4 bg-gray-800 rounded-lg">
+                <div class="text-sm text-gray-400">优化目标</div>
+                <div class="text-xl font-bold">质量评分</div>
+              </div>
+            </div>
+          </div>
+          
+          <div id="optimization-placeholder" class="text-center py-12">
+            <span class="material-icons text-5xl text-gray-600 mb-4">tune</span>
+            <h3 class="text-xl font-bold mb-2">等待开始优化</h3>
+            <p class="text-gray-500">设置好参数并点击"开始优化"按钮</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 结果分析 -->
+      <div id="results-tab" class="tab-content hidden">
+        <div class="card mb-8">
+          <h2 class="section-title text-xl font-bold">优化结果</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="result-card p-6">
+              <div class="text-lg font-bold mb-4">优化前参数</div>
+              <div class="space-y-3">
+                <div class="flex justify-between">
+                  <span>大中片率</span>
+                  <span>77</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>叶含梗率</span>
+                  <span>1.2</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>梗含叶率</span>
+                  <span>0.6</span>
+                </div>
+                <div class="flex justify-between mt-4 pt-4 border-t border-gray-700">
+                  <span class="font-bold">质量评分</span>
+                  <span class="font-bold text-green-400">86.7</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="result-card p-6 border-l-4 border-yellow-500">
+              <div class="text-lg font-bold mb-4">优化后参数</div>
+              <div class="space-y-3">
+                <div class="flex justify-between">
+                  <span>大中片率</span>
+                  <span class="text-yellow-400">78</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>叶含梗率</span>
+                  <span class="text-yellow-400">1.1</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>梗含叶率</span>
+                  <span class="text-yellow-400">0.5</span>
+                </div>
+                <div class="flex justify-between mt-4 pt-4 border-t border-gray-700">
+                  <span class="font-bold">质量评分</span>
+                  <span class="font-bold text-yellow-400">93.4</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="result-card p-6 border-l-4 border-green-500">
+              <div class="text-lg font-bold mb-4">优化效果</div>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span>效果提升</span>
+                    <span class="text-green-400">+7.7%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-value bg-green-500" style="width: 100%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span>时间效率</span>
+                    <span class="text-yellow-400">+0.5%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-value bg-yellow-500" style="width: 10%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <h3 class="text-lg font-bold mb-4">优化过程收敛图</h3>
+            <div class="bg-gray-800 p-4 rounded-lg">
+              <canvas id="convergence-chart" height="300"></canvas>
+            </div>
+          </div>
+          
+          <div class="flex justify-end space-x-4">
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center">
+              <span class="material-icons mr-2">download</span> 导出结果
+            </button>
+            <button class="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg flex items-center">
+              <span class="material-icons mr-2">playlist_add_check</span> 应用参数
+            </button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2 class="section-title text-xl font-bold">参数敏感性分析</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-gray-800 p-4 rounded-lg">
+              <canvas id="sensitivity-chart" height="300"></canvas>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold mb-4">参数影响权重</h3>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span>大中片率</span>
+                    <span>51.9%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-value" style="width: 52%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span>叶含梗率</span>
+                    <span>25.7%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-value" style="width: 26%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span>梗含叶率</span>
+                    <span>22.4%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-value" style="width: 22%"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-8">
+                <h3 class="text-lg font-bold mb-4">优化建议</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-300">
+                  <li>大中片率在范围内越大越好</li>
+                  <li>叶含梗率在范围内越小越好</li>
+                  <li>梗含叶率在范围内越小越好</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 新增人工评估模块 -->
+        <div class="card mb-8">
+          <h2 class="section-title text-xl font-bold">人工评估</h2>
+          <p class="text-gray-400 mb-6">根据生产经验和产品质量要求，对优化结果进行人工评估和调整</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-lg font-bold mb-4">指标评估</h3>
+              <div class="space-y-6">
+                <!-- 大中片率评估 -->
+                <div class="p-4 bg-gray-800 rounded-lg">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-medium">大中片率 (78%)</span>
+                    <div class="flex items-center space-x-2">
+                      <span class="text-sm text-gray-400">评估:</span>
+                      <select id="assessment-rate" class="param-input text-sm py-1 px-2 w-auto">
+                        <option value="too-low">偏低</option>
+                        <option value="appropriate" selected>适中</option>
+                        <option value="too-high">偏高</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="relative h-6 bg-gray-700 rounded-full overflow-hidden">
+                    <div class="absolute inset-0 flex">
+                      <div class="w-1/3 border-r border-gray-600"></div>
+                      <div class="w-1/3 border-r border-gray-600"></div>
+                      <div class="w-1/3"></div>
+                    </div>
+                    <div class="absolute top-0 h-full bg-green-500 bg-opacity-50" style="width: 78%; left: 0;"></div>
+                    <div class="absolute top-0 h-full w-2 bg-yellow-500" style="left: 78%"></div>
+                  </div>
+                  <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>偏低</span>
+                    <span>适中</span>
+                    <span>偏高</span>
+                  </div>
+                </div>
+                
+                <!-- 叶含梗率评估 -->
+                <div class="p-4 bg-gray-800 rounded-lg">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-medium">叶含梗率 (1.1%)</span>
+                    <div class="flex items-center space-x-2">
+                      <span class="text-sm text-gray-400">评估:</span>
+                      <select id="assessment-leaf" class="param-input text-sm py-1 px-2 w-auto">
+                        <option value="too-low">偏低</option>
+                        <option value="appropriate" selected>适中</option>
+                        <option value="too-high">偏高</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="relative h-6 bg-gray-700 rounded-full overflow-hidden">
+                    <div class="absolute inset-0 flex">
+                      <div class="w-1/3 border-r border-gray-600"></div>
+                      <div class="w-1/3 border-r border-gray-600"></div>
+                      <div class="w-1/3"></div>
+                    </div>
+                    <div class="absolute top-0 h-full bg-green-500 bg-opacity-50" style="width: 40%; left: 0;"></div>
+                    <div class="absolute top-0 h-full w-2 bg-yellow-500" style="left: 40%"></div>
+                  </div>
+                  <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>偏低</span>
+                    <span>适中</span>
+                    <span>偏高</span>
+                  </div>
+                </div>
+                
+                <!-- 梗含叶率评估 -->
+                <div class="p-4 bg-gray-800 rounded-lg">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-medium">梗含叶率 (0.5%)</span>
+                    <div class="flex items-center space-x-2">
+                      <span class="text-sm text-gray-400">评估:</span>
+                      <select id="assessment-stem" class="param-input text-sm py-1 px-2 w-auto">
+                        <option value="too-low">偏低</option>
+                        <option value="appropriate" selected>适中</option>
+                        <option value="too-high">偏高</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="relative h-6 bg-gray-700 rounded-full overflow-hidden">
+                    <div class="absolute inset-0 flex">
+                      <div class="w-1/3 border-r border-gray-600"></div>
+                      <div class="w-1/3 border-r border-gray-600"></div>
+                      <div class="w-1/3"></div>
+                    </div>
+                    <div class="absolute top-0 h-full bg-green-500 bg-opacity-50" style="width: 30%; left: 0;"></div>
+                    <div class="absolute top-0 h-full w-2 bg-yellow-500" style="left: 30%"></div>
+                  </div>
+                  <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>偏低</span>
+                    <span>适中</span>
+                    <span>偏高</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-lg font-bold mb-4">手动调整</h3>
+              <div class="space-y-6">
+                <!-- 大中片率调整 -->
+                <div class="p-4 bg-gray-800 rounded-lg">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-medium">大中片率调整</span>
+                    <div class="text-sm text-yellow-400">
+                      机器优化值: 78%
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-4">
+                    <input type="range" min="75" max="85" value="78" class="flex-grow" id="adjust-rate">
+                    <input type="number" min="75" max="85" value="78" class="param-input w-20" id="adjust-rate-value">
+                  </div>
+                  <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>75%</span>
+                    <span>85%</span>
+                  </div>
+                </div>
+                
+                <!-- 叶含梗率调整 -->
+                <div class="p-4 bg-gray-800 rounded-lg">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-medium">叶含梗率调整</span>
+                    <div class="text-sm text-yellow-400">
+                      机器优化值: 1.1%
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-4">
+                    <input type="range" min="0.5" max="1.5" step="0.1" value="1.1" class="flex-grow" id="adjust-leaf">
+                    <input type="number" min="0.5" max="1.5" step="0.1" value="1.1" class="param-input w-20" id="adjust-leaf-value">
+                  </div>
+                  <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0.5%</span>
+                    <span>1.5%</span>
+                  </div>
+                </div>
+                
+                <!-- 梗含叶率调整 -->
+                <div class="p-4 bg-gray-800 rounded-lg">
+                  <div class="flex justify-between items-center mb-3">
+                    <span class="font-medium">梗含叶率调整</span>
+                    <div class="text-sm text-yellow-400">
+                      机器优化值: 0.5%
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-4">
+                    <input type="range" min="0.3" max="0.8" step="0.1" value="0.5" class="flex-grow" id="adjust-stem">
+                    <input type="number" min="0.3" max="0.8" step="0.1" value="0.5" class="param-input w-20" id="adjust-stem-value">
+                  </div>
+                  <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0.3%</span>
+                    <span>0.8%</span>
+                  </div>
+                </div>
+                
+                <button class="btn-primary w-full mt-4">应用人工调整值</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 全局变量
+    let currentTab = 'data-upload';
+    let currentFiles = [];
+    let currentModels = [];    // 切换标签页功能
+    function switchTab(tabName) {
+        // 隐藏所有内容
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+        
+        // 移除所有按钮的活跃状态
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // 显示选中的内容
+        const targetTab = document.getElementById(tabName + '-tab');
+        if (targetTab) {
+            targetTab.classList.remove('hidden');
+        }
+        
+        // 激活对应按钮
+        const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+        
+        currentTab = tabName;
+        
+        // 如果切换到数据或模型页面，刷新文件列表
+        if (tabName === 'data' || tabName === 'model') {
+            loadFilesAndModels();
+        }
+    }
+
+    // 加载文件和模型列表
+    async function loadFilesAndModels() {
+        try {
+            console.log('开始加载文件和模型...');
+            
+            // 并行加载文件列表和模型列表
+            const promises = [];
+            
+            // 只有在相应的元素存在时才加载
+            if (document.getElementById('files-list')) {
+                promises.push(loadFileList());
+            }
+            
+            if (document.getElementById('models-list')) {
+                promises.push(loadModelList());
+            }
+            
+            await Promise.all(promises);
+            console.log('文件和模型加载完成');
+            
+        } catch (error) {
+            console.error('加载文件和模型时出错:', error);
+            showMessage('加载数据失败: ' + error.message, 'error');
+        }
+    }
+
+    // 加载文件列表
+    async function loadFileList() {
+        try {
+            const response = await fetch('/api/get_uploaded_files');
+            const data = await response.json();
+            
+            if (data.success) {
+                currentFiles = data.files;
+                updateFileListDisplay();
+            } else {
+                console.error('获取文件列表失败:', data.message);
+                showMessage('获取文件列表失败: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('加载文件列表错误:', error);
+            showMessage('加载文件列表失败', 'error');
+        }
+    }
+
+    // 加载模型列表
+    async function loadModelList() {
+        try {
+            console.log('正在加载模型列表...');
+            
+            const response = await fetch('/api/models');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('模型列表响应:', data);
+            
+            if (data.success) {
+                updateModelListDisplay(data.models || []);
+                console.log(`加载了 ${data.models ? data.models.length : 0} 个模型`);
+            } else {
+                console.error('加载模型列表失败:', data.message);
+                showMessage('加载模型列表失败: ' + data.message, 'error');
+                updateModelListDisplay([]);
+            }
+        } catch (error) {
+            console.error('加载模型列表错误:', error);
+            showMessage('加载模型列表失败: ' + error.message, 'error');
+            updateModelListDisplay([]);
+        }
+    }
+
+    // 更新文件列表显示
+    function updateFileListDisplay() {
+        const fileListContainer = document.getElementById('uploaded-files-list');
+        
+        if (!fileListContainer) {
+            console.error('找不到文件列表容器');
+            return;
+        }
+
+        if (currentFiles.length === 0) {
+            fileListContainer.innerHTML = `
+                <div class="p-4 text-center text-gray-500">
+                    <span class="material-icons text-3xl mb-2">folder_open</span>
+                    <p>暂无上传的文件</p>
+                </div>
+            `;
+            return;
+        }        fileListContainer.innerHTML = currentFiles.map(file => `
+            <div class="p-4 hover:bg-gray-800 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="material-icons text-green-400 mr-3">
+                            ${file.file_type === 'Excel' ? 'table_chart' : 'description'}
+                        </span>
+                        <div>
+                            <h4 class="font-medium text-white">${file.display_name}</h4>
+                            <p class="text-sm text-gray-400">
+                                ${file.file_type} • ${(file.file_size / (1024 * 1024)).toFixed(2)} MB • 
+                                ${new Date(file.upload_time).toLocaleString('zh-CN')}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="previewFile('${file.filename}')" 
+                                class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+                            预览
+                        </button>
+                        <button onclick="startPredictionWithFile('${file.filename}', '${file.display_name}')" 
+                                class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
+                            开始预测
+                        </button>
+                        <button onclick="deleteFile('${file.filename}')" 
+                                class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition">
+                            删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }    // 更新模型列表显示函数
+    function updateModelListDisplay(models) {
+        const modelsList = document.getElementById('models-list');
+        
+        if (!models || models.length === 0) {
+            modelsList.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <div class="text-4xl mb-4">📊</div>
+                    <div class="text-lg mb-2">暂无模型文件</div>
+                    <div class="text-sm">请上传模型文件到 uploads/models/ 目录</div>
+                </div>
+            `;
+            return;
+        }
+        
+        // 使用单选框格式
+        modelsList.innerHTML = models.map((model, index) => `
+            <div class="model-item bg-gray-800 rounded-lg border border-gray-700 p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center flex-1">
+                        <!-- 单选框 -->
+                        <input type="radio" 
+                               name="selected-model" 
+                               value="${model.filename}"
+                               id="model-${index}"
+                               class="mr-4 w-4 h-4 text-green-600 bg-gray-700 border-gray-600 focus:ring-green-500"
+                               ${index === 0 ? 'checked' : ''}
+                               onchange="onModelSelectionChange('${model.filename}')">
+                        
+                        <div class="flex-1">
+                            <label for="model-${index}" class="font-medium text-white cursor-pointer">
+                                ${model.display_name || model.filename}
+                            </label>
+                            <div class="text-sm text-gray-400 mt-1">
+                                文件大小: ${model.size_mb || '0'} MB | 
+                                上传时间: ${model.upload_time ? new Date(model.upload_time).toLocaleString() : '未知'}
+                            </div>
+                            ${model.accuracy ? `<div class="text-sm text-green-400 mt-1">准确率: ${model.accuracy}%</div>` : ''}
+                            ${model.model_type && model.model_type !== 'unknown' ? `<div class="text-sm text-blue-400 mt-1">类型: ${model.model_type}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 ml-4">
+                        ${model.is_active ? 
+                            '<span class="px-2 py-1 bg-green-600 text-green-100 text-xs rounded">激活中</span>' : 
+                            ''
+                        }
+                        <button onclick="deleteModel('${model.filename}')" 
+                                class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
+                            删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 模型选择变化处理函数
+    function onModelSelectionChange(selectedModelFilename) {
+        console.log('选择的模型:', selectedModelFilename);
+        
+        // 可以在这里添加额外的处理逻辑，比如显示模型详细信息
+        showMessage(`已选择模型: ${selectedModelFilename}`, 'info');
+    }
+
+    // 获取当前选择的模型
+    function getSelectedModel() {
+        const selectedRadio = document.querySelector('input[name="selected-model"]:checked');
+        if (!selectedRadio) {
+            return null;
+        }
+        
+        return {
+            filename: selectedRadio.value,
+            displayName: selectedRadio.nextElementSibling?.textContent?.trim() || selectedRadio.value
+        };
+    }
+
+    // 激活模型函数
+async function activateModel(filename) {
+    try {
+        const response = await fetch(`/api/models/${filename}/activate`, {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showMessage(data.message, 'success');
+            loadModelList(); // 重新加载模型列表
+        } else {
+            showMessage('激活模型失败: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('激活模型错误:', error);
+        showMessage('激活模型失败: ' + error.message, 'error');
+    }
+}
+
+// 删除模型函数 - 修复版
+async function deleteModel(filename) {
+    if (!confirm(`确定要删除模型 "${filename}" 吗？此操作不可恢复。`)) {
+        return;
+    }
+    
+    try {
+        console.log(`正在删除模型: ${filename}`);
+        
+        // 使用正确的URL格式
+        const response = await fetch(`/api/models/${filename}`, {
+            method: 'DELETE'
+        });
+        
+        console.log('删除响应状态:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('删除响应数据:', data);
+        
+        if (data.success) {
+            showMessage(data.message, 'success');
+            loadModelList(); // 重新加载模型列表
+        } else {
+            showMessage('删除模型失败: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('删除模型错误:', error);
+        showMessage('删除模型失败: ' + error.message, 'error');
+    }
+}
+
+// 文件上传处理
+function handleFileUpload(inputElement, uploadType) {
+        const file = inputElement.files[0];
+        if (!file) {
+            console.log('没有选择文件');
+            return;
+        }
+
+        console.log(`开始上传${uploadType}文件:`, file.name);
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const uploadUrl = uploadType === 'data' ? '/api/upload_data' : '/api/models/upload';
+        
+        // 查找正确的按钮元素
+        let uploadButton;
+        if (uploadType === 'data') {
+            uploadButton = document.querySelector('#data-upload-area button');
+        } else {
+            uploadButton = document.querySelector('#model-upload-area button');
+        }
+        
+        // 显示上传进度
+        if (uploadButton) {
+            uploadButton.textContent = '上传中...';
+            uploadButton.disabled = true;
+        }        fetch(uploadUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            console.log('上传响应状态:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('上传响应数据:', data);
+            if (data.success) {
+                showMessage(data.message, 'success');
+                // 重新加载文件列表
+                if (uploadType === 'data') {
+                    loadFileList();
+                } else {
+                    loadModelList();
+                }
+                               // 清空文件输入
+                inputElement.value = '';
+            } else {
+                showMessage('上传失败: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('上传错误:', error);
+            showMessage('上传失败: ' + error.message, 'error');
+        })
+        .finally(() => {
+            // 恢复按钮状态
+            if (uploadButton) {
+                uploadButton.textContent = uploadType === 'data' ? '选择文件' : '选择文件';
+                uploadButton.disabled = false;
+            }
+        });
+    }
+
+    // 预览文件
+    async function previewFile(filename) {
+        try {
+            const response = await fetch(`/api/preview_file/${filename}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                showFilePreview(data.data);
+            } else {
+                showMessage('预览失败: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('预览文件错误:', error);
+            showMessage('预览文件失败', 'error');
+        }
+ }
+
+    // 显示文件预览
+    function showFilePreview(fileData) {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-gray-900 rounded-lg p-6 max-w-6xl max-h-96 overflow-auto border border-gray-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-white">文件预览: ${fileData.filename}</h3>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="text-sm text-gray-400 mb-4">
+                    行数: ${fileData.rows} | 列数: ${fileData.columns}
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full border border-gray-600">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                ${fileData.column_names.map(col => `<th class="border border-gray-600 px-2 py-1 text-left text-xs text-gray-300">${col}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${fileData.preview.map(row => `
+                                <tr class="hover:bg-gray-800">
+                                    ${fileData.column_names.map(col => `<td class="border border-gray-600 px-2 py-1 text-xs text-gray-300">${row[col] || ''}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    // 删除文件
+    async function deleteFile(filename) {
+        if (!confirm('确定要删除这个文件吗？')) return;
+
+        try {
+            const response = await fetch('/api/delete_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ filename: filename })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showMessage('文件删除成功', 'success');
+                loadFileList(); // 重新加载文件列表
+            } else {
+                showMessage('删除失败: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('删除文件错误:', error);
+            showMessage('删除文件失败', 'error');
+        }
+    }
+
+    // 删除模型
+    async function deleteModel(filename) {
+        if (!confirm(`确定要删除模型 "${filename}" 吗？此操作不可恢复。`)) {
+            return;
+        }
+        
+        try {
+            console.log(`正在删除模型: ${filename}`);
+            
+            // 使用正确的URL格式
+            const response = await fetch(`/api/models/${filename}`, {
+                method: 'DELETE'
+            });
+            
+            console.log('删除响应状态:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('删除响应数据:', data);
+            
+            if (data.success) {
+                showMessage(data.message, 'success');
+                loadModelList(); // 重新加载模型列表
+            } else {
+                showMessage('删除模型失败: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('删除模型错误:', error);
+            showMessage('删除模型失败: ' + error.message, 'error');
+        }
+    }
+
+    // 设置活跃模型
+    async function setActiveModel(filename) {
+        try {
+            const response = await fetch('/api/set_active_model', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ filename: filename })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showMessage('模型设置成功', 'success');
+                loadModelList(); // 重新加载模型列表
+            } else {
+                showMessage('设置失败: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('设置活跃模型错误:', error);
+            showMessage('设置模型失败', 'error');
+        }
+    }
+
+    // 显示消息
+    function showMessage(message, type = 'info') {
+        const messageDiv = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        
+        messageDiv.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity`;
+        messageDiv.textContent = message;
+        
+        document.body.appendChild(messageDiv);
+        
+        // 3秒后自动消失
+        setTimeout(() => {
+            messageDiv.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(messageDiv);
+            }, 300);
+        }, 3000);
+    }    // 页面加载完成后的初始化
+    window.addEventListener('DOMContentLoaded', function() {
+        // 初始化标签页
+        initializeTabs();
+        
+        // 加载文件和模型列表
+        loadFilesAndModels();
+        
+        // 绑定文件上传事件
+        setupFileUpload();
+        
+        // 定期刷新文件列表（每10秒）
+        setInterval(() => {
+            if (currentTab === 'data' || currentTab === 'model') {
+                loadFilesAndModels();
+            }
+        }, 10000);
+    });
+
+    // 初始化标签页
+    function initializeTabs() {
+        // 显示默认标签页
+        switchTab('home');
+        
+        // 绑定标签按钮事件
+        document.querySelectorAll('[data-tab]').forEach(element => {
+            element.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                if (tabName) {
+                    switchTab(tabName);
+                }
+            });
+        });
+    }    // 设置文件上传
+    function setupFileUpload() {
+        console.log('初始化文件上传事件绑定');
+        
+        const dataFileInput = document.getElementById('data-file-input');
+        const modelFileInput = document.getElementById('model-file-input');
+        
+        if (dataFileInput) {
+            console.log('找到数据文件输入元素');
+            dataFileInput.addEventListener('change', function() {
+                console.log('数据文件选择事件触发');
+                handleFileUpload(this, 'data');
+            });
+        } else {
+            console.error('未找到数据文件输入元素');
+        }
+        
+        if (modelFileInput) {
+            console.log('找到模型文件输入元素');
+            modelFileInput.addEventListener('change', function() {
+                console.log('模型文件选择事件触发');
+                handleFileUpload(this, 'model');
+            });
+        } else {
+            console.error('未找到模型文件输入元素');
+        }
+        
+        // 添加拖拽上传功能
+        const dataUploadArea = document.getElementById('data-upload-area');
+        const modelUploadArea = document.getElementById('model-upload-area');
+        
+        if (dataUploadArea) {
+            setupDragAndDrop(dataUploadArea, dataFileInput, 'data');
+        }
+        
+        if (modelUploadArea) {
+            setupDragAndDrop(modelUploadArea, modelFileInput, 'model');
+        }
+    }
+
+    // 设置拖拽上传
+    function setupDragAndDrop(dropArea, fileInput, uploadType) {
+        if (!dropArea || !fileInput) return;
+        
+        // 防止浏览器默认行为
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        // 高亮拖拽区域
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.add('drag-over');
+            }, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => {
+                dropArea.classList.remove('drag-over');
+            }, false);
+        });
+        
+        // 处理文件放置
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                const file = files[0];
+                
+                // 验证文件类型
+                const allowedTypes = uploadType === 'data' 
+                    ? ['.csv', '.xlsx', '.xls'] 
+                    : ['.pkl'];
+                
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                if (!allowedTypes.includes(fileExtension)) {
+                    const allowedTypesStr = allowedTypes.join(', ');
+                    showMessage(`只支持以下格式的文件: ${allowedTypesStr}`, 'error');
+                    return;
+                }
+                
+                // 模拟文件输入选择
+                const fakeEvent = {
+                    target: fileInput,
+                    files: [file]
+                };
+                
+                // 手动设置文件到input
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                
+                // 触发上传
+                handleFileUpload(fileInput, uploadType);
+            }
+        }
+    }
+
+    // 运行模型预测
+async function runModelPrediction() {
+    console.log('开始运行模型预测...');
+    
+    // 检查是否选择了模型
+    const selectedModel = getSelectedModel();
+    if (!selectedModel) {
+        showMessage('请先选择一个模型！', 'error');
+        return;
+    }
+    
+    console.log('使用模型:', selectedModel);
+    
+    // 显示加载状态
+    showPredictionLoading();
+    
+    try {
+        // 收集所有输入参数
+        const parameters = collectModelParameters();
+        console.log('收集到的参数:', parameters);
+        
+        // 构建请求数据，包含模型信息
+        const requestData = {
+            ...parameters,
+            selected_model: selectedModel.filename,  // 添加选择的模型文件名
+            model_display_name: selectedModel.displayName  // 添加模型显示名称
+        };
+        
+        console.log('发送到后端的数据:', requestData);
+        
+        // 发送预测请求
+        const response = await fetch('/api/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        const data = await response.json();
+        console.log('后端响应:', data);
+        
+        if (data.success) {
+            displayPredictionResults(data.predictions, data.confidence);
+            showMessage(`使用模型 "${selectedModel.displayName}" 预测完成！`, 'success');
+        } else {
+            showMessage('预测失败: ' + data.message, 'error');
+            showPredictionPlaceholder();
+        }
+    } catch (error) {
+        console.error('预测错误:', error);
+        showMessage('预测失败: ' + error.message, 'error');
+        showPredictionPlaceholder();
+    }
+}
+
+// 收集模型参数
+function collectModelParameters() {
+    const parameters = {};
+    
+    console.log('开始收集参数...');
+    
+    // 收集所有输入框的值
+    const inputs = document.querySelectorAll('#model-tab .param-input');
+    console.log(`找到 ${inputs.length} 个输入控件`);
+    
+    inputs.forEach((input, index) => {
+        const label = input.closest('div').querySelector('label');
+        if (label) {
+            const paramName = label.textContent.trim();
+            let paramValue;
+            
+            if (input.type === 'number' || input.type === 'range') {
+                paramValue = parseFloat(input.value) || 0;
+            } else if (input.tagName === 'SELECT') {
+                paramValue = input.value;
+            } else {
+                paramValue = input.value;
+            }
+            
+            parameters[paramName] = paramValue;
+            console.log(`参数 ${index + 1}: ${paramName} = ${paramValue}`);
+        }
+    });
+    
+    // 收集单选按钮的值
+    const radioGroups = document.querySelectorAll('input[type="radio"]:checked');
+    console.log(`找到 ${radioGroups.length} 个选中的单选按钮`);
+    
+    radioGroups.forEach((radio, index) => {
+        const radioName = radio.name;
+        const radioValue = radio.value;
+        const radioText = radio.nextElementSibling?.textContent?.trim() || radioValue;
+        
+        // 根据radio name找到对应的label
+        let paramName = '';
+        if (radioName === 'quality-attribute') {
+            paramName = '待加工原烟数据记录_质量属性（稍差、合格、稍强）';
+        } else if (radioName === 'moistening-method') {
+            paramName = '二润工段数据记录_润叶方式（蒸汽、加水、混合）';
+        } else if (radioName === 'flow-rate') {
+            paramName = '铺叶工段数据记录_流量（kg/h)';
+        }
+        
+        if (paramName) {
+            parameters[paramName] = radioText;
+            console.log(`单选按钮 ${index + 1}: ${paramName} = ${radioText}`);
+        }
+    });
+    
+    console.log(`总共收集到 ${Object.keys(parameters).length} 个参数`);
+    return parameters;
+}
+
+// 显示预测结果
+function displayPredictionResults(predictions, confidence) {
+    // 隐藏加载状态
+    const statusElement = document.getElementById('prediction-status');
+    if (statusElement) {
+        statusElement.classList.add('hidden');
+    }
+    
+    // 更新结果
+    if (predictions.big_medium_rate !== undefined) {
+        const element = document.getElementById('result-big-medium-rate');
+        if (element) element.textContent = predictions.big_medium_rate.toFixed(1);
+        
+        const confidenceElement = document.getElementById('confidence-big-medium-rate');
+        if (confidenceElement) {
+            confidenceElement.textContent = `预测置信度: ${confidence?.big_medium_rate_confidence || 92.4}%`;
+        }
+    }
+    
+    if (predictions.leaf_stem_rate !== undefined) {
+        const element = document.getElementById('result-leaf-stem-rate');
+        if (element) element.textContent = predictions.leaf_stem_rate.toFixed(1);
+        
+        const confidenceElement = document.getElementById('confidence-leaf-stem-rate');
+        if (confidenceElement) {
+            confidenceElement.textContent = `预测置信度: ${confidence?.leaf_stem_rate_confidence || 89.6}%`;
+        }
+    }
+    
+    if (predictions.stem_leaf_rate !== undefined) {
+        const element = document.getElementById('result-stem-leaf_rate');
+        if (element) element.textContent = predictions.stem_leaf_rate.toFixed(1);
+        
+        const confidenceElement = document.getElementById('confidence-stem-leaf-rate');
+        if (confidenceElement) {
+            confidenceElement.textContent = `预测置信度: ${confidence?.stem_leaf_rate_confidence || 91.3}%`;
+        }
+    }
+}
+
+// 显示预测加载状态
+function showPredictionLoading() {
+    const statusElement = document.getElementById('prediction-status');
+    if (statusElement) {
+        statusElement.innerHTML = `
+            <div class="text-2xl mb-2">⏳</div>
+            <div class="text-lg">正在预测中...</div>
+            <div class="mt-2 text-gray-400">请稍候</div>
+        `;
+        statusElement.classList.remove('hidden');
+    }
+}
+
+// 显示预测占位符
+function showPredictionPlaceholder() {
+    const statusElement = document.getElementById('prediction-status');
+    if (statusElement) {
+        statusElement.innerHTML = `
+            <div class="text-2xl mb-2">🔮</div>
+            <div class="text-lg">等待预测</div>
+            <div class="mt-2 text-gray-400">点击"运行预测"按钮开始</div>
+        `;
+        statusElement.classList.remove('hidden');
+    }
+}
+
+// 添加缺少的getSelectedFileInfo函数
+function getSelectedFileInfo() {
+    const selectedRadio = document.querySelector('input[name="data-file"]:checked');
+    if (!selectedRadio) {
+        return null;
+    }
+    
+    return {
+        filename: selectedRadio.value,
+        displayName: selectedRadio.getAttribute('data-display-name') || selectedRadio.value
+    };
+}
+  </script>
