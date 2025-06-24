@@ -5,6 +5,39 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import random
 
+# 全局变量存储优化进度
+optimization_progress = {}
+
+class ImprovedRBFNN:
+    def __init__(self, n_centers, sigma=1.0, reg_lambda=1e-6):
+        self.n_centers = n_centers  # 隐藏层神经元数量
+        self.sigma = sigma  # 高斯核宽度参数
+        self.centers = None  # RBF中心点
+        self.weights = None  # 输出层权重
+        self.reg_lambda = reg_lambda  # 正则化参数
+
+    def _gaussian_kernel(self, x, centers):
+        """改进的高斯径向基函数，考虑特征维度"""
+        n_samples = x.shape[0]
+        n_centers = centers.shape[0]
+        n_features = x.shape[1]
+
+        # 调整sigma基于特征维度 - 保留此逻辑
+        sigma = self.sigma * np.sqrt(n_features)
+
+        distances = np.zeros((n_samples, n_centers))
+        for i in range(n_centers):
+            # 自适应距离计算
+            sq_diff = (x - centers[i]) ** 2
+            distances[:, i] = np.sum(sq_diff, axis=1)
+
+        return np.exp(-distances / (2 * sigma ** 2))
+
+    def predict(self, X):
+        rbf_output = self._gaussian_kernel(X, self.centers)
+        rbf_output = np.column_stack([rbf_output, np.ones(X.shape[0])])
+        return rbf_output.dot(self.weights)
+
 def allowed_file(filename, allowed_extensions):
     """检查文件扩展名是否允许"""
     return '.' in filename and \

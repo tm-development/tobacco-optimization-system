@@ -14,7 +14,7 @@ def create_app():
     os.makedirs(app.config['MODEL_FOLDER'], exist_ok=True)
     
     # 注册蓝图
-    from app.routes import main
-    app.register_blueprint(main)
+    from app.routes import register_blueprints
+    register_blueprints(app)
     
     return app

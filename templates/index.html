@@ -388,24 +388,43 @@ select.param-input:focus {
           <span class="material-icons text-white">local_florist</span>
         </div>
         <h1 class="text-2xl font-bold">烟草生产优化系统</h1>
-      </div>
-      <div class="flex space-x-4">
+      </div>      <div class="flex space-x-4">
         <button class="px-4 py-2 rounded-lg bg-green-800 hover:bg-green-700 transition flex items-center">
           <span class="material-icons mr-2">settings</span> 系统设置
         </button>
-        <button class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition flex items-center">
-          <span class="material-icons mr-2">account_circle</span> 用户账号
-        </button>
+        <div class="relative">
+          <button id="user-menu-button" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition flex items-center">
+            <span class="material-icons mr-2">account_circle</span> 
+            <span id="user-display-name">用户账号</span>
+            <span class="material-icons ml-2">expand_more</span>
+          </button>          <!-- 用户菜单下拉 -->
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-600 hidden z-50">
+            <div class="py-1">
+              <div class="px-4 py-2 text-xs text-gray-400 border-b border-gray-600">
+                <span>角色: </span><span id="user-role-display">未登录</span>
+              </div>
+              <a href="#" id="logout-btn" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                <span class="material-icons mr-2 text-sm">logout</span> 登出
+              </a>
+              <div class="border-t border-gray-600 my-1"></div>
+              <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                <span class="material-icons mr-2 text-sm">person</span> 个人资料
+              </a>
+              <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                <span class="material-icons mr-2 text-sm">security</span> 安全设置
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    
-    <!-- 标签导航 -->
+      <!-- 标签导航 -->
     <div class="flex space-x-4 mb-8">
       <div class="tab-button active" data-tab="home">首页</div>
-      <div class="tab-button" data-tab="data">数据导入</div>
-      <div class="tab-button" data-tab="model">模型管理</div>
-      <div class="tab-button" data-tab="optimization">参数优化</div>
-      <div class="tab-button" data-tab="results">结果分析</div>
+      <div class="tab-button" data-tab="data" id="data-tab" style="display: none;">数据导入</div>
+      <div class="tab-button" data-tab="model" id="model-tab" style="display: none;">模型管理</div>
+      <div class="tab-button" data-tab="optimization" id="optimization-tab">参数优化</div>
+      <div class="tab-button" data-tab="results" id="results-tab" style="display: none;">结果分析</div>
     </div>
     
     <!-- 内容区域 -->
@@ -2746,6 +2765,135 @@ function bindAdjustmentSliders() {
 // 更新系统状态
 function updateSystemStatus() {
     console.log('📊 更新系统状态...');
+}
+
+// 用户菜单交互
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化用户权限和界面
+    initializeUserInterface();
+    
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenu = document.getElementById('user-menu');
+    
+    // 用户菜单点击事件
+    if (userMenuButton && userMenu) {
+        userMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userMenu.classList.toggle('hidden');
+        });
+        
+        // 点击其他地方关闭菜单
+        document.addEventListener('click', function() {
+            userMenu.classList.add('hidden');
+        });
+        
+        // 阻止菜单内部点击事件冒泡
+        userMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+    
+    // 登出按钮事件
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    }
+      // 检查用户登录状态 - 移除此函数，因为现在使用initializeUserInterface
+    // checkUserLoginStatus();
+});
+
+// 旧的用户状态检查函数已移除，现在使用JWT认证
+
+// 初始化用户界面和权限
+async function initializeUserInterface() {
+    try {
+        const response = await fetch('/api/user/info');
+        if (response.ok) {
+            const userInfo = await response.json();
+            updateUIForUser(userInfo);
+        } else {
+            // 未登录，重定向到登录页面
+            window.location.href = '/login';
+        }
+    } catch (error) {
+        console.error('获取用户信息失败:', error);
+        window.location.href = '/login';
+    }
+}
+
+// 根据用户信息更新界面
+function updateUIForUser(userInfo) {
+    const userDisplayName = document.getElementById('user-display-name');
+    const userRoleDisplay = document.getElementById('user-role-display');
+    
+    if (userDisplayName) {
+        userDisplayName.textContent = userInfo.username;
+    }
+    
+    if (userRoleDisplay) {
+        userRoleDisplay.textContent = userInfo.role === 'admin' ? '管理员' : '普通用户';
+    }
+    
+    // 根据权限显示/隐藏标签页
+    const permissions = userInfo.permissions;
+    
+    const dataTab = document.getElementById('data-tab');
+    const modelTab = document.getElementById('model-tab');
+    const resultsTab = document.getElementById('results-tab');
+    const optimizationTab = document.getElementById('optimization-tab');
+    
+    if (dataTab) {
+        dataTab.style.display = permissions.file_management ? 'block' : 'none';
+    }
+    
+    if (modelTab) {
+        modelTab.style.display = permissions.model_management ? 'block' : 'none';
+    }
+    
+    if (resultsTab) {
+        resultsTab.style.display = permissions.metric_prediction ? 'block' : 'none';
+    }
+    
+    if (optimizationTab) {
+        optimizationTab.style.display = permissions.parameter_optimization ? 'block' : 'none';
+    }
+    
+    // 如果用户没有参数优化权限，重定向到登录页面（这种情况不应该发生）
+    if (!permissions.parameter_optimization) {
+        alert('您没有权限访问此系统');
+        window.location.href = '/login';
+    }
+}
+
+// 登出函数
+async function logout() {
+    try {
+        const response = await fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            window.location.href = '/login';
+        } else {
+            console.error('登出失败');
+        }
+    } catch (error) {
+        console.error('登出请求失败:', error);
+        // 即使请求失败也跳转到登录页面
+        window.location.href = '/login';
+    }
+}
+
+// 检查用户是否有特定权限
+function hasPermission(permission) {
+    // 这个函数可以在需要时调用来检查权限
+    return window.userPermissions && window.userPermissions[permission];
 }
   </script>
 </body>

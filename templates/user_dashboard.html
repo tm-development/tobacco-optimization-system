@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>参数优化 - 烟草生产优化系统</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-dark: #1B5E20;
+      --primary-light: #4CAF50;
+      --secondary: #FF9800;
+      --dark-bg: #121212;
+      --card-bg: #1E1E1E;
+      --text-primary: #E0E0E0;
+      --text-secondary: #9E9E9E;
+    }
+    
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      padding: 24px;
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      color: white;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #F57C00;
+      transform: translateY(-2px);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    }
+    
+    .optimization-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .status-running {
+      background-color: rgba(255, 193, 7, 0.2);
+      color: #FFC107;
+    }
+    
+    .status-completed {
+      background-color: rgba(76, 175, 80, 0.2);
+      color: var(--primary-light);
+    }
+    
+    .status-stopped {
+      background-color: rgba(244, 67, 54, 0.2);
+      color: #F44336;
+    }
+    
+    @media (max-width: 768px) {
+      .optimization-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 页面头部 -->
+    <div class="header">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold mb-2">
+            <span class="material-icons text-4xl mr-3" style="vertical-align: middle;">tune</span>
+            参数优化系统
+          </h1>
+          <p class="text-white/80">智能优化烟草生产参数，提升产品质量</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <div class="text-sm text-white/80">当前用户</div>
+            <div class="font-semibold" id="user-display-name">用户</div>
+          </div>
+          <div class="relative">
+            <button id="user-menu-button" class="p-3 bg-white/20 rounded-lg hover:bg-white/30 transition">
+              <span class="material-icons">account_circle</span>
+            </button>
+            <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-600 hidden z-50">
+              <div class="py-1">
+                <div class="px-4 py-2 text-xs text-gray-400 border-b border-gray-600">
+                  <span>角色: </span><span id="user-role-display">普通用户</span>
+                </div>
+                <a href="#" id="logout-btn" class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">
+                  <span class="material-icons mr-2 text-sm">logout</span> 登出
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 参数优化主内容 -->
+    <div class="optimization-grid">
+      <!-- 优化参数设置 -->
+      <div class="card">
+        <h2 class="text-xl font-bold mb-6 flex items-center">
+          <span class="material-icons mr-2">settings</span>
+          优化参数设置
+        </h2>
+        
+        <form id="optimization-form">
+          <div class="form-group">
+            <label class="form-label">目标指标</label>
+            <select id="target-metric" class="form-input">
+              <option value="stem_leaf_ratio">茎梗率</option>
+              <option value="moisture_content">含水率</option>
+              <option value="quality_score">综合质量评分</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">目标值</label>
+            <input type="number" id="target-value" class="form-input" 
+                   placeholder="请输入目标值" step="0.01" value="0.65">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">优化算法</label>
+            <select id="optimization-algorithm" class="form-input">
+              <option value="genetic">遗传算法</option>
+              <option value="particle_swarm">粒子群优化</option>
+              <option value="simulated_annealing">模拟退火</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">最大迭代次数</label>
+            <input type="number" id="max-iterations" class="form-input" 
+                   placeholder="请输入最大迭代次数" value="100" min="10" max="1000">
+          </div>
+          
+          <div class="flex space-x-3">
+            <button type="submit" class="btn-primary">
+              <span class="material-icons">play_arrow</span>
+              开始优化
+            </button>
+            <button type="button" id="stop-optimization" class="btn-secondary" disabled>
+              <span class="material-icons">stop</span>
+              停止优化
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 优化进度和结果 -->
+      <div class="card">
+        <h2 class="text-xl font-bold mb-6 flex items-center">
+          <span class="material-icons mr-2">analytics</span>
+          优化进度
+        </h2>
+        
+        <div id="optimization-status" class="mb-6">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm text-gray-400">当前状态:</span>
+            <span id="status-badge" class="status-badge status-stopped">
+              <span class="material-icons text-sm">stop_circle</span>
+              未开始
+            </span>
+          </div>
+          
+          <div class="mb-3">
+            <div class="flex justify-between text-sm mb-1">
+              <span>进度</span>
+              <span id="progress-text">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="text-sm text-gray-400">
+            <div>当前迭代: <span id="current-iteration">0</span></div>
+            <div>最佳适应度: <span id="best-fitness">-</span></div>
+            <div>预计剩余时间: <span id="estimated-time">-</span></div>
+          </div>
+        </div>
+        
+        <!-- 优化结果显示 -->
+        <div id="optimization-results" class="hidden">
+          <h3 class="text-lg font-semibold mb-4">优化结果</h3>
+          <div id="results-content" class="space-y-3">
+            <!-- 结果将通过JavaScript动态填充 -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 优化历史记录 -->
+    <div class="card">
+      <h2 class="text-xl font-bold mb-6 flex items-center">
+        <span class="material-icons mr-2">history</span>
+        优化历史
+      </h2>
+      
+      <div id="optimization-history" class="space-y-4">
+        <div class="text-center text-gray-400 py-8">
+          暂无优化历史记录
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentTaskId = null;
+    let optimizationInterval = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化用户界面
+      initializeUserInterface();
+      
+      // 用户菜单事件
+      setupUserMenu();
+      
+      // 初始化优化表单
+      setupOptimizationForm();
+      
+      // 加载优化历史
+      loadOptimizationHistory();
+    });
+
+    // 初始化用户界面
+    async function initializeUserInterface() {
+      try {
+        const response = await fetch('/api/user/info');
+        if (response.ok) {
+          const userInfo = await response.json();
+          updateUIForUser(userInfo);
+        } else {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error);
+        window.location.href = '/';
+      }
+    }
+
+    // 更新用户界面
+    function updateUIForUser(userInfo) {
+      const userDisplayName = document.getElementById('user-display-name');
+      const userRoleDisplay = document.getElementById('user-role-display');
+      
+      if (userDisplayName) {
+        userDisplayName.textContent = userInfo.username;
+      }
+      
+      if (userRoleDisplay) {
+        userRoleDisplay.textContent = userInfo.role === 'admin' ? '管理员' : '普通用户';
+      }
+    }
+
+    // 设置用户菜单
+    function setupUserMenu() {
+      const userMenuButton = document.getElementById('user-menu-button');
+      const userMenu = document.getElementById('user-menu');
+      const logoutBtn = document.getElementById('logout-btn');
+      
+      if (userMenuButton && userMenu) {
+        userMenuButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          userMenu.classList.toggle('hidden');
+        });
+        
+        document.addEventListener('click', function() {
+          userMenu.classList.add('hidden');
+        });
+        
+        userMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+      
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          logout();
+        });
+      }
+    }
+
+    // 设置优化表单
+    function setupOptimizationForm() {
+      const form = document.getElementById('optimization-form');
+      const stopBtn = document.getElementById('stop-optimization');
+      
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        startOptimization();
+      });
+      
+      stopBtn.addEventListener('click', function() {
+        stopOptimization();
+      });
+    }
+
+    // 开始优化
+    async function startOptimization() {
+      const formData = {
+        target_metric: document.getElementById('target-metric').value,
+        target_value: parseFloat(document.getElementById('target-value').value),
+        algorithm: document.getElementById('optimization-algorithm').value,
+        max_iterations: parseInt(document.getElementById('max-iterations').value)
+      };
+
+      try {
+        const response = await fetch('/api/optimize_parameters', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          currentTaskId = result.task_id;
+          updateOptimizationStatus('running');
+          startProgressMonitoring();
+        } else {
+          alert('优化启动失败: ' + result.message);
+        }
+      } catch (error) {
+        console.error('优化请求失败:', error);
+        alert('网络错误，请稍后重试');
+      }
+    }
+
+    // 停止优化
+    async function stopOptimization() {
+      if (!currentTaskId) return;
+
+      try {
+        const response = await fetch(`/api/stop_optimization/${currentTaskId}`, {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          updateOptimizationStatus('stopped');
+          stopProgressMonitoring();
+        }
+      } catch (error) {
+        console.error('停止优化失败:', error);
+      }
+    }
+
+    // 更新优化状态
+    function updateOptimizationStatus(status) {
+      const statusBadge = document.getElementById('status-badge');
+      const stopBtn = document.getElementById('stop-optimization');
+      const submitBtn = document.querySelector('#optimization-form button[type="submit"]');
+
+      statusBadge.className = 'status-badge';
+      
+      if (status === 'running') {
+        statusBadge.classList.add('status-running');
+        statusBadge.innerHTML = '<span class="material-icons text-sm">play_circle</span>运行中';
+        stopBtn.disabled = false;
+        submitBtn.disabled = true;
+      } else if (status === 'completed') {
+        statusBadge.classList.add('status-completed');
+        statusBadge.innerHTML = '<span class="material-icons text-sm">check_circle</span>已完成';
+        stopBtn.disabled = true;
+        submitBtn.disabled = false;
+      } else {
+        statusBadge.classList.add('status-stopped');
+        statusBadge.innerHTML = '<span class="material-icons text-sm">stop_circle</span>已停止';
+        stopBtn.disabled = true;
+        submitBtn.disabled = false;
+      }
+    }
+
+    // 开始进度监控
+    function startProgressMonitoring() {
+      if (optimizationInterval) {
+        clearInterval(optimizationInterval);
+      }
+
+      optimizationInterval = setInterval(async () => {
+        if (!currentTaskId) return;
+
+        try {
+          const response = await fetch(`/api/optimization_progress/${currentTaskId}`);
+          const progress = await response.json();
+
+          if (progress.status === 'completed') {
+            updateOptimizationStatus('completed');
+            updateProgress(100);
+            displayOptimizationResults(progress);
+            stopProgressMonitoring();
+            loadOptimizationHistory();
+          } else if (progress.status === 'running') {
+            updateProgress(progress.progress || 0);
+            updateProgressInfo(progress);
+          } else if (progress.status === 'error') {
+            updateOptimizationStatus('stopped');
+            alert('优化过程出现错误: ' + progress.message);
+            stopProgressMonitoring();
+          }
+        } catch (error) {
+          console.error('获取进度失败:', error);
+        }
+      }, 1000);
+    }
+
+    // 停止进度监控
+    function stopProgressMonitoring() {
+      if (optimizationInterval) {
+        clearInterval(optimizationInterval);
+        optimizationInterval = null;
+      }
+      currentTaskId = null;
+    }
+
+    // 更新进度条
+    function updateProgress(percentage) {
+      const progressFill = document.getElementById('progress-fill');
+      const progressText = document.getElementById('progress-text');
+      
+      progressFill.style.width = percentage + '%';
+      progressText.textContent = Math.round(percentage) + '%';
+    }
+
+    // 更新进度信息
+    function updateProgressInfo(progress) {
+      document.getElementById('current-iteration').textContent = progress.current_iteration || 0;
+      document.getElementById('best-fitness').textContent = progress.best_fitness ? progress.best_fitness.toFixed(4) : '-';
+      document.getElementById('estimated-time').textContent = progress.estimated_time || '-';
+    }
+
+    // 显示优化结果
+    function displayOptimizationResults(progress) {
+      const resultsDiv = document.getElementById('optimization-results');
+      const resultsContent = document.getElementById('results-content');
+      
+      if (progress.result) {
+        resultsContent.innerHTML = `
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-green-900/20 p-4 rounded-lg">
+              <div class="text-sm text-gray-400">优化参数</div>
+              <div class="text-lg font-semibold">${JSON.stringify(progress.result.optimal_params, null, 2)}</div>
+            </div>
+            <div class="bg-blue-900/20 p-4 rounded-lg">
+              <div class="text-sm text-gray-400">预测值</div>
+              <div class="text-lg font-semibold">${progress.result.predicted_value.toFixed(4)}</div>
+            </div>
+          </div>
+        `;
+        resultsDiv.classList.remove('hidden');
+      }
+    }
+
+    // 加载优化历史
+    async function loadOptimizationHistory() {
+      try {
+        const response = await fetch('/api/optimization_history');
+        const history = await response.json();
+        
+        const historyDiv = document.getElementById('optimization-history');
+        
+        if (history.length > 0) {
+          historyDiv.innerHTML = history.map(item => `
+            <div class="bg-gray-800/50 p-4 rounded-lg">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="font-semibold">${item.target_metric} - 目标值: ${item.target_value}</div>
+                  <div class="text-sm text-gray-400">${item.timestamp}</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-sm">预测值: ${item.predicted_value.toFixed(4)}</div>
+                  <div class="text-xs text-gray-400">算法: ${item.algorithm}</div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          historyDiv.innerHTML = '<div class="text-center text-gray-400 py-8">暂无优化历史记录</div>';
+        }
+      } catch (error) {
+        console.error('加载历史记录失败:', error);
+      }
+    }
+
+    // 登出函数
+    async function logout() {
+      try {
+        const response = await fetch('/api/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          window.location.href = '/';
+        } else {
+          console.error('登出失败');
+        }
+      } catch (error) {
+        console.error('登出请求失败:', error);
+        window.location.href = '/';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -6,6 +6,11 @@ class Config:
     # 基本配置
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'tobacco-optimization-secret-key-2025'
     
+    # Session配置
+    SESSION_TYPE = 'filesystem'
+    SESSION_PERMANENT = False
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
+    
     # 数据库配置
     SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
