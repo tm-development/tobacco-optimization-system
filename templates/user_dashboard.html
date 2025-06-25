@@ -102,8 +102,7 @@
       font-weight: 600;
       color: var(--text-primary);
     }
-    
-    .form-input {
+      .form-input {
       width: 100%;
       padding: 12px;
       background-color: rgba(255, 255, 255, 0.05);
@@ -113,17 +112,17 @@
       transition: all 0.3s ease;
     }
     
-    .form-input:focus {
+    .form-input:disabled {
+      background-color: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      cursor: not-allowed;
+    }
+      .form-input:focus {
       outline: none;
       border-color: var(--primary);
       background-color: rgba(255, 255, 255, 0.08);
       box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
-    }
-    
-    .optimization-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
     }
     
     .progress-bar {
@@ -161,16 +160,9 @@
       background-color: rgba(76, 175, 80, 0.2);
       color: var(--primary-light);
     }
-    
-    .status-stopped {
+      .status-stopped {
       background-color: rgba(244, 67, 54, 0.2);
       color: #F44336;
-    }
-    
-    @media (max-width: 768px) {
-      .optimization-grid {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
@@ -208,99 +200,215 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- 参数优化主内容 -->
-    <div class="optimization-grid">
-      <!-- 优化参数设置 -->
-      <div class="card">
-        <h2 class="text-xl font-bold mb-6 flex items-center">
-          <span class="material-icons mr-2">settings</span>
-          优化参数设置
-        </h2>
+    </div>    <!-- 参数优化设置 -->
+    <div class="card mb-8">
+      <h2 class="text-xl font-bold mb-6 flex items-center">
+        <span class="material-icons mr-2">settings</span>
+        参数优化设置
+      </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">模型选择</h3>
+            <button id="edit-model-btn" class="text-sm px-3 py-1 bg-gray-600 hover:bg-gray-500 rounded transition-colors">
+              <span class="material-icons text-sm mr-1">edit</span>
+              修改
+            </button>
+          </div>
+          <select id="model-selection" class="form-input" disabled>
+            <option value="rbfnn" selected>RBFNN预测模型 v3.2</option>
+            <option value="lasso">Lasso预测模型 v2.5</option>
+            <option value="efficiency">效率优化模型 v1.7</option>
+          </select>
+        </div>
         
-        <form id="optimization-form">
-          <div class="form-group">
-            <label class="form-label">目标指标</label>
-            <select id="target-metric" class="form-input">
-              <option value="stem_leaf_ratio">茎梗率</option>
-              <option value="moisture_content">含水率</option>
-              <option value="quality_score">综合质量评分</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">目标值</label>
-            <input type="number" id="target-value" class="form-input" 
-                   placeholder="请输入目标值" step="0.01" value="0.65">
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">优化算法</label>
-            <select id="optimization-algorithm" class="form-input">
-              <option value="genetic">遗传算法</option>
-              <option value="particle_swarm">粒子群优化</option>
-              <option value="simulated_annealing">模拟退火</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">最大迭代次数</label>
-            <input type="number" id="max-iterations" class="form-input" 
-                   placeholder="请输入最大迭代次数" value="100" min="10" max="1000">
-          </div>
-          
-          <div class="flex space-x-3">
-            <button type="submit" class="btn-primary">
-              <span class="material-icons">play_arrow</span>
-              开始优化
-            </button>
-            <button type="button" id="stop-optimization" class="btn-secondary" disabled>
-              <span class="material-icons">stop</span>
-              停止优化
-            </button>
-          </div>
-        </form>
+        <div>
+          <h3 class="text-lg font-bold mb-4">优化目标</h3>
+          <select id="optimization-target" class="form-input">
+            <option value="quality">最大化质量评分</option>
+            <option value="yield">最大化产量</option>
+            <option value="cost">最小化成本</option>
+            <option value="balance">平衡质量与产量</option>
+          </select>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">算法选择</h3>
+          <select id="algorithm-selection" class="form-input">
+            <option value="pso" selected>粒子群优化 (PSO)</option>
+            <option value="ga">遗传算法 (GA)</option>
+            <option value="sa">模拟退火 (SA)</option>
+            <option value="gd">梯度下降 (GD)</option>
+          </select>
+        </div>
       </div>
-
-      <!-- 优化进度和结果 -->
-      <div class="card">
-        <h2 class="text-xl font-bold mb-6 flex items-center">
-          <span class="material-icons mr-2">analytics</span>
-          优化进度
-        </h2>
-        
-        <div id="optimization-status" class="mb-6">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-sm text-gray-400">当前状态:</span>
-            <span id="status-badge" class="status-badge status-stopped">
-              <span class="material-icons text-sm">stop_circle</span>
-              未开始
-            </span>
-          </div>
-          
-          <div class="mb-3">
-            <div class="flex justify-between text-sm mb-1">
-              <span>进度</span>
-              <span id="progress-text">0%</span>
+      
+      <div class="mb-6">
+        <h3 class="text-lg font-bold mb-4">参数范围设置</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-700">
+            <thead>
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">参数</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">最小值</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">最大值</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">当前值</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+              <tr>
+                <td class="px-4 py-3">大中片率</td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param1-min" value="77" step="0.1"></td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param1-max" value="79" step="0.1"></td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param1-current" value="78" step="0.1"></td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">叶含梗率</td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param2-min" value="1.1" step="0.1"></td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param2-max" value="1.5" step="0.1"></td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param2-current" value="1.2" step="0.1"></td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">梗含叶率</td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param3-min" value="0.5" step="0.1"></td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param3-max" value="0.7" step="0.1"></td>
+                <td class="px-4 py-3"><input type="number" class="form-input w-20" id="param3-current" value="0.6" step="0.1"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="flex justify-center">
+        <button class="btn-primary px-8 py-3 text-lg flex items-center" id="start-optimization">
+          <span class="material-icons mr-2">play_arrow</span> 开始优化
+        </button>
+      </div>
+    </div>
+    
+    <!-- 优化进度 -->
+    <div class="card mb-8">
+      <h2 class="text-xl font-bold mb-6 flex items-center">
+        <span class="material-icons mr-2">analytics</span>
+        优化进度
+      </h2>
+      
+      <div id="optimization-progress" class="hidden">
+        <div class="optimization-animation mb-6" id="particle-animation">
+          <!-- 粒子动画区域 -->
+          <div class="relative h-32 bg-gray-900 rounded-lg overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="text-gray-500">优化算法运行中...</div>
             </div>
-            <div class="progress-bar">
-              <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
-            </div>
-          </div>
-          
-          <div class="text-sm text-gray-400">
-            <div>当前迭代: <span id="current-iteration">0</span></div>
-            <div>最佳适应度: <span id="best-fitness">-</span></div>
-            <div>预计剩余时间: <span id="estimated-time">-</span></div>
           </div>
         </div>
         
-        <!-- 优化结果显示 -->
-        <div id="optimization-results" class="hidden">
-          <h3 class="text-lg font-semibold mb-4">优化结果</h3>
-          <div id="results-content" class="space-y-3">
-            <!-- 结果将通过JavaScript动态填充 -->
+        <div class="mb-6">
+          <div class="flex justify-between mb-1">
+            <span>优化进度</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar h-4">
+            <div class="progress-fill h-4" id="progress-value" style="width: 0%"></div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 bg-gray-800 rounded-lg">
+            <div class="text-sm text-gray-400">迭代次数</div>
+            <div class="text-xl font-bold" id="iteration-count">0/100</div>
+          </div>
+          <div class="p-4 bg-gray-800 rounded-lg">
+            <div class="text-sm text-gray-400">当前最优值</div>
+            <div class="text-xl font-bold text-green-400" id="current-best">0.00</div>
+          </div>
+          <div class="p-4 bg-gray-800 rounded-lg">
+            <div class="text-sm text-gray-400">优化目标</div>
+            <div class="text-xl font-bold" id="optimization-objective">质量评分</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="optimization-placeholder" class="text-center py-12">
+        <span class="material-icons text-5xl text-gray-600 mb-4">tune</span>
+        <h3 class="text-xl font-bold mb-2">等待开始优化</h3>
+        <p class="text-gray-500">设置好参数并点击"开始优化"按钮</p>
+      </div>
+    </div>
+    
+    <!-- 优化结果 -->
+    <div class="card" id="results-section" style="display: none;">
+      <h2 class="text-xl font-bold mb-6 flex items-center">
+        <span class="material-icons mr-2">assessment</span>
+        优化结果
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gray-800/50 p-6 rounded-lg">
+          <div class="text-lg font-bold mb-4">优化前参数</div>
+          <div class="space-y-3" id="before-params">
+            <div class="flex justify-between">
+              <span class="text-gray-300">大中片率</span>
+              <span class="text-white">78</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-300">叶含梗率</span>
+              <span class="text-white">1.2</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-300">梗含叶率</span>
+              <span class="text-white">0.6</span>
+            </div>
+            <div class="flex justify-between mt-4 pt-4 border-t border-gray-700">
+              <span class="font-bold text-gray-400">质量评分</span>
+              <span class="font-bold text-green-400" id="before-score">86.7</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-800/50 p-6 rounded-lg border-l-4 border-yellow-500">
+          <div class="text-lg font-bold mb-4">优化后参数</div>
+          <div class="space-y-3" id="after-params">
+            <div class="flex justify-between">
+              <span class="text-gray-300">大中片率</span>
+              <span class="text-yellow-400" id="optimized-param1">--</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-300">叶含梗率</span>
+              <span class="text-yellow-400" id="optimized-param2">--</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-300">梗含叶率</span>
+              <span class="text-yellow-400" id="optimized-param3">--</span>
+            </div>
+            <div class="flex justify-between mt-4 pt-4 border-t border-gray-700">
+              <span class="font-bold text-gray-400">质量评分</span>
+              <span class="font-bold text-yellow-400" id="after-score">--</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-800/50 p-6 rounded-lg border-l-4 border-green-500">
+          <div class="text-lg font-bold mb-4">优化效果</div>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>效果提升</span>
+                <span class="text-green-400" id="improvement-percent">+0.0%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill bg-green-500" id="improvement-bar" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>时间效率</span>
+                <span class="text-yellow-400">+0.5%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill bg-yellow-500" style="width: 10%"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -396,30 +504,69 @@
           logout();
         });
       }
-    }
-
-    // 设置优化表单
+    }    // 设置优化表单
     function setupOptimizationForm() {
-      const form = document.getElementById('optimization-form');
-      const stopBtn = document.getElementById('stop-optimization');
+      const startBtn = document.getElementById('start-optimization');
+      const editModelBtn = document.getElementById('edit-model-btn');
+      const modelSelection = document.getElementById('model-selection');
       
-      form.addEventListener('submit', function(e) {
+      startBtn.addEventListener('click', function(e) {
         e.preventDefault();
         startOptimization();
       });
       
-      stopBtn.addEventListener('click', function() {
-        stopOptimization();
+      // 模型修改按钮事件
+      editModelBtn.addEventListener('click', function() {
+        if (modelSelection.disabled) {
+          // 启用模型选择
+          modelSelection.disabled = false;
+          modelSelection.focus();
+          this.innerHTML = '<span class="material-icons text-sm mr-1">check</span>确认';
+          this.classList.remove('bg-gray-600', 'hover:bg-gray-500');
+          this.classList.add('bg-green-600', 'hover:bg-green-500');
+        } else {
+          // 禁用模型选择
+          modelSelection.disabled = true;
+          this.innerHTML = '<span class="material-icons text-sm mr-1">edit</span>修改';
+          this.classList.remove('bg-green-600', 'hover:bg-green-500');
+          this.classList.add('bg-gray-600', 'hover:bg-gray-500');
+        }
       });
-    }
-
-    // 开始优化
+      
+      // 监听优化目标变化
+      const targetSelect = document.getElementById('optimization-target');
+      targetSelect.addEventListener('change', function() {
+        const objectiveDisplay = document.getElementById('optimization-objective');
+        const selectedOption = this.options[this.selectedIndex].text;
+        if (objectiveDisplay) {
+          objectiveDisplay.textContent = selectedOption;
+        }
+      });
+    }// 开始优化
     async function startOptimization() {
+      // 收集参数设置
       const formData = {
-        target_metric: document.getElementById('target-metric').value,
-        target_value: parseFloat(document.getElementById('target-value').value),
-        algorithm: document.getElementById('optimization-algorithm').value,
-        max_iterations: parseInt(document.getElementById('max-iterations').value)
+        model: document.getElementById('model-selection').value,
+        target: document.getElementById('optimization-target').value,
+        algorithm: document.getElementById('algorithm-selection').value,
+        parameters: {
+          param1: {
+            min: parseFloat(document.getElementById('param1-min').value),
+            max: parseFloat(document.getElementById('param1-max').value),
+            current: parseFloat(document.getElementById('param1-current').value)
+          },
+          param2: {
+            min: parseFloat(document.getElementById('param2-min').value),
+            max: parseFloat(document.getElementById('param2-max').value),
+            current: parseFloat(document.getElementById('param2-current').value)
+          },
+          param3: {
+            min: parseFloat(document.getElementById('param3-min').value),
+            max: parseFloat(document.getElementById('param3-max').value),
+            current: parseFloat(document.getElementById('param3-current').value)
+          }
+        },
+        max_iterations: 100
       };
 
       try {
@@ -435,7 +582,14 @@
         
         if (result.success) {
           currentTaskId = result.task_id;
-          updateOptimizationStatus('running');
+          
+          // 显示优化进度区域
+          document.getElementById('optimization-placeholder').style.display = 'none';
+          document.getElementById('optimization-progress').classList.remove('hidden');
+          
+          // 禁用开始按钮
+          document.getElementById('start-optimization').disabled = true;
+          
           startProgressMonitoring();
         } else {
           alert('优化启动失败: ' + result.message);
@@ -444,53 +598,7 @@
         console.error('优化请求失败:', error);
         alert('网络错误，请稍后重试');
       }
-    }
-
-    // 停止优化
-    async function stopOptimization() {
-      if (!currentTaskId) return;
-
-      try {
-        const response = await fetch(`/api/stop_optimization/${currentTaskId}`, {
-          method: 'POST'
-        });
-
-        if (response.ok) {
-          updateOptimizationStatus('stopped');
-          stopProgressMonitoring();
-        }
-      } catch (error) {
-        console.error('停止优化失败:', error);
-      }
-    }
-
-    // 更新优化状态
-    function updateOptimizationStatus(status) {
-      const statusBadge = document.getElementById('status-badge');
-      const stopBtn = document.getElementById('stop-optimization');
-      const submitBtn = document.querySelector('#optimization-form button[type="submit"]');
-
-      statusBadge.className = 'status-badge';
-      
-      if (status === 'running') {
-        statusBadge.classList.add('status-running');
-        statusBadge.innerHTML = '<span class="material-icons text-sm">play_circle</span>运行中';
-        stopBtn.disabled = false;
-        submitBtn.disabled = true;
-      } else if (status === 'completed') {
-        statusBadge.classList.add('status-completed');
-        statusBadge.innerHTML = '<span class="material-icons text-sm">check_circle</span>已完成';
-        stopBtn.disabled = true;
-        submitBtn.disabled = false;
-      } else {
-        statusBadge.classList.add('status-stopped');
-        statusBadge.innerHTML = '<span class="material-icons text-sm">stop_circle</span>已停止';
-        stopBtn.disabled = true;
-        submitBtn.disabled = false;
-      }
-    }
-
-    // 开始进度监控
+    }    // 开始进度监控
     function startProgressMonitoring() {
       if (optimizationInterval) {
         clearInterval(optimizationInterval);
@@ -504,7 +612,6 @@
           const progress = await response.json();
 
           if (progress.status === 'completed') {
-            updateOptimizationStatus('completed');
             updateProgress(100);
             displayOptimizationResults(progress);
             stopProgressMonitoring();
@@ -513,7 +620,6 @@
             updateProgress(progress.progress || 0);
             updateProgressInfo(progress);
           } else if (progress.status === 'error') {
-            updateOptimizationStatus('stopped');
             alert('优化过程出现错误: ' + progress.message);
             stopProgressMonitoring();
           }
@@ -530,12 +636,15 @@
         optimizationInterval = null;
       }
       currentTaskId = null;
+      
+      // 重新启用开始按钮
+      document.getElementById('start-optimization').disabled = false;
     }
 
     // 更新进度条
     function updateProgress(percentage) {
-      const progressFill = document.getElementById('progress-fill');
-      const progressText = document.getElementById('progress-text');
+      const progressFill = document.getElementById('progress-value');
+      const progressText = document.getElementById('progress-percent');
       
       progressFill.style.width = percentage + '%';
       progressText.textContent = Math.round(percentage) + '%';
@@ -543,30 +652,44 @@
 
     // 更新进度信息
     function updateProgressInfo(progress) {
-      document.getElementById('current-iteration').textContent = progress.current_iteration || 0;
-      document.getElementById('best-fitness').textContent = progress.best_fitness ? progress.best_fitness.toFixed(4) : '-';
-      document.getElementById('estimated-time').textContent = progress.estimated_time || '-';
+      document.getElementById('iteration-count').textContent = 
+        `${progress.current_iteration || 0}/100`;
+      document.getElementById('current-best').textContent = 
+        progress.best_fitness ? progress.best_fitness.toFixed(4) : '0.00';
     }
 
     // 显示优化结果
     function displayOptimizationResults(progress) {
-      const resultsDiv = document.getElementById('optimization-results');
-      const resultsContent = document.getElementById('results-content');
-      
       if (progress.result) {
-        resultsContent.innerHTML = `
-          <div class="grid grid-cols-2 gap-4">
-            <div class="bg-green-900/20 p-4 rounded-lg">
-              <div class="text-sm text-gray-400">优化参数</div>
-              <div class="text-lg font-semibold">${JSON.stringify(progress.result.optimal_params, null, 2)}</div>
-            </div>
-            <div class="bg-blue-900/20 p-4 rounded-lg">
-              <div class="text-sm text-gray-400">预测值</div>
-              <div class="text-lg font-semibold">${progress.result.predicted_value.toFixed(4)}</div>
-            </div>
-          </div>
-        `;
-        resultsDiv.classList.remove('hidden');
+        // 显示结果区域
+        document.getElementById('results-section').style.display = 'block';
+        
+        // 更新优化后的参数值
+        if (progress.result.optimal_params) {
+          const params = progress.result.optimal_params;
+          document.getElementById('optimized-param1').textContent = 
+            params.param1 ? params.param1.toFixed(1) : '--';
+          document.getElementById('optimized-param2').textContent = 
+            params.param2 ? params.param2.toFixed(1) : '--';
+          document.getElementById('optimized-param3').textContent = 
+            params.param3 ? params.param3.toFixed(1) : '--';
+        }
+        
+        // 更新优化后评分
+        if (progress.result.predicted_value) {
+          document.getElementById('after-score').textContent = 
+            progress.result.predicted_value.toFixed(1);
+          
+          // 计算提升百分比
+          const beforeScore = parseFloat(document.getElementById('before-score').textContent);
+          const afterScore = progress.result.predicted_value;
+          const improvement = ((afterScore - beforeScore) / beforeScore * 100);
+          
+          document.getElementById('improvement-percent').textContent = 
+            `+${improvement.toFixed(1)}%`;
+          document.getElementById('improvement-bar').style.width = 
+            Math.min(improvement * 10, 100) + '%';
+        }
       }
     }
 
