@@ -209,8 +209,7 @@ select.param-input:focus {
       padding-bottom: 12px;
       margin-bottom: 24px;
     }
-    
-    .section-title::after {
+      .section-title::after {
       content: '';
       position: absolute;
       bottom: 0;
@@ -219,6 +218,11 @@ select.param-input:focus {
       height: 3px;
       background-color: var(--primary);
       border-radius: 2px;
+    }
+    
+    /* 确保 hidden 类正确隐藏元素 */
+    .hidden {
+      display: none !important;
     }
 
     /* 强制两列布局 - 增强版本 */
@@ -417,17 +421,14 @@ select.param-input:focus {
           </div>
         </div>
       </div>
-    </div>
-      <!-- 标签导航 -->
-    <div class="flex space-x-4 mb-8">
+    </div>    <!-- 标签导航 -->    <div class="flex space-x-4 mb-8">
       <div class="tab-button active" data-tab="home">首页</div>
-      <div class="tab-button" data-tab="data" id="data-tab" style="display: none;">数据导入</div>
-      <div class="tab-button" data-tab="model" id="model-tab" style="display: none;">模型管理</div>
-      <div class="tab-button" data-tab="optimization" id="optimization-tab">参数优化</div>
-      <div class="tab-button" data-tab="results" id="results-tab" style="display: none;">结果分析</div>
+      <div class="tab-button" data-tab="data">数据导入</div>
+      <div class="tab-button" data-tab="model">模型管理</div>
+      <div class="tab-button" data-tab="optimization">参数优化</div>
+      <div class="tab-button" data-tab="results">结果分析</div>
     </div>
-    
-    <!-- 内容区域 -->
+      <!-- 内容区域 -->
     <div id="content-area">
       <!-- 首页 -->
       <div id="home-tab" class="tab-content">
@@ -1344,15 +1345,18 @@ select.param-input:focus {
     </div>
   </div>
 
-  <script>
-    // 全局变量
-    let currentTab = 'data-upload';
+  <script>    // 全局变量
+    let currentTab = 'home'; // 默认显示首页
     let currentFiles = [];
     let currentModels = [];    // 切换标签页功能
     function switchTab(tabName) {
+        console.log(`🔄 切换到标签页: ${tabName}`);
+        
         // 隐藏所有内容
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.add('hidden');
+            content.style.display = 'none'; // 强制隐藏
+            console.log(`隐藏标签页: ${content.id}`);
         });
         
         // 移除所有按钮的活跃状态
@@ -1360,24 +1364,38 @@ select.param-input:focus {
             btn.classList.remove('active');
         });
         
-        // 显示选中的内容
-        const targetTab = document.getElementById(tabName + '-tab');
-        if (targetTab) {
-            targetTab.classList.remove('hidden');
+        // 显示选中的内容 - 修复ID匹配
+        const targetContent = document.getElementById(tabName + '-tab');
+        if (targetContent) {
+            targetContent.classList.remove('hidden');
+            targetContent.style.display = 'block'; // 强制显示
+            console.log(`✅ 显示内容: ${tabName}-tab`);
+        } else {
+            console.error(`❌ 找不到内容: ${tabName}-tab`);
+            // 列出所有可用的标签页ID用于调试
+            const allTabs = document.querySelectorAll('.tab-content');
+            console.log('所有可用的标签页:', Array.from(allTabs).map(tab => tab.id));
         }
         
         // 激活对应按钮
         const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
         if (activeButton) {
             activeButton.classList.add('active');
+            console.log(`✅ 激活按钮: ${tabName}`);
+        } else {
+            console.error(`❌ 找不到按钮: [data-tab="${tabName}"]`);
         }
         
         currentTab = tabName;
         
-        // 如果切换到数据或模型页面，刷新文件列表
-        if (tabName === 'data' || tabName === 'model') {
-            loadFilesAndModels();
-        }
+        // 延迟加载数据，确保DOM已经显示
+        setTimeout(() => {
+            if (tabName === 'data') {
+                loadModelList(); // 加载所有模型列表容器
+            } else if (tabName === 'model') {
+                loadModelList(); // 加载所有模型列表容器
+            }
+        }, 100);
     }
 
     // 加载文件和模型列表 - 修复版
@@ -1807,11 +1825,59 @@ function handleFileUpload(inputElement, uploadType) {
     window.addEventListener('DOMContentLoaded', function() {
     console.log('DOM加载完成，开始初始化...');
     
+    // 确保首页立即显示
+    const homeTab = document.getElementById('home-tab');
+    if (homeTab) {
+        homeTab.classList.remove('hidden');
+        console.log('✅ 首页已显示');
+    }
+    
+    // 确保首页按钮处于激活状态
+    const homeButton = document.querySelector('.tab-button[data-tab="home"]');
+    if (homeButton) {
+        homeButton.classList.add('active');
+        console.log('✅ 首页按钮已激活');
+    }
+    
     // 初始化标签页
     initializeTabs();
     
     // 绑定文件上传事件
     setupFileUpload();
+    
+    // 初始化用户权限和界面
+    initializeUserInterface();
+    
+    // 用户菜单交互
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenu = document.getElementById('user-menu');
+    
+    // 用户菜单点击事件
+    if (userMenuButton && userMenu) {
+        userMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userMenu.classList.toggle('hidden');
+        });
+        
+        // 点击其他地方关闭菜单
+        document.addEventListener('click', function() {
+            userMenu.classList.add('hidden');
+        });
+        
+        // 阻止菜单内部点击事件冒泡
+        userMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+    
+    // 登出按钮事件
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    }
     
     // 初始化下载按钮状态
     setTimeout(() => {
@@ -1877,24 +1943,23 @@ function initializeTabs() {
     
     // 绑定所有标签按钮的点击事件
     document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const tabName = this.getAttribute('data-tab');
-            if (tabName) {
-                switchTab(tabName);
-            }
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            switchTab(tabName);
         });
     });
     
-    // 设置默认标签页
-    const firstTab = document.querySelector('.tab-button.active');
-    if (firstTab) {
-        const defaultTab = firstTab.getAttribute('data-tab');
-        console.log('默认标签页:', defaultTab);
-        currentTab = defaultTab;
-    } else {
-        // 如果没有默认活跃标签，设置为首页
-        switchTab('home');
-    }
+    // 绑定首页中的功能按钮事件
+    document.querySelectorAll('button[data-tab]').forEach(button => {
+        if (!button.classList.contains('tab-button')) {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+                switchTab(tabName);
+            });
+        }
+    });
+    
+    console.log('✅ 标签页事件绑定完成');
 }
 
 // 设置文件上传事件
@@ -2200,52 +2265,7 @@ function syncAllModelLists() {
     });
 }
 
-// 修复标签页切换逻辑 - 确保加载时同步两个列表
-function switchTab(tabName) {
-    console.log(`🔄 切换到标签页: ${tabName}`);
-    
-    // 隐藏所有内容
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.add('hidden');
-    });
-    
-    // 移除所有按钮的活跃状态
-    document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // 显示选中的内容
-    const targetTab = document.getElementById(tabName + '-tab');
-    if (targetTab) {
-        targetTab.classList.remove('hidden');
-        console.log(`✅ 显示标签页: ${tabName}-tab`);
-    } else {
-        console.error(`❌ 找不到标签页: ${tabName}-tab`);
-    }
-    
-    // 激活对应按钮
-    const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
-    if (activeButton) {
-        activeButton.classList.add('active');
-        console.log(`✅ 激活按钮: ${tabName}`);
-    } else {
-        console.error(`❌ 找不到按钮: [data-tab="${tabName}"]`);
-    }
-    
-    currentTab = tabName;
-    
-    // 延迟加载数据，确保DOM已经显示
-    setTimeout(() => {
-        if (tabName === 'data') {
-            console.log(`📂 数据导入页面需要加载数据`);
-            loadFileList();
-            loadModelList(); // 加载所有模型列表容器
-        } else if (tabName === 'model') {
-            console.log(`📂 模型管理页面需要加载模型`);
-            loadModelList(); // 加载所有模型列表容器
-        }
-    }, 100);
-}
+
 
 // 修复模型操作后的同步更新
 async function deleteModel(filename) {
@@ -2767,44 +2787,6 @@ function updateSystemStatus() {
     console.log('📊 更新系统状态...');
 }
 
-// 用户菜单交互
-document.addEventListener('DOMContentLoaded', function() {
-    // 初始化用户权限和界面
-    initializeUserInterface();
-    
-    const userMenuButton = document.getElementById('user-menu-button');
-    const userMenu = document.getElementById('user-menu');
-    
-    // 用户菜单点击事件
-    if (userMenuButton && userMenu) {
-        userMenuButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            userMenu.classList.toggle('hidden');
-        });
-        
-        // 点击其他地方关闭菜单
-        document.addEventListener('click', function() {
-            userMenu.classList.add('hidden');
-        });
-        
-        // 阻止菜单内部点击事件冒泡
-        userMenu.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
-    
-    // 登出按钮事件
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            logout();
-        });
-    }
-      // 检查用户登录状态 - 移除此函数，因为现在使用initializeUserInterface
-    // checkUserLoginStatus();
-});
-
 // 旧的用户状态检查函数已移除，现在使用JWT认证
 
 // 初始化用户界面和权限
@@ -2837,35 +2819,8 @@ function updateUIForUser(userInfo) {
         userRoleDisplay.textContent = userInfo.role === 'admin' ? '管理员' : '普通用户';
     }
     
-    // 根据权限显示/隐藏标签页
-    const permissions = userInfo.permissions;
-    
-    const dataTab = document.getElementById('data-tab');
-    const modelTab = document.getElementById('model-tab');
-    const resultsTab = document.getElementById('results-tab');
-    const optimizationTab = document.getElementById('optimization-tab');
-    
-    if (dataTab) {
-        dataTab.style.display = permissions.file_management ? 'block' : 'none';
-    }
-    
-    if (modelTab) {
-        modelTab.style.display = permissions.model_management ? 'block' : 'none';
-    }
-    
-    if (resultsTab) {
-        resultsTab.style.display = permissions.metric_prediction ? 'block' : 'none';
-    }
-    
-    if (optimizationTab) {
-        optimizationTab.style.display = permissions.parameter_optimization ? 'block' : 'none';
-    }
-    
-    // 如果用户没有参数优化权限，重定向到登录页面（这种情况不应该发生）
-    if (!permissions.parameter_optimization) {
-        alert('您没有权限访问此系统');
-        window.location.href = '/login';
-    }
+    // 所有用户都可以访问全部功能，不再根据权限隐藏标签页
+    console.log('用户登录成功，所有功能已开放');
 }
 
 // 登出函数
@@ -2888,12 +2843,6 @@ async function logout() {
         // 即使请求失败也跳转到登录页面
         window.location.href = '/login';
     }
-}
-
-// 检查用户是否有特定权限
-function hasPermission(permission) {
-    // 这个函数可以在需要时调用来检查权限
-    return window.userPermissions && window.userPermissions[permission];
 }
   </script>
 </body>

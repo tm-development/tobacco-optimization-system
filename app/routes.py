@@ -30,13 +30,7 @@ def dashboard():
         session.clear()
         return redirect(url_for('main.index'))
     
-    # 根据用户角色显示不同页面
-    user_role = payload.get('role', 'user')
-    if user_role == 'admin':
-        return render_template('index.html')
-    else:
-        # 普通用户只显示参数优化页面
-        return render_template('user_dashboard.html')
+    return render_template('index.html')
 
 
 
