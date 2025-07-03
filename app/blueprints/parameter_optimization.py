@@ -202,36 +202,7 @@ def eval_func(individual, i, fixed_categorical_param_list, fixed_numeric_param_l
 
     # 如果有目标值，根据与目标值的接近程度调整适应度
      # 应用约束条件检查
-    if constraints:
-    # 检查大中片率约束
-        if 'big_medium_rate' in constraints:
-            constraint = constraints['big_medium_rate']
-            if 'min' in constraint and large_medium_rate < constraint['min']:
-            # 大中片率低于最小值：重惩罚（减少适应度）
-                large_medium_rate = large_medium_rate - (constraint['min'] - large_medium_rate) * 2
-            if 'max' in constraint and large_medium_rate > constraint['max']:
-            # 大中片率高于最大值：重惩罚（减少适应度）
-                large_medium_rate = large_medium_rate - (large_medium_rate - constraint['max']) * 2
-    
-    # 检查叶含梗率约束
-        if 'leaf_stem_rate' in constraints:
-            constraint = constraints['leaf_stem_rate']
-            if 'min' in constraint and leaf_in_stem_rate < constraint['min']:
-            # 叶含梗率低于最小值：惩罚（增加适应度值，因为权重是-1.0）
-                leaf_in_stem_rate = leaf_in_stem_rate + (constraint['min'] - leaf_in_stem_rate) * 2
-            if 'max' in constraint and leaf_in_stem_rate > constraint['max']:
-            # 叶含梗率高于最大值：惩罚（增加适应度值，因为权重是-1.0）
-                leaf_in_stem_rate = leaf_in_stem_rate + (leaf_in_stem_rate - constraint['max']) * 2
-    
-    # 检查梗含叶率约束
-        if 'stem_leaf_rate' in constraints:
-            constraint = constraints['stem_leaf_rate']
-            if 'min' in constraint and stem_in_leaf_rate < constraint['min']:
-            # 梗含叶率低于最小值：惩罚（增加适应度值，因为权重是-1.0）
-                stem_in_leaf_rate = stem_in_leaf_rate + (constraint['min'] - stem_in_leaf_rate) * 2
-            if 'max' in constraint and stem_in_leaf_rate > constraint['max']:
-            # 梗含叶率高于最大值：惩罚（增加适应度值，因为权重是-1.0）
-                stem_in_leaf_rate = stem_in_leaf_rate + (stem_in_leaf_rate - constraint['max']) * 2
+  
     # 应用目标值调整（现有逻辑）
     if target_values:
         if 'big_medium_rate' in target_values:
