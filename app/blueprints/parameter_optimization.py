@@ -14,6 +14,8 @@ from deap import base, creator, tools, algorithms
 from ..utils import optimization_progress, ImprovedRBFNN
 from .user_management import user_or_admin_required
 from werkzeug.utils import secure_filename
+import json
+from ..models import db, OptimizationResult  # 导入数据库模型
 
 parameter_optimization = Blueprint('parameter_optimization', __name__)
 
@@ -156,8 +158,8 @@ def eval_func(individual, i, fixed_categorical_param_list, fixed_numeric_param_l
     numeric_input = pd.concat([pd.DataFrame([fixed_numeric_params]), numeric_input], axis=1)
     X_input = pd.concat([encoded_input, numeric_input], axis=1)
 
-    # 预测叶含梗率
-    with open('./uploads/models/叶含梗率_rbfnn.pkl', 'rb') as f:
+    # 预测梗含叶率
+    with open('./uploads/models/梗含叶率_rbfnn.pkl', 'rb') as f:
         model_package1 = pickle.load(f)
 
     model1 = model_package1['model']
@@ -182,8 +184,8 @@ def eval_func(individual, i, fixed_categorical_param_list, fixed_numeric_param_l
     y_pred_scaled2 = model2.predict(X2_scaled)
     y2 = scaler_y2.inverse_transform(y_pred_scaled2.reshape(-1, 1))
 
-    # 预测梗含叶率
-    with open('./uploads/models/梗含叶率_rbfnn.pkl', 'rb') as f:
+    # 预测叶含梗率
+    with open('./uploads/models/叶含梗率_rbfnn.pkl', 'rb') as f:
         model_package3 = pickle.load(f)
 
     model3 = model_package3['model']
@@ -202,7 +204,7 @@ def eval_func(individual, i, fixed_categorical_param_list, fixed_numeric_param_l
 
     # 如果有目标值，根据与目标值的接近程度调整适应度
      # 应用约束条件检查
-  
+   
     # 应用目标值调整（现有逻辑）
     if target_values:
         if 'big_medium_rate' in target_values:
@@ -1075,3 +1077,418 @@ def download_optimization_result_file(filename):
     except Exception as e:
         print(f"下载优化结果文件错误: {str(e)}")
         return jsonify({'success': False, 'message': f'下载文件失败: {str(e)}'})
+
+@parameter_optimization.route('/api/preview_optimization_result_file', methods=['GET'])
+@user_or_admin_required
+def preview_optimization_result_file():
+    """预览优化结果文件内容"""
+    try:
+        file_path_from_request = request.args.get('file_path')
+        if not file_path_from_request:
+            return jsonify({'success': False, 'message': '未提供文件路径'})
+
+        # 从请求路径中提取纯文件名
+        filename = os.path.basename(file_path_from_request)
+        if '..' in filename:  # 安全检查
+            return jsonify({'success': False, 'message': '无效的文件名'})
+
+        # 使用项目根目录构建绝对路径，这种方式更稳健
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+        abs_file_path = os.path.join(base_dir, 'uploads', 'data', 'results', filename)
+        
+        if not os.path.exists(abs_file_path):
+            return jsonify({'success': False, 'message': f'文件不存在: {abs_file_path}'})
+        
+        # 读取CSV文件前10行用于预览
+        df = pd.read_csv(abs_file_path, encoding='gbk', nrows=10)
+        
+        # 构造响应数据
+        response_data = {
+            'columns': df.columns.tolist(),
+            'rows': df.values.tolist()
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': response_data
+        })
+        
+    except Exception as e:
+        print(f"预览优化结果文件错误: {str(e)}")
+        return jsonify({'success': False, 'message': f'预览文件失败: {str(e)}'})
+    
+@parameter_optimization.route('/api/get_optimization_result_data', methods=['GET'])
+@user_or_admin_required
+def get_optimization_result_data():
+    """获取可编辑的优化结果数据"""
+    try:
+        file_path_from_request = request.args.get('file_path')
+        if not file_path_from_request:
+            return jsonify({'success': False, 'message': '未提供文件路径'})
+            
+        filename = os.path.basename(file_path_from_request)
+        if '..' in filename:
+            return jsonify({'success': False, 'message': '无效的文件名'})
+
+        results_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'results')
+        full_path = os.path.join(results_dir, filename)
+
+        if not os.path.exists(full_path):
+            return jsonify({'success': False, 'message': '文件不存在', 'path_checked': full_path})
+
+        def read_and_convert_to_ordered_list(path, encoding):
+            """读取CSV并将其第一行转换为有序的键值对列表"""
+            df = pd.read_csv(path, nrows=1, encoding=encoding)
+            ordered_dict = df.iloc[0].to_dict(into=OrderedDict)
+            # 转换为键值对列表以保证JSON传输过程中的顺序
+            ordered_list = [{'key': k, 'value': v} for k, v in ordered_dict.items()]
+            return ordered_list
+
+        try:
+            # 优先使用 utf-8-sig 读取
+            result_data_list = read_and_convert_to_ordered_list(full_path, 'utf-8-sig')
+            return jsonify({'success': True, 'data': result_data_list})
+        except UnicodeDecodeError:
+            try:
+                # 如果失败，则尝试GBK编码
+                current_app.logger.warning(f"UTF-8-SIG decoding failed for {full_path}. Trying GBK...")
+                result_data_list = read_and_convert_to_ordered_list(full_path, 'gbk')
+                return jsonify({'success': True, 'data': result_data_list})
+            except Exception as e_gbk:
+                current_app.logger.error(f"Failed to read file {full_path} with both UTF-8-SIG and GBK: {traceback.format_exc()}")
+                return jsonify({'success': False, 'message': f'读取文件失败: {str(e_gbk)}'})
+        except Exception as e:
+            current_app.logger.error(f"Error reading file {full_path}: {traceback.format_exc()}")
+            return jsonify({'success': False, 'message': f'读取文件时发生未知错误: {str(e)}'})
+
+    except Exception as e:
+        current_app.logger.error(f"Error in get_optimization_result_data for {file_path_from_request}: {traceback.format_exc()}")
+        return jsonify({'success': False, 'message': f'处理请求失败: {str(e)}'})
+    
+@parameter_optimization.route('/api/save_optimization_result_to_database', methods=['POST'])
+@user_or_admin_required
+def save_optimization_result_to_database():
+    """将原始优化结果保存到数据库"""
+    try:
+        data = request.get_json()
+        if not data or 'file_path' not in data:
+            return jsonify({'success': False, 'message': '未提供文件路径'})
+            
+        file_path_from_request = data['file_path']
+            
+        # 从请求路径中提取纯文件名
+        filename = os.path.basename(file_path_from_request)
+        if '..' in filename:  # 安全检查
+            return jsonify({'success': False, 'message': '无效的文件名'})
+
+        # 使用项目根目录构建绝对路径
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+        abs_file_path = os.path.join(base_dir, 'uploads', 'data', 'results', filename)
+        
+        if not os.path.exists(abs_file_path):
+            return jsonify({'success': False, 'message': f'文件不存在: {abs_file_path}'})
+        
+        # 从文件名中提取任务ID
+        task_id = filename.replace('optimization_result_', '').replace('.csv', '')
+        # 读取CSV文件最后一行（通常是最优结果）
+        df = pd.read_csv(abs_file_path, encoding='gbk')
+        
+        if df.empty:
+            return jsonify({'success': False, 'message': '文件中没有数据'})
+        
+        # 获取最后一行数据
+        best_result = df.iloc[-1].to_dict()
+        
+        # 准备要保存到数据库的数据
+        params_json = {}
+        metrics_json = {}
+        
+        # 分类参数
+        for key in categorical_vars.keys():
+            if key in best_result:
+                params_json[key] = best_result[key]
+        
+        # 数值参数
+        for key in numeric_vars:
+            if key in best_result:
+                params_json[key] = float(best_result[key])
+        
+        # 指标数据 - 使用中文键
+        metric_keys = ['大中片率', '叶含梗率', '梗含叶率', '综合得分']
+        for key in metric_keys:
+            if key in best_result:
+                try:
+                    value = best_result[key]
+                    # 使用 pandas.notna 检查以正确处理 NaN 和 None
+                    metrics_json[key] = float(value) if pd.notna(value) else None
+                except (ValueError, TypeError):
+                    metrics_json[key] = None
+        
+        # 检查数据库中是否已存在此任务的结果
+        existing_result = OptimizationResult.query.filter_by(task_id=task_id).first()
+        
+        if existing_result:
+            # 更新现有记录
+            existing_result.parameters = json.dumps(params_json, ensure_ascii=False)
+            existing_result.metrics = json.dumps(metrics_json, ensure_ascii=False)
+            existing_result.updated_at = datetime.now()
+            existing_result.is_modified = False
+            existing_result.file_path = abs_file_path
+        else:
+            # 创建新记录
+            new_result = OptimizationResult(
+                task_id=task_id,
+                parameters=json.dumps(params_json, ensure_ascii=False),
+                metrics=json.dumps(metrics_json, ensure_ascii=False),
+                file_path=abs_file_path,
+                created_at=datetime.now(),
+                is_modified=False
+            )
+            db.session.add(new_result)
+        
+        # 提交数据库事务
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': '优化结果已成功保存到数据库',
+            'task_id': task_id
+        })
+        
+    except Exception as e:
+        # 回滚数据库事务
+        db.session.rollback()
+        current_app.logger.error(f"保存优化结果到数据库错误: {traceback.format_exc()}")
+        return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
+
+@parameter_optimization.route('/api/save_modified_result_to_database', methods=['POST'])
+@user_or_admin_required
+def save_modified_result_to_database():
+    """将修改后的优化结果保存到数据库"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'message': '未接收到请求数据'})
+
+        file_path_from_request = data.get('file_path')
+        modified_data = data.get('modified_data')
+
+        if not file_path_from_request or not isinstance(modified_data, dict):
+            return jsonify({'success': False, 'message': '参数不完整或格式不正确'})
+
+        filename = os.path.basename(file_path_from_request)
+        if '..' in filename:
+            return jsonify({'success': False, 'message': '无效的文件名'})
+
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+        abs_file_path = os.path.join(base_dir, 'uploads', 'data', 'results', filename)
+
+        if not os.path.exists(abs_file_path):
+            return jsonify({'success': False, 'message': f'文件不存在: {abs_file_path}'})
+
+        task_id = filename.replace('optimization_result_', '').replace('.csv', '')
+
+        df = pd.read_csv(abs_file_path, encoding='gbk')
+        if df.empty:
+            return jsonify({'success': False, 'message': '原始文件中没有数据'})
+
+        best_result = df.iloc[-1].to_dict()
+        for key, value in modified_data.items():
+            if key in best_result:
+                best_result[key] = value
+
+        params_json = {}
+        metrics_json = {}
+
+        for key in categorical_vars.keys():
+            if key in best_result:
+                params_json[key] = best_result[key]
+
+        for key in numeric_vars:
+            if key in best_result:
+                try:
+                    float_val = float(best_result[key])
+                    params_json[key] = float_val
+                    best_result[key] = float_val
+                except (ValueError, TypeError):
+                    params_json[key] = None
+                    best_result[key] = None
+                    current_app.logger.warning(f"Cannot convert value for numeric key '{key}'.")
+
+        # 指标数据 - 使用中文键
+        metric_keys = ['大中片率', '叶含梗率', '梗含叶率', '综合得分']
+        for key in metric_keys:
+            if key in best_result:
+                try:
+                    float_val = float(best_result[key])
+                    metrics_json[key] = float_val
+                    best_result[key] = float_val
+                except (ValueError, TypeError):
+                    metrics_json[key] = None
+                    best_result[key] = None
+                    current_app.logger.warning(f"Cannot convert value for metric key '{key}'.")
+        
+        last_row_index = df.index[-1]
+        for key, value in best_result.items():
+            if key in df.columns:
+                df.loc[last_row_index, key] = value
+        
+        modified_file_path = abs_file_path.replace('.csv', '_modified.csv')
+        df.to_csv(modified_file_path, index=False, encoding='gbk')
+        
+        existing_result = OptimizationResult.query.filter_by(task_id=task_id).first()
+        
+        if existing_result:
+            existing_result.parameters = json.dumps(params_json, ensure_ascii=False)
+            existing_result.metrics = json.dumps(metrics_json, ensure_ascii=False)
+            existing_result.updated_at = datetime.now()
+            existing_result.is_modified = True
+            existing_result.file_path = modified_file_path
+        else:
+            new_result = OptimizationResult(
+                task_id=task_id,
+                parameters=json.dumps(params_json, ensure_ascii=False),
+                metrics=json.dumps(metrics_json, ensure_ascii=False),
+                file_path=modified_file_path,
+                created_at=datetime.now(),
+                is_modified=True
+            )
+            db.session.add(new_result)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': '修改后的优化结果已成功保存到数据库',
+            'task_id': task_id,
+            'modified_file_path': modified_file_path
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"--- ERROR in save_modified_result_to_database ---\n{traceback.format_exc()}")
+        return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
+    """将修改后的优化结果保存到数据库"""
+    try:
+        data = request.get_json()
+        # 健壮性修改：使用.get()并检查返回值
+        if not data:
+            return jsonify({'success': False, 'message': '未接收到请求数据'})
+
+        file_path_from_request = data.get('file_path')
+        modified_data = data.get('modified_data')
+
+        if not file_path_from_request or not isinstance(modified_data, dict):
+            return jsonify({'success': False, 'message': '参数不完整或格式不正确'})
+
+        filename = os.path.basename(file_path_from_request)
+        if '..' in filename:
+            return jsonify({'success': False, 'message': '无效的文件名'})
+
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+        abs_file_path = os.path.join(base_dir, 'uploads', 'data', 'results', filename)
+
+        if not os.path.exists(abs_file_path):
+            return jsonify({'success': False, 'message': f'文件不存在: {abs_file_path}'})
+
+        task_id = filename.replace('optimization_result_', '').replace('.csv', '')
+
+        df = pd.read_csv(abs_file_path, encoding='gbk')
+        if df.empty:
+            return jsonify({'success': False, 'message': '原始文件中没有数据'})
+
+        # 获取最后一行数据作为基础，并合并用户修改
+        best_result = df.iloc[-1].to_dict()
+        for key, value in modified_data.items():
+            if key in best_result:
+                best_result[key] = value
+
+        # 准备JSON对象，并使用清理后的数据同步更新best_result
+        params_json = {}
+        metrics_json = {}
+
+        # 分类参数
+        for key in categorical_vars.keys():
+            if key in best_result:
+                params_json[key] = best_result[key]
+
+        # 数值参数 - 转换并同步更新
+        for key in numeric_vars:
+            if key in best_result:
+                try:
+                    float_val = float(best_result[key])
+                    params_json[key] = float_val
+                    best_result[key] = float_val  # 同步更新，用于写入CSV
+                except (ValueError, TypeError):
+                    params_json[key] = None  # 在JSON中为null
+                    best_result[key] = None  # 在DataFrame中为None，写入CSV时变为空
+                    print(f"Warning: Cannot convert value for numeric key '{key}'.")
+
+        # 指标数据 - 转换并同步更新
+        metric_keys_map = {
+            '大中片率': 'big_medium_rate',
+            '叶含梗率': 'leaf_stem_rate',
+            '梗含叶率': 'stem_leaf_rate',
+            '综合得分': 'score'
+        }
+        for chinese_key, english_key in metric_keys_map.items():
+            if chinese_key in best_result:
+                try:
+                    float_val = float(best_result[chinese_key])
+                    metrics_json[english_key] = float_val
+                    best_result[chinese_key] = float_val # 同步更新
+                except (ValueError, TypeError):
+                    metrics_json[english_key] = None
+                    best_result[chinese_key] = None
+                    print(f"Warning: Cannot convert value for metric key '{chinese_key}'.")
+
+        # 使用清理和转换后的best_result更新DataFrame
+        last_row_index = df.index[-1]
+        for key, value in best_result.items():
+            if key in df.columns:
+                df.loc[last_row_index, key] = value
+        
+        # 生成并保存修改后的CSV文件
+        modified_file_path = abs_file_path.replace('.csv', '_modified.csv')
+        df.to_csv(modified_file_path, index=False, encoding='gbk')
+        
+        # 查询或创建数据库记录
+        existing_result = OptimizationResult.query.filter_by(task_id=task_id).first()
+        
+        if existing_result:
+            # 更新记录
+            existing_result.parameters = json.dumps(params_json, ensure_ascii=False)
+            existing_result.metrics = json.dumps(metrics_json, ensure_ascii=False)
+            existing_result.updated_at = datetime.now()
+            existing_result.is_modified = True
+            existing_result.file_path = modified_file_path
+        else:
+            # 创建新记录
+            new_result = OptimizationResult(
+                task_id=task_id,
+                parameters=json.dumps(params_json, ensure_ascii=False),
+                metrics=json.dumps(metrics_json, ensure_ascii=False),
+                file_path=modified_file_path,
+                created_at=datetime.now(),
+                is_modified=True
+            )
+            db.session.add(new_result)
+        
+        # 提交到数据库
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': '修改后的优化结果已成功保存到数据库',
+            'task_id': task_id,
+            'modified_file_path': modified_file_path
+        })
+        
+    except Exception as e:
+        # 回滚并记录详细错误
+        db.session.rollback()
+        import traceback
+        print("--- ERROR in save_modified_result_to_database ---")
+        traceback.print_exc()
+        print("--- END ERROR ---")
+        return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})

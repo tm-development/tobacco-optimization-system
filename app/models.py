@@ -3,11 +3,51 @@ from werkzeug.utils import secure_filename
 import os
 import pandas as pd
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+
+# 初始化SQLAlchemy
+db = SQLAlchemy()
 
 try:
     import psutil
 except ImportError:
     psutil = None
+
+# 添加SQLAlchemy数据库模型
+class OptimizationResult(db.Model):
+    """优化结果数据库模型"""
+    __tablename__ = 'optimization_results'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    task_id = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    parameters = db.Column(db.Text, nullable=False)  # JSON字符串格式
+    metrics = db.Column(db.Text, nullable=False)     # JSON字符串格式
+    file_path = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    is_modified = db.Column(db.Boolean, default=False)
+    
+    def __init__(self, task_id, parameters, metrics, file_path, created_at=None, is_modified=False):
+        self.task_id = task_id
+        self.parameters = parameters
+        self.metrics = metrics
+        self.file_path = file_path
+        self.created_at = created_at or datetime.now()
+        self.is_modified = is_modified
+    
+    def to_dict(self):
+        """将模型转换为字典"""
+        import json
+        return {
+            'id': self.id,
+            'task_id': self.task_id,
+            'parameters': json.loads(self.parameters),
+            'metrics': json.loads(self.metrics),
+            'file_path': self.file_path,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'is_modified': self.is_modified
+        }
 
 class OptimizationTask:
     """优化任务模型"""
@@ -335,27 +375,6 @@ class PredictionResult:
             'model_used': self.model_used,
             'data_source': self.data_source,
             'input_params': self.input_params,
-            'timestamp': self.timestamp.isoformat()  # 确保转换为ISO格式字符串
-        }
-
-class OptimizationResult:
-    """优化结果模型"""
-    
-    def __init__(self, task_id, best_params, best_score, algorithm, iterations):
-        self.task_id = task_id
-        self.best_params = best_params
-        self.best_score = best_score
-        self.algorithm = algorithm
-        self.iterations = iterations
-        self.timestamp = datetime.now()
-    
-    def to_dict(self):
-        return {
-            'task_id': self.task_id,
-            'best_params': self.best_params,
-            'best_score': self.best_score,
-            'algorithm': self.algorithm,
-            'iterations': self.iterations,
             'timestamp': self.timestamp.isoformat()  # 确保转换为ISO格式字符串
         }
 

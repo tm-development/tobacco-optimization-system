@@ -698,7 +698,7 @@
             <div class="card">
                 <h2 class="section-title text-xl font-bold">模型测试</h2>
                 <div class="model-test-grid">
-                   <!-- 左侧：输入测试参数 -->
+                    <!-- 左侧：输入测试参数 -->
                      <div>
                         <h3 class="text-lg font-bold mb-4">输入测试参数</h3>
                         <div class="input-params-container space-y-4">
@@ -912,33 +912,31 @@
                         </div>
                         <button class="btn-primary w-full mt-4" onclick="runModelPrediction()">运行预测</button>
                     </div>
-
-
                     <!-- 右侧：预测结果 -->
                     <div>
                         <h3 class="text-lg font-bold mb-4">预测结果</h3>
                         <div class="prediction-results-container">
                             <div class="result-card p-6 rounded-lg">
                                 <div class="grid grid-cols-1 gap-6" id="prediction-results">
-                                    <!-- 大中片率 -->
-                                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                                     <!-- 大中片率 -->
+                                     <div class="text-center p-4 bg-gray-800 rounded-lg">
                                         <div class="text-4xl font-bold text-green-400 mb-2" id="result-big-medium-rate">
-                                            86.7
+                                            77.9
                                         </div>
                                         <div class="text-lg">大中片率 (%)</div>
                                         <div class="mt-2 text-gray-400" id="confidence-big-medium-rate">预测置信度:
-                                            92.4%
+                                            93.4%
                                         </div>
                                     </div>
 
                                     <!-- 叶含梗率 -->
                                     <div class="text-center p-4 bg-gray-800 rounded-lg">
                                         <div class="text-4xl font-bold text-green-400 mb-2" id="result-leaf-stem-rate">
-                                            1.2
+                                            1.36
                                         </div>
                                         <div class="text-lg">叶含梗率 (%)</div>
                                         <div class="mt-2 text-gray-400" id="confidence-leaf-stem-rate">预测置信度:
-                                            89.6%
+                                            91.8%
                                         </div>
                                     </div>
 
@@ -949,11 +947,9 @@
                                         </div>
                                         <div class="text-lg">梗含叶率 (%)</div>
                                         <div class="mt-2 text-gray-400" id="confidence-stem-leaf-rate">预测置信度:
-                                            91.3%
+                                            88.5%
                                         </div>
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
@@ -1020,11 +1016,11 @@
                     <tr>
                         <td class="px-4 py-3">大中片率</td>
                         <td class="px-4 py-3"><input type="number" id="big-medium-target"
-                                                     class="param-input w-20" value="85"></td>
+                                                     class="param-input w-20" value="80"></td>
                         <td class="px-4 py-3"><input type="number" id="big-medium-min" class="param-input w-20"
-                                                     value="80"></td>
+                                                     value="75"></td>
                         <td class="px-4 py-3"><input type="number" id="big-medium-max" class="param-input w-20"
-                                                     value="90"></td>
+                                                     value="82"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3">叶含梗率</td>
@@ -2724,7 +2720,7 @@ function runModelPrediction() {
 
     // 模拟预测结果
     const results = {
-        bigMediumRate: (85 + Math.random() * 5).toFixed(1),
+        bigMediumRate: (75 + Math.random() * 5).toFixed(1),
         leafStemRate: (1.0 + Math.random() * 0.5).toFixed(1),
         stemLeafRate: (0.4 + Math.random() * 0.4).toFixed(1)
     };
@@ -3852,15 +3848,6 @@ function manualViewResults() {
           </div>
         </div>
       </div>
-      
-      <!-- 添加收敛图表容器 -->
-      <h2 class="text-xl font-bold my-4">优化收敛过程</h2>
-      <div class="bg-gray-800 p-4 rounded-lg">
-        <!-- 调整图表的宽高 -->
-        <div class="mx-auto" style="max-width: 600px;">
-          <canvas id="convergence-chart" width="100%" height="120"></canvas>
-        </div>
-      </div>
     `;
     
     resultsTab.appendChild(resultCard);
@@ -3871,15 +3858,62 @@ function manualViewResults() {
       downloadDiv.className = 'card p-6 mt-6';
       
       downloadDiv.innerHTML = `
-        <h2 class="text-xl font-bold mb-4">结果文件下载</h2>
-        <div class="text-center">
-          <button class="btn-primary px-6 py-3 text-lg inline-flex items-center">
-            <span class="material-icons mr-2">download</span> 下载优化结果文件
-          </button>
+        <h2 class="text-xl font-bold mb-4">优化结果操作</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="text-center">
+            <button class="btn-primary px-6 py-3 text-lg inline-flex items-center">
+              <span class="material-icons mr-2">download</span> 下载优化结果文件
+            </button>
+          </div>
+          <div class="text-center">
+            <button id="view-result-btn" class="btn-secondary px-6 py-3 text-lg inline-flex items-center">
+              <span class="material-icons mr-2">visibility</span> 查看优化结果
+            </button>
+          </div>
+        </div>
+        
+        <!-- 结果预览区域 -->
+        <div id="optimization-result-preview" class="mt-6 hidden">
+          <h3 class="text-lg font-bold mb-3">优化结果预览</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-600">
+              <thead class="bg-gray-800">
+                <tr id="optimization-result-header"></tr>
+              </thead>
+              <tbody id="optimization-result-body"></tbody>
+            </table>
+          </div>
+          
+          <!-- 结果操作按钮 -->
+          <div class="flex justify-between mt-6">
+            <div>
+              <button id="save-to-db-btn" class="btn-success px-6 py-2 text-lg inline-flex items-center">
+                <span class="material-icons mr-2">check_circle</span> 确认并保存到数据库
+              </button>
+            </div>
+            <div>
+              <button id="modify-result-btn" class="btn-warning px-6 py-2 text-lg inline-flex items-center">
+                <span class="material-icons mr-2">edit</span> 修改结果
+              </button>
+            </div>
+          </div>
+          
+          <!-- 修改结果表单，默认隐藏 -->
+          <div id="modify-result-form" class="mt-6 p-4 border border-gray-600 rounded hidden">
+            <h3 class="text-lg font-bold mb-3">修改优化结果</h3>
+            <div id="modify-result-fields" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              <!-- 这里将由JavaScript动态填充表单字段 -->
+            </div>
+            <div class="flex justify-end mt-4 space-x-3">
+              <button id="cancel-modify-btn" class="btn-secondary px-4 py-2">取消</button>
+              <button id="save-modified-btn" class="btn-primary px-4 py-2">保存修改</button>
+            </div>
+          </div>
         </div>
       `;
       
-      downloadDiv.querySelector('button').onclick = function() {
+      // 绑定下载按钮点击事件
+      downloadDiv.querySelector('.btn-primary').onclick = function() {
         const filename = optimizationData.result_file.split('/').pop();
         const downloadLink = document.createElement('a');
         downloadLink.href = `/api/download_optimization_result_file/${filename}`;
@@ -3891,75 +3925,62 @@ function manualViewResults() {
       };
       
       resultsTab.appendChild(downloadDiv);
+      
+      // 绑定查看结果按钮事件
+      const viewResultBtn = downloadDiv.querySelector('#view-result-btn');
+      if (viewResultBtn) {
+        viewResultBtn.addEventListener('click', function() {
+          const resultPreviewDiv = document.getElementById('optimization-result-preview');
+          
+          // 切换预览区域的显示/隐藏状态
+          if (resultPreviewDiv.classList.contains('hidden')) {
+            resultPreviewDiv.classList.remove('hidden');
+            loadOptimizationResultPreview(optimizationData.result_file);
+          } else {
+            resultPreviewDiv.classList.add('hidden');
+          }
+        });
+      }
+      
+      // 绑定保存到数据库按钮事件
+      const saveToDbBtn = downloadDiv.querySelector('#save-to-db-btn');
+      if (saveToDbBtn) {
+        saveToDbBtn.addEventListener('click', function() {
+          saveResultToDatabase(optimizationData.result_file);
+        });
+      }
+      
+      // 绑定修改结果按钮事件
+      const modifyResultBtn = downloadDiv.querySelector('#modify-result-btn');
+      if (modifyResultBtn) {
+        modifyResultBtn.addEventListener('click', function() {
+          const modifyForm = document.getElementById('modify-result-form');
+          modifyForm.classList.toggle('hidden');
+          
+          // 只有在首次点击时加载表单
+          if (!modifyForm.dataset.loaded) {
+            loadModifyResultForm(optimizationData.result_file);
+            modifyForm.dataset.loaded = 'true';
+          }
+        });
+      }
+      
+      // 绑定取消修改按钮事件
+      const cancelModifyBtn = downloadDiv.querySelector('#cancel-modify-btn');
+      if (cancelModifyBtn) {
+        cancelModifyBtn.addEventListener('click', function() {
+          document.getElementById('modify-result-form').classList.add('hidden');
+        });
+      }
+      
+      // 绑定保存修改按钮事件
+      const saveModifiedBtn = downloadDiv.querySelector('#save-modified-btn');
+      if (saveModifiedBtn) {
+        saveModifiedBtn.addEventListener('click', function() {
+          saveModifiedResultToDatabase();
+        });
+      }
     }
-    
-    // 文件选择区域
-    const fileSelectDiv = document.createElement('div');
-    fileSelectDiv.className = 'card p-6 mt-6';
-    fileSelectDiv.innerHTML = `
-      <h2 class="section-title text-xl font-bold">优化结果历史文件</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label class="block text-sm font-medium mb-2">选择优化结果历史文件</label>
-          <div class="flex space-x-2">
-            <select id="result-file-select" class="param-input flex-grow">
-              <option value="">加载中...</option>
-            </select>
-            <button id="load-result-btn" class="btn-primary px-4 py-2 text-sm">
-              <span class="material-icons text-sm mr-1">visibility</span>预览
-            </button>
-            <button id="download-result-btn" class="btn-secondary px-4 py-2 text-sm">
-              <span class="material-icons text-sm mr-1">download</span>下载
-            </button>
-          </div>
-        </div>
-        <div>
-          <div class="text-sm mb-2">文件信息</div>
-          <div id="result-file-info" class="text-sm text-gray-400">
-            选择一个文件以查看详情
-          </div>
-        </div>
-      </div>
-      
-      <!-- 数据预览区域 -->
-      <div id="result-preview-container" class="mt-4 hidden">
-        <h3 class="text-lg font-bold mb-2">数据预览 (前5行)</h3>
-        <div class="overflow-x-auto">
-          <table class="min-w-full border border-gray-600" id="result-preview-table">
-            <thead class="bg-gray-800">
-              <tr id="result-preview-header"></tr>
-            </thead>
-            <tbody id="result-preview-body"></tbody>
-          </table>
-        </div>
-      </div>
-    `;
-    
-    resultsTab.appendChild(fileSelectDiv);
-    
-    // 绑定按钮事件
-    setTimeout(() => {
-      const loadResultBtn = document.getElementById('load-result-btn');
-      const downloadResultBtn = document.getElementById('download-result-btn');
-      
-      if (loadResultBtn) {
-        loadResultBtn.addEventListener('click', previewResultFile);
-      }
-      
-      if (downloadResultBtn) {
-        downloadResultBtn.addEventListener('click', downloadResultFile);
-      }
-      
-      // 初始化收敛图表
-      if (typeof initializeConvergenceChart === 'function') {
-        initializeConvergenceChart(optimizationData.best_score || 0);
-      }
-      
-      // 初始化文件选择器
-      initResultFileSelector();
-    }, 100);
-    
-    showMessage('优化结果已加载', 'success');
   } else {
     // 无数据时显示提示
     const noDataCard = document.createElement('div');
@@ -4198,6 +4219,232 @@ function getManualInputData() {
     }
 
     return manualData;
+}
+
+// 加载优化结果预览
+function loadOptimizationResultPreview(resultFilePath) {
+  const headerEl = document.getElementById('optimization-result-header');
+  const bodyEl = document.getElementById('optimization-result-body');
+  
+  // 清空现有内容
+  headerEl.innerHTML = '';
+  bodyEl.innerHTML = '';
+  
+  // 显示加载中状态
+  bodyEl.innerHTML = '<tr><td colspan="10" class="text-center py-4">加载中...</td></tr>';
+  
+  // 发送请求获取结果数据
+  fetch(`/api/preview_optimization_result_file?file_path=${encodeURIComponent(resultFilePath)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.data) {
+        // 清空加载状态
+        headerEl.innerHTML = '';
+        bodyEl.innerHTML = '';
+        
+        // 渲染表头
+        if (data.data.columns && data.data.columns.length > 0) {
+          data.data.columns.forEach(column => {
+            const th = document.createElement('th');
+            th.className = 'px-4 py-2 text-left text-white';
+            th.textContent = column;
+            headerEl.appendChild(th);
+          });
+        }
+        
+        // 渲染表格数据
+        if (data.data.rows && data.data.rows.length > 0) {
+          data.data.rows.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-t border-gray-600';
+            
+            row.forEach(cell => {
+              const td = document.createElement('td');
+              td.className = 'px-4 py-2';
+              td.textContent = cell;
+              tr.appendChild(td);
+            });
+            
+            bodyEl.appendChild(tr);
+          });
+        } else {
+          bodyEl.innerHTML = '<tr><td colspan="10" class="text-center py-4">无数据</td></tr>';
+        }
+      } else {
+        bodyEl.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-red-500">${data.message || '加载失败'}</td></tr>`;
+      }
+    })
+    .catch(error => {
+      console.error('加载优化结果预览失败:', error);
+      bodyEl.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-red-500">加载失败，请重试</td></tr>';
+    });
+}
+
+// 加载修改结果表单
+function loadModifyResultForm(resultFilePath) {
+  const formContainer = document.getElementById('modify-result-fields');
+  
+  // 定义需要转为下拉选择框的字段及其选项
+  const selectOptionsMap = {
+    "回潮工段数据记录_回潮方式": ["半回", "全回"],
+    "一润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"],
+    "二润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"]
+  };
+  
+  // 显示加载状态
+  formContainer.innerHTML = '<div class="col-span-3 text-center py-4">加载中...</div>';
+  
+  // 发送请求获取结果数据以填充表单
+  fetch(`/api/get_optimization_result_data?file_path=${encodeURIComponent(resultFilePath)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.data && Array.isArray(data.data)) {
+        formContainer.innerHTML = '';
+        
+        // 直接遍历有序数组，保证了显示顺序
+        data.data.forEach(item => {
+          const key = item.key;
+          const value = String(item.value); // 确保值为字符串以便比较
+          
+          const fieldDiv = document.createElement('div');
+          fieldDiv.className = 'form-field';
+          
+          let fieldHtml = '';
+          // 检查是否是需要特殊处理的字段
+          if (selectOptionsMap.hasOwnProperty(key)) {
+            const options = selectOptionsMap[key];
+            const optionsHtml = options.map(opt => 
+              `<option value="${opt}" ${opt === value ? 'selected' : ''}>${opt}</option>`
+            ).join('');
+            
+            fieldHtml = `
+              <label class="block text-sm font-medium mb-1">${key}</label>
+              <select class="param-input w-full" name="${key}" data-original="${value}">
+                ${optionsHtml}
+              </select>
+            `;
+          } else {
+            // 默认使用文本输入框
+            fieldHtml = `
+              <label class="block text-sm font-medium mb-1">${key}</label>
+              <input type="text" class="param-input w-full" 
+                     name="${key}" value="${value}" data-original="${value}">
+            `;
+          }
+          
+          fieldDiv.innerHTML = fieldHtml;
+          formContainer.appendChild(fieldDiv);
+        });
+      } else {
+        formContainer.innerHTML = `<div class="col-span-3 text-center py-4 text-red-500">${data.message || '加载失败或数据格式不正确'}</div>`;
+      }
+    })
+    .catch(error => {
+      console.error('加载修改表单失败:', error);
+      formContainer.innerHTML = '<div class="col-span-3 text-center py-4 text-red-500">加载失败，请重试</div>';
+    });
+}
+
+
+// 保存结果到数据库
+function saveResultToDatabase(resultFilePath) {
+  // 确认对话框
+  if (!confirm('确定要保存当前优化结果到数据库吗？')) {
+    return;
+  }
+  
+  // 显示保存中状态
+  showMessage('正在保存结果到数据库...', 'info');
+  
+  // 发送保存请求
+  fetch('/api/save_optimization_result_to_database', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      file_path: resultFilePath
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showMessage('优化结果已成功保存到数据库！', 'success');
+      } else {
+        showMessage(`保存失败: ${data.message || '未知错误'}`, 'error');
+      }
+    })
+    .catch(error => {
+      console.error('保存到数据库失败:', error);
+      showMessage('保存失败，请重试', 'error');
+    });
+}
+
+// 保存修改后的结果到数据库
+function saveModifiedResultToDatabase() {
+  // 获取所有修改后的字段
+  const inputFields = document.querySelectorAll('#modify-result-fields input, #modify-result-fields select');
+  const modifiedData = {};
+  let hasChanges = false;
+  
+  inputFields.forEach(input => {
+    const originalValue = input.dataset.original;
+    const currentValue = input.value.trim();
+    
+    // 只有在值确实被修改时才添加到提交数据中
+    if (String(originalValue) !== currentValue) {
+      modifiedData[input.name] = currentValue;
+      hasChanges = true;
+    }
+  });
+  
+  if (!hasChanges) {
+    showMessage('没有检测到任何修改', 'info');
+    return;
+  }
+  
+  if (!confirm('确定要保存修改后的结果到数据库吗？')) {
+    return;
+  }
+  
+  showMessage('正在保存修改后的结果到数据库...', 'info');
+  
+  // 关键修复：从正确的全局变量获取优化数据
+  const optimizationData = window.lastOptimizationProgress;
+  if (!optimizationData || !optimizationData.result_file) {
+    showMessage('错误：无法找到优化结果信息。请重新运行优化或加载结果。', 'error');
+    return;
+  }
+  
+  const submitData = {
+    file_path: optimizationData.result_file,
+    modified_data: modifiedData
+  };
+  
+  // 发送保存请求
+  fetch('/api/save_modified_result_to_database', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(submitData)
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showMessage('修改后的结果已成功保存到数据库！', 'success');
+        // 隐藏修改表单
+        document.getElementById('modify-result-form').classList.add('hidden');
+        // 使用正确的文件路径刷新预览
+        loadOptimizationResultPreview(optimizationData.result_file);
+      } else {
+        showMessage(`保存失败: ${data.message || '未知错误'}`, 'error');
+      }
+    })
+    .catch(error => {
+      console.error('保存修改后的结果失败:', error);
+      showMessage('保存失败，请重试', 'error');
+    });
 }
 </script>
 </body>
