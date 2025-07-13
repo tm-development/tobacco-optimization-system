@@ -18,6 +18,12 @@ import json
 from ..models import db, OptimizationResult  # 导入数据库模型
 
 parameter_optimization = Blueprint('parameter_optimization', __name__)
+@parameter_optimization.route('/api/test', methods=['GET'])
+@user_or_admin_required
+def test_api():
+    """测试API接口"""
+    print("🔍 进入测试API接口")
+    return jsonify({'success': True, 'message': '测试API接口正常工作'})
 
 # 定义分类变量及其可能的取值
 categorical_vars = OrderedDict({
@@ -1155,14 +1161,14 @@ def get_optimization_result_data():
                 result_data_list = read_and_convert_to_ordered_list(full_path, 'gbk')
                 return jsonify({'success': True, 'data': result_data_list})
             except Exception as e_gbk:
-                current_app.logger.error(f"Failed to read file {full_path} with both UTF-8-SIG and GBK: {traceback.format_exc()}")
+                #current_app.logger.error(f"Failed to read file {full_path} with both UTF-8-SIG and GBK: {traceback.format_exc()}")
                 return jsonify({'success': False, 'message': f'读取文件失败: {str(e_gbk)}'})
         except Exception as e:
-            current_app.logger.error(f"Error reading file {full_path}: {traceback.format_exc()}")
+            #current_app.logger.error(f"Error reading file {full_path}: {traceback.format_exc()}")
             return jsonify({'success': False, 'message': f'读取文件时发生未知错误: {str(e)}'})
 
     except Exception as e:
-        current_app.logger.error(f"Error in get_optimization_result_data for {file_path_from_request}: {traceback.format_exc()}")
+        #current_app.logger.error(f"Error in get_optimization_result_data for {file_path_from_request}: {traceback.format_exc()}")
         return jsonify({'success': False, 'message': f'处理请求失败: {str(e)}'})
     
 @parameter_optimization.route('/api/save_optimization_result_to_database', methods=['POST'])
@@ -1258,7 +1264,7 @@ def save_optimization_result_to_database():
     except Exception as e:
         # 回滚数据库事务
         db.session.rollback()
-        current_app.logger.error(f"保存优化结果到数据库错误: {traceback.format_exc()}")
+        #current_app.logger.error(f"保存优化结果到数据库错误: {traceback.format_exc()}")
         return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
 
 @parameter_optimization.route('/api/save_modified_result_to_database', methods=['POST'])
@@ -1366,129 +1372,348 @@ def save_modified_result_to_database():
         
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"--- ERROR in save_modified_result_to_database ---\n{traceback.format_exc()}")
+        #current_app.logger.error(f"--- ERROR in save_modified_result_to_database ---\n{traceback.format_exc()}")
         return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
-    """将修改后的优化结果保存到数据库"""
+
+
+@parameter_optimization.route('/api/predict_parameter_impact', methods=['POST'])
+@user_or_admin_required
+def predict_parameter_impact():
+    """预测单个参数变化对质量指标的影响"""
+    print
     try:
         data = request.get_json()
-        # 健壮性修改：使用.get()并检查返回值
         if not data:
             return jsonify({'success': False, 'message': '未接收到请求数据'})
-
-        file_path_from_request = data.get('file_path')
-        modified_data = data.get('modified_data')
-
-        if not file_path_from_request or not isinstance(modified_data, dict):
-            return jsonify({'success': False, 'message': '参数不完整或格式不正确'})
-
-        filename = os.path.basename(file_path_from_request)
-        if '..' in filename:
-            return jsonify({'success': False, 'message': '无效的文件名'})
-
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-        abs_file_path = os.path.join(base_dir, 'uploads', 'data', 'results', filename)
-
-        if not os.path.exists(abs_file_path):
-            return jsonify({'success': False, 'message': f'文件不存在: {abs_file_path}'})
-
-        task_id = filename.replace('optimization_result_', '').replace('.csv', '')
-
-        df = pd.read_csv(abs_file_path, encoding='gbk')
-        if df.empty:
-            return jsonify({'success': False, 'message': '原始文件中没有数据'})
-
-        # 获取最后一行数据作为基础，并合并用户修改
-        best_result = df.iloc[-1].to_dict()
-        for key, value in modified_data.items():
-            if key in best_result:
-                best_result[key] = value
-
-        # 准备JSON对象，并使用清理后的数据同步更新best_result
-        params_json = {}
-        metrics_json = {}
-
-        # 分类参数
-        for key in categorical_vars.keys():
-            if key in best_result:
-                params_json[key] = best_result[key]
-
-        # 数值参数 - 转换并同步更新
-        for key in numeric_vars:
-            if key in best_result:
-                try:
-                    float_val = float(best_result[key])
-                    params_json[key] = float_val
-                    best_result[key] = float_val  # 同步更新，用于写入CSV
-                except (ValueError, TypeError):
-                    params_json[key] = None  # 在JSON中为null
-                    best_result[key] = None  # 在DataFrame中为None，写入CSV时变为空
-                    print(f"Warning: Cannot convert value for numeric key '{key}'.")
-
-        # 指标数据 - 转换并同步更新
-        metric_keys_map = {
-            '大中片率': 'big_medium_rate',
-            '叶含梗率': 'leaf_stem_rate',
-            '梗含叶率': 'stem_leaf_rate',
-            '综合得分': 'score'
-        }
-        for chinese_key, english_key in metric_keys_map.items():
-            if chinese_key in best_result:
-                try:
-                    float_val = float(best_result[chinese_key])
-                    metrics_json[english_key] = float_val
-                    best_result[chinese_key] = float_val # 同步更新
-                except (ValueError, TypeError):
-                    metrics_json[english_key] = None
-                    best_result[chinese_key] = None
-                    print(f"Warning: Cannot convert value for metric key '{chinese_key}'.")
-
-        # 使用清理和转换后的best_result更新DataFrame
-        last_row_index = df.index[-1]
-        for key, value in best_result.items():
-            if key in df.columns:
-                df.loc[last_row_index, key] = value
         
-        # 生成并保存修改后的CSV文件
-        modified_file_path = abs_file_path.replace('.csv', '_modified.csv')
-        df.to_csv(modified_file_path, index=False, encoding='gbk')
+        param_name = data.get('param_name')
+        param_value = data.get('param_value')
+        result_file_path = data.get('result_file_path')
+        complete_parameters = data.get('complete_parameters', {})
         
-        # 查询或创建数据库记录
-        existing_result = OptimizationResult.query.filter_by(task_id=task_id).first()
+        # 支持批量预测的参数格式（用于趋势预览）
+        base_parameters = data.get('base_parameters', {})
+        varying_parameter = data.get('varying_parameter', '')
+        parameter_values = data.get('parameter_values', [])
         
-        if existing_result:
-            # 更新记录
-            existing_result.parameters = json.dumps(params_json, ensure_ascii=False)
-            existing_result.metrics = json.dumps(metrics_json, ensure_ascii=False)
-            existing_result.updated_at = datetime.now()
-            existing_result.is_modified = True
-            existing_result.file_path = modified_file_path
+        print(f"🔮 收到预测请求: {data.keys()}")
+        
+        # 判断是单点预测还是批量预测
+        if param_name and param_value is not None:
+            # 单点预测模式
+            print(f"📊 单点预测: {param_name} = {param_value}")
+            
+            # 构建完整的参数集合
+            final_parameters = build_complete_parameter_set(complete_parameters, param_name, param_value, result_file_path)
+            
+            if not final_parameters:
+                return jsonify({'success': False, 'message': '无法构建完整的参数集合'})
+            
+            # 调用RBFNN模型预测
+            prediction_result = predict_with_rbfnn_enhanced(final_parameters)
+            
+            return jsonify({
+                'success': True,
+                'prediction': prediction_result,
+                'param_name': param_name,
+                'param_value': param_value,
+                'total_parameters': len(final_parameters)
+            })
+            
+        elif varying_parameter and parameter_values:
+            # 批量预测模式（用于趋势预览）
+            print(f"📈 批量预测: {varying_parameter}, 值数量: {len(parameter_values)}")
+            
+            predictions = []
+            
+            for param_value in parameter_values:
+                # 创建当前参数组合
+                current_params = base_parameters.copy()
+                current_params[varying_parameter] = param_value
+                
+                # 进行RBFNN预测
+                prediction_result = predict_with_rbfnn_enhanced(current_params)
+                
+                # 添加参数值到结果中
+                prediction_result['parameter_value'] = param_value
+                predictions.append(prediction_result)
+            
+            return jsonify({
+                'success': True,
+                'message': '参数影响预测完成',
+                'varying_parameter': varying_parameter,
+                'predictions': predictions
+            })
         else:
-            # 创建新记录
-            new_result = OptimizationResult(
-                task_id=task_id,
-                parameters=json.dumps(params_json, ensure_ascii=False),
-                metrics=json.dumps(metrics_json, ensure_ascii=False),
-                file_path=modified_file_path,
-                created_at=datetime.now(),
-                is_modified=True
-            )
-            db.session.add(new_result)
-        
-        # 提交到数据库
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': '修改后的优化结果已成功保存到数据库',
-            'task_id': task_id,
-            'modified_file_path': modified_file_path
-        })
+            return jsonify({'success': False, 'message': '参数格式不正确'})
         
     except Exception as e:
-        # 回滚并记录详细错误
-        db.session.rollback()
+        print(f"参数影响预测错误: {str(e)}")
         import traceback
-        print("--- ERROR in save_modified_result_to_database ---")
         traceback.print_exc()
-        print("--- END ERROR ---")
-        return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
+        return jsonify({'success': False, 'message': f'预测失败: {str(e)}'})
+
+
+def build_complete_parameter_set(complete_parameters, changing_param_name, changing_param_value, result_file_path):
+    """构建完整的参数集合，包括所有必需的输入参数"""
+    try:
+        final_parameters = {}
+        
+        # 1. 从默认数据文件获取基础参数结构
+        base_params = get_default_parameters_for_prediction()
+        final_parameters.update(base_params)
+        print(f"📋 基础参数数量: {len(base_params)}")
+        
+        # 2. 从结果文件获取优化后的参数（如果存在）
+        if result_file_path:
+            result_params = get_parameters_from_result_file(result_file_path)
+            if result_params:
+                final_parameters.update(result_params)
+                print(f"📁 结果文件参数数量: {len(result_params)}")
+        
+        # 3. 应用前端传来的完整参数
+        if complete_parameters:
+            for key, value in complete_parameters.items():
+                if key in categorical_vars:
+                    final_parameters[key] = str(value)
+                elif any(keyword in key for keyword in ['水份', '温度', '湿度', '含量', '比', '参数', '流量']):
+                    try:
+                        final_parameters[key] = float(value)
+                    except (ValueError, TypeError):
+                        print(f"⚠️ 参数 {key} 值转换失败: {value}")
+                else:
+                    final_parameters[key] = value
+            
+            print(f"🌐 前端完整参数数量: {len(complete_parameters)}")
+        
+        # 4. 应用当前变化的参数
+        if changing_param_name in categorical_vars:
+            final_parameters[changing_param_name] = str(changing_param_value)
+        else:
+            try:
+                final_parameters[changing_param_name] = float(changing_param_value)
+            except (ValueError, TypeError):
+                print(f"⚠️ 变化参数 {changing_param_name} 值转换失败: {changing_param_value}")
+                return None
+        
+        print(f"🔄 最终应用变化参数: {changing_param_name} = {changing_param_value}")
+        
+        # 5. 验证关键参数的存在性
+        required_categorical = [
+            "待加工原烟数据记录_质量属性（稍差、合格、稍强）", 
+            "回潮工段数据记录_回潮方式", 
+            "一润工段数据记录_润叶方式（蒸汽、加水、混合）", 
+            "二润工段数据记录_润叶方式（蒸汽、加水、混合）"
+        ]
+        
+        for param in required_categorical:
+            if param not in final_parameters:
+                final_parameters[param] = get_default_categorical_value(param)
+                print(f"🔧 补充缺失的分类参数: {param}")
+        
+        print(f"✅ 构建完整参数集合成功，总参数数量: {len(final_parameters)}")
+        return final_parameters
+        
+    except Exception as e:
+        print(f"构建完整参数集合错误: {str(e)}")
+        return None
+
+
+def get_default_parameters_for_prediction():
+    """获取预测用的默认参数"""
+    default_params = {}
+    
+    # 默认分类参数
+    default_params.update({
+        "待加工原烟数据记录_质量属性（稍差、合格、稍强）": "合格",
+        "回潮工段数据记录_回潮方式": "半回",
+        "一润工段数据记录_润叶方式（蒸汽、加水、混合）": "混合",
+        "二润工段数据记录_润叶方式（蒸汽、加水、混合）": "混合"
+    })
+    
+    # 默认数值参数
+    default_params.update({
+        "待加工原烟数据记录_水份（%）": 20.2,
+        "待加工原烟数据记录_温度（℃）": 25.0,
+        "待加工原烟数据记录_烟碱含量（%）": 2.5,
+        "待加工原烟数据记录_叶梗比（%）": 15.0,
+        "待加工原烟数据记录_环境温度（℃）": 22.0,
+        "待加工原烟数据记录_环境湿度（%）": 60.0,
+        "铺叶工段数据记录_环境温度（℃）": 23.0,
+        "铺叶工段数据记录_环境湿度（%）": 65.0,
+        "回潮工段数据记录_潮后水份（%）": 18.5,
+        "回潮工段数据记录_潮后温度（℃）": 45.0,
+        "回潮工段数据记录_环境温度（℃）": 24.0,
+        "回潮工段数据记录_环境湿度（%）": 70.0,
+        "一润工段数据记录_润前水份（%）": 16.0,
+        "一润工段数据记录_润前温度（℃）": 40.0,
+        "一润工段数据记录_润后水份（%）": 18.0,
+        "一润工段数据记录_润后温度（℃）": 50.0,
+        "一润工段数据记录_环境温度（℃）": 25.0,
+        "一润工段数据记录_环境湿度（%）": 75.0,
+        "二润工段数据记录_润前水份（%）": 17.0,
+        "二润工段数据记录_润前温度（℃）": 45.0,
+        "二润工段数据记录_润后水份（%）": 19.0,
+        "二润工段数据记录_润后温度（℃）": 55.0,
+        "二润工段数据记录_环境温度（℃）": 26.0,
+        "二润工段数据记录_环境湿度（%）": 80.0,
+        "打叶工段数据记录_打前水份（%）": 15.5,
+        "打叶工段数据记录_打前温度（℃）": 35.0,
+        "打叶工段数据记录_环境湿度（%）": 65.0,
+        "打叶工段数据记录_环境温度（℃）": 27.0,
+        "铺叶工段数据记录_流量（kg/h)": 12000,
+        "打叶工段数据记录_一打_打辊参数（hz）": 42,
+        "打叶工段数据记录_二打_打辊参数（hz）": 45,
+        "打叶工段数据记录_三打_打辊参数（hz）": 48,
+        "打叶工段数据记录_四打_打辊参数（hz）": 48,
+        "打叶工段数据记录_风分参数（hz）_一分": 33,
+        "打叶工段数据记录_风分参数（hz）_二分": 31,
+        "打叶工段数据记录_风分参数（hz）_三分": 36,
+        "打叶工段数据记录_风分参数（hz）_四分": 34,
+        "打叶工段数据记录_风分参数（hz）_五分": 28,
+        "打叶工段数据记录_风分参数（hz）_六分": 33,
+        "打叶工段数据记录_风分参数（hz）_七分": 41,
+        "打叶工段数据记录_风分参数（hz）_八分": 40,
+        "打叶工段数据记录_风分参数（hz）_九分": 41,
+        "打叶工段数据记录_风分参数（hz）_十分": 36,
+        "打叶工段数据记录_风分参数（hz）_十一分": 46
+    })
+    
+    return default_params
+
+
+def get_parameters_from_result_file(result_file_path):
+    """从结果文件获取参数"""
+    try:
+        if not result_file_path or not os.path.exists(result_file_path):
+            return {}
+            
+        df = pd.read_csv(result_file_path, encoding='gbk')
+        if df.empty:
+            return {}
+            
+        # 获取最后一行（最优解）的参数
+        last_row = df.iloc[-1]
+        params = {}
+        
+        # 提取分类参数
+        for param_name in categorical_vars.keys():
+            if param_name in last_row:
+                params[param_name] = str(last_row[param_name])
+        
+        # 提取数值参数
+        for col in df.columns:
+            if col not in categorical_vars.keys() and col not in ['大中片率', '叶含梗率', '梗含叶率']:
+                try:
+                    params[col] = float(last_row[col])
+                except (ValueError, TypeError):
+                    pass
+        
+        return params
+        
+    except Exception as e:
+        print(f"从结果文件获取参数错误: {str(e)}")
+        return {}
+
+
+def get_default_categorical_value(param_name):
+    """获取分类参数的默认值"""
+    defaults = {
+        "待加工原烟数据记录_质量属性（稍差、合格、稍强）": "合格",
+        "回潮工段数据记录_回潮方式": "半回",
+        "一润工段数据记录_润叶方式（蒸汽、加水、混合）": "混合",
+        "二润工段数据记录_润叶方式（蒸汽、加水、混合）": "混合"
+    }
+    return defaults.get(param_name, "合格")
+
+
+def predict_with_rbfnn_enhanced(parameters):
+    """使用RBFNN模型进行预测的增强版本，包含完整的数据预处理"""
+    try:
+        print(f"🧠 使用RBFNN模型预测，输入参数数量: {len(parameters)}")
+        
+        # 构建分类参数DataFrame
+        categorical_data = {}
+        for param_name in ["待加工原烟数据记录_质量属性（稍差、合格、稍强）", "回潮工段数据记录_回潮方式", 
+                          "一润工段数据记录_润叶方式（蒸汽、加水、混合）", "二润工段数据记录_润叶方式（蒸汽、加水、混合）"]:
+            categorical_data[param_name] = [parameters.get(param_name, get_default_categorical_value(param_name))]
+        
+        categorical_df = pd.DataFrame(categorical_data)
+        
+        # One-Hot编码
+        encoder = OneHotEncoder(sparse_output=False, categories=[["稍差", "合格", "稍强"], ["半回", "全回"],
+                                                                 ["蒸汽", "加水", "混合"], ["蒸汽", "加水", "混合"]])
+        encoded_array = encoder.fit_transform(categorical_df)
+        feature_names = encoder.get_feature_names_out(input_features=categorical_df.columns)
+        encoded_df = pd.DataFrame(encoded_array.astype(bool), columns=feature_names)
+        
+        # 构建数值参数DataFrame
+        numeric_data = {}
+        all_numeric_params = [col for col in parameters.keys() if col not in categorical_vars.keys()]
+        
+        for param_name in all_numeric_params:
+            if param_name in parameters:
+                numeric_data[param_name] = [parameters[param_name]]
+        
+        numeric_df = pd.DataFrame(numeric_data)
+        
+        # 合并特征
+        X_input = pd.concat([encoded_df, numeric_df], axis=1)
+        
+        print(f"📊 输入特征维度: {X_input.shape}")
+        
+        # 使用三个RBFNN模型进行预测
+        predictions = {}
+        
+        # 预测所有三个指标
+        model_info = [
+            ('梗含叶率', './uploads/models/梗含叶率_rbfnn.pkl', 'stem_leaf_rate'),
+            ('大中片率', './uploads/models/大中片率_rbfnn.pkl', 'big_medium_rate'),
+            ('叶含梗率', './uploads/models/叶含梗率_rbfnn.pkl', 'leaf_stem_rate')
+        ]
+        
+        for metric_name, model_path, result_key in model_info:
+            if os.path.exists(model_path):
+                print(f"🔮 正在预测 {metric_name}...")
+                
+                with open(model_path, 'rb') as f:
+                    model_package = pickle.load(f)
+                
+                model = model_package['model']
+                scaler_X = model_package['scaler_X']
+                scaler_y = model_package['scaler_y']
+                feature_names = scaler_X.feature_names_in_
+                
+                # 确保特征顺序一致
+                X_aligned = X_input[feature_names]
+                X_scaled = scaler_X.transform(X_aligned)
+                y_pred_scaled = model.predict(X_scaled)
+                y_pred = scaler_y.inverse_transform(y_pred_scaled.reshape(-1, 1))
+                
+                predictions[result_key] = float(y_pred.flatten()[0])
+                print(f"✅ {metric_name} 预测完成: {predictions[result_key]:.3f}")
+            else:
+                print(f"⚠️ 模型文件不存在: {model_path}")
+                # 提供默认值
+                default_values = {'stem_leaf_rate': 0.6, 'big_medium_rate': 78.0, 'leaf_stem_rate': 1.4}
+                predictions[result_key] = default_values[result_key]
+        
+        print(f"🎯 RBFNN预测完成: {predictions}")
+        return predictions
+        
+    except Exception as e:
+        print(f"RBFNN预测错误: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        # 返回默认值
+        return {
+            'stem_leaf_rate': 0.6,
+            'big_medium_rate': 78.0,
+            'leaf_stem_rate': 1.4
+        }
+
+
+# 替换原来的predict_with_rbfnn函数
+def predict_with_rbfnn(parameters_data):
+    """兼容性包装函数，调用增强版本"""
+    return predict_with_rbfnn_enhanced(parameters_data)

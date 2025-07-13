@@ -3,6 +3,7 @@ from app import create_app
 import os
 import numpy as np
 import json
+
 class ImprovedRBFNN:
     def __init__(self, n_centers, sigma=1.0, reg_lambda=1e-6):
         self.n_centers = n_centers  # 隐藏层神经元数量
@@ -32,7 +33,7 @@ class ImprovedRBFNN:
         rbf_output = self._gaussian_kernel(X, self.centers)
         rbf_output = np.column_stack([rbf_output, np.ones(X.shape[0])])
         return rbf_output.dot(self.weights)
-app = create_app()
+
 
 if __name__ == "__main__":
     # 确保上传目录存在
@@ -56,6 +57,6 @@ if __name__ == "__main__":
     print("🚀 启动烟草生产优化系统...")
     print("📊 访问地址: http://127.0.0.1:5000")
     print("🔧 调试模式: 开启 (自动重载: 关闭)")
-    
+    app = create_app()
     # 禁用自动重载来避免watchdog问题
     app.run(debug=True, use_reloader=False, host='127.0.0.1', port=5000)

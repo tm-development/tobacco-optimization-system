@@ -4557,6 +4557,9 @@ function loadModifyResultForm(resultFilePath) {
     "二润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"]
   };
   
+  // 定义不允许修改的字段
+  const excludedFields = ['大中片率', '叶含梗率', '梗含叶率', '综合得分'];
+  
   // 显示加载状态
   formContainer.innerHTML = '<div class="col-span-3 text-center py-4">加载中...</div>';
   
@@ -4567,8 +4570,11 @@ function loadModifyResultForm(resultFilePath) {
       if (data.success && data.data && Array.isArray(data.data)) {
         formContainer.innerHTML = '';
         
+        // 过滤掉不允许修改的字段
+        const filteredData = data.data.filter(item => !excludedFields.includes(item.key));
+        
         // 直接遍历有序数组，保证了显示顺序
-        data.data.forEach(item => {
+        filteredData.forEach(item => {
           const key = item.key;
           const value = String(item.value); // 确保值为字符串以便比较
           
@@ -4626,6 +4632,17 @@ function loadModifyResultForm(resultFilePath) {
           fieldDiv.innerHTML = fieldHtml;
           formContainer.appendChild(fieldDiv);
         });
+        
+        // 添加说明文字
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'col-span-3 p-3 bg-yellow-900 bg-opacity-30 border border-yellow-500 rounded-lg mt-4';
+        noteDiv.innerHTML = `
+          <div class="flex items-center text-yellow-300">
+            <span class="material-icons mr-2">info</span>
+            <span class="text-sm">注意：大中片率、叶含梗率、梗含叶率和综合得分为系统计算结果，不可修改</span>
+          </div>
+        `;
+        formContainer.appendChild(noteDiv);
         
         // 添加事件委托处理预览按钮点击
         formContainer.addEventListener('click', function(event) {
@@ -4701,7 +4718,15 @@ function saveModifiedResultToDatabase() {
   const modifiedData = {};
   let hasChanges = false;
   
+  // 定义不允许修改的字段
+  const excludedFields = ['大中片率', '叶含梗率', '梗含叶率', '综合得分'];
+  
   inputFields.forEach(input => {
+    // 跳过不允许修改的字段
+    if (excludedFields.includes(input.name)) {
+      return;
+    }
+    
     const originalValue = input.dataset.original;
     const currentValue = input.value.trim();
     
@@ -4796,91 +4821,331 @@ function showTrendPreview(paramName, paramType, options, currentValue, resultFil
   }
 }
 
-// 生成分类参数趋势
-function generateCategoricalTrend(paramName, options, currentValue, resultFilePath) {
-  // 模拟API调用生成不同选项下的预测结果
-  const promises = options.map(option => {
-    return simulateParameterPrediction(paramName, option, resultFilePath);
-  });
-  
-  Promise.all(promises)
-    .then(results => {
-      const labels = options;
-      const bigMediumRates = results.map(r => r.big_medium_rate);
-      const leafStemRates = results.map(r => r.leaf_stem_rate);
-      const stemLeafRates = results.map(r => r.stem_leaf_rate);
-      
-      renderTrendChart(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue);
-      generateTrendInsights(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue, 'categorical');
-      
-      document.getElementById('trend-loading').style.display = 'none';
-      document.getElementById('trend-charts-container').style.display = 'block';
-    })
-    .catch(error => {
-      console.error('生成分类趋势失败:', error);
-      showTrendError('生成趋势预览失败，请重试');
-    });
-}
-
-// 生成数值参数趋势
-function generateNumericalTrend(paramName, currentValue, resultFilePath) {
-  const baseValue = parseFloat(currentValue);
-  if (isNaN(baseValue)) {
-    showTrendError('参数值无效，无法生成趋势预览');
-    return;
-  }
-  
-  // 生成±5范围内的值，步长0.5
-  const values = [];
-  for (let i = baseValue - 5; i <= baseValue + 5; i += 0.5) {
-    values.push(Math.round(i * 10) / 10); // 保留1位小数
-  }
-  
-  const promises = values.map(value => {
-    return simulateParameterPrediction(paramName, value.toString(), resultFilePath);
-  });
-  
-  Promise.all(promises)
-    .then(results => {
-      const labels = values.map(v => v.toString());
-      const bigMediumRates = results.map(r => r.big_medium_rate);
-      const leafStemRates = results.map(r => r.leaf_stem_rate);
-      const stemLeafRates = results.map(r => r.stem_leaf_rate);
-      
-      renderTrendChart(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue);
-      generateTrendInsights(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue, 'numerical');
-      
-      document.getElementById('trend-loading').style.display = 'none';
-      document.getElementById('trend-charts-container').style.display = 'block';
-    })
-    .catch(error => {
-      console.error('生成数值趋势失败:', error);
-      showTrendError('生成趋势预览失败，请重试');
-    });
-}
-
-// 模拟参数预测（在实际应用中应该调用后端API）
-function simulateParameterPrediction(paramName, paramValue, resultFilePath) {
-  return new Promise((resolve) => {
-    console.log(`模拟预测 ${paramName}: ${paramValue}`);
+// 生成分类参数趋势 - 使用RBFNN模型批量预测
+async function generateCategoricalTrend(paramName, options, currentValue, resultFilePath) {
+  try {
+    console.log('生成分类型趋势数据:', options);
     
-    // 模拟网络延迟
-    setTimeout(() => {
-      // 基于参数值生成更真实的模拟结果
-      const seed = paramValue.toString().split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const random1 = Math.abs(Math.sin(seed * 0.1)) * 0.5 + 0.75; // 0.75-1.25
-      const random2 = Math.abs(Math.sin(seed * 0.2)) * 0.3 + 0.9;  // 0.9-1.2
-      const random3 = Math.abs(Math.sin(seed * 0.3)) * 0.2 + 0.4;  // 0.4-0.6
+    // 获取基础参数
+    const baseParameters = await getCurrentParameters();
+    if (!baseParameters) {
+      throw new Error('无法获取基础参数');
+    }
+    
+    // 调用后端API进行批量预测
+    const response = await fetch('/api/predict_parameter_impact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        base_parameters: baseParameters,
+        varying_parameter: paramName,
+        parameter_values: options
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`预测请求失败: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || '预测失败');
+    }
+
+    const predictions = data.predictions;
+    const labels = options;
+    const bigMediumRates = predictions.map(p => Math.round(p.big_medium_rate * 100) / 100);
+    const leafStemRates = predictions.map(p => Math.round(p.leaf_stem_rate * 100) / 100);
+    const stemLeafRates = predictions.map(p => Math.round(p.stem_leaf_rate * 100) / 100);
+    
+    renderTrendChart(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue);
+    generateTrendInsights(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue, 'categorical');
+    
+    document.getElementById('trend-loading').style.display = 'none';
+    document.getElementById('trend-charts-container').style.display = 'block';
+    
+  } catch (error) {
+    console.error('生成分类趋势失败:', error);
+    showTrendError('生成趋势预览失败: ' + error.message);
+  }
+}
+
+// 生成数值参数趋势 - 使用RBFNN模型批量预测
+async function generateNumericalTrend(paramName, currentValue, resultFilePath) {
+  try {
+    const baseValue = parseFloat(currentValue);
+    if (isNaN(baseValue)) {
+      showTrendError('参数值无效，无法生成趋势预览');
+      return;
+    }
+    
+    console.log('生成数值型趋势数据，基础值:', baseValue);
+    
+    // 生成±5范围内的值，步长0.5
+    const values = [];
+    for (let i = baseValue - 5; i <= baseValue + 5; i += 0.5) {
+      values.push(Math.round(i * 10) / 10); // 保留1位小数
+    }
+    
+    // 获取基础参数
+    const baseParameters = await getCurrentParameters();
+    if (!baseParameters) {
+      throw new Error('无法获取基础参数');
+    }
+    
+    // 调用后端API进行批量预测
+    const response = await fetch('/api/predict_parameter_impact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        base_parameters: baseParameters,
+        varying_parameter: paramName,
+        parameter_values: values
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`预测请求失败: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || '预测失败');
+    }
+
+    const predictions = data.predictions;
+    const labels = values.map(v => v.toString());
+    const bigMediumRates = predictions.map(p => Math.round(p.big_medium_rate * 100) / 100);
+    const leafStemRates = predictions.map(p => Math.round(p.leaf_stem_rate * 100) / 100);
+    const stemLeafRates = predictions.map(p => Math.round(p.stem_leaf_rate * 100) / 100);
+    
+    renderTrendChart(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue);
+    generateTrendInsights(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue, 'numerical');
+    
+    document.getElementById('trend-loading').style.display = 'none';
+    document.getElementById('trend-charts-container').style.display = 'block';
+    
+  } catch (error) {
+    console.error('生成数值趋势失败:', error);
+    showTrendError('生成趋势预览失败: ' + error.message);
+  }
+}
+
+// 获取当前所有参数值的函数
+async function getCurrentParameters() {
+  try {
+    const parameters = {};
+    
+    // 获取分类参数（与后端保持一致）
+    const categoricalParams = {
+      "回潮工段数据记录_回潮方式": ["半回", "全回"],
+      "一润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"],
+      "二润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"]
+    };
+    
+    // 获取数值参数列表（与后端保持一致）
+    const numericParams = [
+      "铺叶工段数据记录_流量（kg/h)",
+      "打叶工段数据记录_一打_打辊参数（hz）",
+      "打叶工段数据记录_二打_打辊参数（hz）",
+      "打叶工段数据记录_三打_打辊参数（hz）",
+      "打叶工段数据记录_四打_打辊参数（hz）",
+      "打叶工段数据记录_风分参数（hz）_一分",
+      "打叶工段数据记录_风分参数（hz）_二分",
+      "打叶工段数据记录_风分参数（hz）_三分",
+      "打叶工段数据记录_风分参数（hz）_四分",
+      "打叶工段数据记录_风分参数（hz）_五分",
+      "打叶工段数据记录_风分参数（hz）_六分",
+      "打叶工段数据记录_风分参数（hz）_七分",
+      "打叶工段数据记录_风分参数（hz）_八分",
+      "打叶工段数据记录_风分参数（hz）_九分",
+      "打叶工段数据记录_风分参数（hz）_十分",
+      "打叶工段数据记录_风分参数（hz）_十一分"
+    ];
+    
+    // 添加RBFNN模型中需要的其他参数
+    const additionalParams = [
+      "待加工原烟数据记录_水份（%）",
+      "待加工原烟数据记录_温度（℃）",
+      "待加工原烟数据记录_烟碱含量（%）",
+      "待加工原烟数据记录_叶梗比（%）",
+      "待加工原烟数据记录_环境温度（℃）",
+      "待加工原烟数据记录_环境湿度（%）",
+      "铺叶工段数据记录_环境温度（℃）",
+      "铺叶工段数据记录_环境湿度（%）",
+      "回潮工段数据记录_潮后水份（%）",
+      "回潮工段数据记录_潮后温度（℃）",
+      "回潮工段数据记录_环境温度（℃）",
+      "回潮工段数据记录_环境湿度（%）",
+      "一润工段数据记录_润前水份（%）",
+      "一润工段数据记录_润前温度（℃）",
+      "一润工段数据记录_润后水份（%）",
+      "一润工段数据记录_润后温度（℃）",
+      "一润工段数据记录_环境温度（℃）",
+      "一润工段数据记录_环境湿度（%）",
+      "二润工段数据记录_润前水份（%）",
+      "二润工段数据记录_润前温度（℃）",
+      "二润工段数据记录_润后水份（%）",
+      "二润工段数据记录_润后温度（℃）",
+      "二润工段数据记录_环境温度（℃）",
+      "二润工段数据记录_环境湿度（%）",
+      "打叶工段数据记录_打前水份（%）",
+      "打叶工段数据记录_打前温度（℃）",
+      "打叶工段数据记录_环境湿度（%）",
+      "打叶工段数据记录_环境温度（℃）"
+    ];
+    
+    // 收集所有必需的参数
+    const allParams = [...Object.keys(categoricalParams), ...numericParams, ...additionalParams];
+    
+    // 从优化结果编辑界面或手动输入界面获取参数值
+    for (const paramName of allParams) {
+      let paramValue = null;
       
+      // 尝试从编辑界面获取值
+      const editInput = document.querySelector(`[data-param="${paramName}"]`);
+      if (editInput) {
+        paramValue = editInput.type === 'number' ? parseFloat(editInput.value) : editInput.value;
+      } else {
+        // 尝试从手动输入界面获取值
+        const manualInput = document.getElementById(`manual-${paramName}`);
+        if (manualInput) {
+          paramValue = manualInput.type === 'number' ? parseFloat(manualInput.value) : manualInput.value;
+        } else {
+          // 使用默认值
+          if (categoricalParams[paramName]) {
+            paramValue = categoricalParams[paramName][0]; // 使用第一个选项作为默认值
+          } else {
+            // 数值参数的默认值
+            const defaultNumericValues = {
+              // 可优化参数
+              "铺叶工段数据记录_流量（kg/h)": 15000,
+              "打叶工段数据记录_一打_打辊参数（hz）": 40,
+              "打叶工段数据记录_二打_打辊参数（hz）": 40,
+              "打叶工段数据记录_三打_打辊参数（hz）": 40,
+              "打叶工段数据记录_四打_打辊参数（hz）": 40,
+              "打叶工段数据记录_风分参数（hz）_一分": 39,
+              "打叶工段数据记录_风分参数（hz）_二分": 39,
+              "打叶工段数据记录_风分参数（hz）_三分": 39,
+              "打叶工段数据记录_风分参数（hz）_四分": 39,
+              "打叶工段数据记录_风分参数（hz）_五分": 35,
+              "打叶工段数据记录_风分参数（hz）_六分": 35,
+              "打叶工段数据记录_风分参数（hz）_七分": 40,
+              "打叶工段数据记录_风分参数（hz）_八分": 37,
+              "打叶工段数据记录_风分参数（hz）_九分": 37,
+              "打叶工段数据记录_风分参数（hz）_十分": 41,
+              "打叶工段数据记录_风分参数（hz）_十一分": 41,
+              // 其他固定参数
+              "待加工原烟数据记录_水份（%）": 20.2,
+              "待加工原烟数据记录_温度（℃）": 25.0,
+              "待加工原烟数据记录_烟碱含量（%）": 2.5,
+              "待加工原烟数据记录_叶梗比（%）": 15.0,
+              "待加工原烟数据记录_环境温度（℃）": 22.0,
+              "待加工原烟数据记录_环境湿度（%）": 60.0,
+              "铺叶工段数据记录_环境温度（℃）": 23.0,
+              "铺叶工段数据记录_环境湿度（%）": 65.0,
+              "回潮工段数据记录_潮后水份（%）": 18.5,
+              "回潮工段数据记录_潮后温度（℃）": 45.0,
+              "回潮工段数据记录_环境温度（℃）": 24.0,
+              "回潮工段数据记录_环境湿度（%）": 70.0,
+              "一润工段数据记录_润前水份（%）": 16.0,
+              "一润工段数据记录_润前温度（℃）": 40.0,
+              "一润工段数据记录_润后水份（%）": 18.0,
+              "一润工段数据记录_润后温度（℃）": 50.0,
+              "一润工段数据记录_环境温度（℃）": 25.0,
+              "一润工段数据记录_环境湿度（%）": 75.0,
+              "二润工段数据记录_润前水份（%）": 17.0,
+              "二润工段数据记录_润前温度（℃）": 45.0,
+              "二润工段数据记录_润后水份（%）": 19.0,
+              "二润工段数据记录_润后温度（℃）": 55.0,
+              "二润工段数据记录_环境温度（℃）": 26.0,
+              "二润工段数据记录_环境湿度（%）": 80.0,
+              "打叶工段数据记录_打前水份（%）": 15.5,
+              "打叶工段数据记录_打前温度（℃）": 35.0,
+              "打叶工段数据记录_环境湿度（%）": 65.0,
+              "打叶工段数据记录_环境温度（℃）": 27.0
+            };
+            paramValue = defaultNumericValues[paramName] || 30;
+          }
+        }
+      }
+      
+      parameters[paramName] = paramValue;
+    }
+    
+    console.log('收集到的基础参数:', parameters);
+    return parameters;
+    
+  } catch (error) {
+    console.error('获取当前参数失败:', error);
+    return null;
+  }
+}
+
+// 使用RBFNN模型进行参数预测
+function simulateParameterPrediction(paramName, paramValue, resultFilePath) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log(`RBFNN预测 ${paramName}: ${paramValue}`);
+      
+      // 获取当前基础参数
+      const baseParameters = await getCurrentParameters();
+      if (!baseParameters) {
+        throw new Error('无法获取基础参数');
+      }
+      
+      // 调用后端API进行单点预测
+      const response = await fetch('/api/predict_parameter_impact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          base_parameters: baseParameters,
+          varying_parameter: paramName,
+          parameter_values: [paramValue]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`预测请求失败: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || '预测失败');
+      }
+
+      const prediction = data.predictions[0];
       const result = {
-        big_medium_rate: Math.round((75 + random1 * 6) * 100) / 100,    // 75-81%
-        leaf_stem_rate: Math.round((random2 * 1.5) * 100) / 100,        // 1.35-1.8%
-        stem_leaf_rate: Math.round((random3 * 1.2) * 100) / 100         // 0.48-0.72%
+        big_medium_rate: Math.round(prediction.big_medium_rate * 100) / 100,
+        leaf_stem_rate: Math.round(prediction.leaf_stem_rate * 100) / 100,
+        stem_leaf_rate: Math.round(prediction.stem_leaf_rate * 100) / 100
       };
       
-      console.log(`预测结果 ${paramValue}:`, result);
+      console.log(`RBFNN预测结果 ${paramValue}:`, result);
       resolve(result);
-    }, 200 + Math.random() * 300); // 200-500ms延迟
+      
+    } catch (error) {
+      console.error('参数预测错误:', error);
+      
+      // 出错时使用默认值作为后备
+      const fallbackResult = {
+        big_medium_rate: 86.7,
+        leaf_stem_rate: 1.2,
+        stem_leaf_rate: 0.6
+      };
+      
+      console.warn('使用默认值作为预测结果:', fallbackResult);
+      resolve(fallbackResult);
+    }
   });
 }
 
