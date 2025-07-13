@@ -15,7 +15,7 @@ class Config:
     MYSQL_HOST = os.environ.get('MYSQL_HOST') or 'localhost'
     MYSQL_PORT = os.environ.get('MYSQL_PORT') or '3306'
     MYSQL_USER = os.environ.get('MYSQL_USER') or 'root'
-    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or '123456'
+    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or 'ZH4630026'
     MYSQL_DB = os.environ.get('MYSQL_DB') or 'tobacco'
     
     # 数据库配置
