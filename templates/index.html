@@ -368,12 +368,37 @@
             background: linear-gradient(135deg, rgba(46, 125, 50, 0.05), rgba(30, 30, 30, 0.8));
             border: 1px solid rgba(46, 125, 50, 0.2);
         }
+        /* 粒子容器样式 */
+        .optimization-animation {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* 浮动动画关键帧 */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px);
+            }
+            50% {
+                transform: translateY(0) translateX(20px);
+            }
+            75% {
+                transform: translateY(20px) translateX(10px);
+            }
+        }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
             .operation-buttons-container .flex {
                 flex-direction: column !important;
-                gap: 1rem !important;
+                space-y: 4 !important;
             }
 
             .operation-buttons-container .space-x-8 > * + * {
@@ -383,272 +408,6 @@
 
             .operation-buttons-container .hidden.md\\:block {
                 display: none !important;
-            }
-        }
-
-        /* 参数趋势预览样式 */
-        .param-preview-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 8px;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .param-preview-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .param-preview-btn .material-icons {
-            font-size: 14px;
-        }
-
-        .form-field-with-preview {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-        }
-
-        .form-field-with-preview .field-input-group {
-            flex: 1;
-        }
-
-        /* 模态框样式 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 24px;
-            border-bottom: 1px solid #333;
-        }
-
-        .modal-close-btn {
-            background: none;
-            border: none;
-            color: #ccc;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .modal-close-btn:hover {
-            background-color: #333;
-            color: white;
-        }
-
-        .modal-body {
-            padding: 24px;
-        }
-
-        /* 加载动画 */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #333;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 趋势图表样式 */
-        #trend-chart {
-            background-color: #1a1a1a;
-            border-radius: 8px;
-        }
-
-        /* 图表容器样式增强 */
-        .chart-container {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .chart-container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .trend-insight-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #333;
-            transition: all 0.3s ease;
-        }
-
-        .trend-insight-item:hover {
-            background-color: rgba(55, 65, 81, 0.8);
-            transform: translateX(4px);
-            border-radius: 6px;
-            padding-left: 12px;
-        }
-
-        .trend-insight-item:last-child {
-            border-bottom: none;
-        }
-
-        .trend-metric {
-            font-weight: bold;
-        }
-
-        .trend-value-positive {
-            color: #4CAF50;
-        }
-
-        .trend-value-negative {
-            color: #f44336;
-        }
-
-        .trend-value-neutral {
-            color: #ff9800;
-        }
-
-        /* 建议项样式 */
-        .recommendation-item {
-            transition: all 0.3s ease;
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid transparent;
-        }
-
-        .recommendation-item:hover {
-            background-color: rgba(59, 130, 246, 0.1);
-            transform: translateX(2px);
-        }
-
-        .recommendation-urgent {
-            border-left-color: #ef4444;
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-
-        .recommendation-high {
-            border-left-color: #f97316;
-            background-color: rgba(249, 115, 22, 0.1);
-        }
-
-        .recommendation-medium {
-            border-left-color: #eab308;
-            background-color: rgba(234, 179, 8, 0.1);
-        }
-
-        .recommendation-normal {
-            border-left-color: #3b82f6;
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-
-        .recommendation-low {
-            border-left-color: #6b7280;
-            background-color: rgba(107, 114, 128, 0.1);
-        }
-
-        .recommendation-success {
-            border-left-color: #10b981;
-            background-color: rgba(16, 185, 129, 0.1);
-        }
-
-        .recommendation-info {
-            border-left-color: #06b6d4;
-            background-color: rgba(6, 182, 212, 0.1);
-        }
-
-        /* 优先级标签样式 */
-        .priority-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .priority-urgent {
-            background-color: #ef4444;
-            color: white;
-        }
-
-        .priority-high {
-            background-color: #f97316;
-            color: white;
-        }
-
-        .priority-medium {
-            background-color: #eab308;
-            color: #000;
-        }
-
-        .priority-normal {
-            background-color: #3b82f6;
-            color: white;
-        }
-
-        .priority-low {
-            background-color: #6b7280;
-            color: white;
-        }
-
-        .priority-success {
-            background-color: #10b981;
-            color: white;
-        }
-
-        .priority-info {
-            background-color: #06b6d4;
-            color: white;
-        }
-
-        /* 图表容器标题样式 */
-        .chart-container {
-            position: relative;
-        }
-
-        .chart-container canvas {
-            border-radius: 6px;
-        }
-
-        /* 响应式设计增强 */
-        @media (max-width: 1024px) {
-            #trend-charts-container .grid {
-                grid-template-columns: 1fr !important;
-            }
-            
-            .chart-container canvas {
-                height: 200px !important;
             }
         }
     </style>
@@ -702,6 +461,7 @@
         <div class="tab-button" data-tab="model">模型管理</div>
         <div class="tab-button" data-tab="optimization">参数优化</div>
         <div class="tab-button" data-tab="results">结果分析</div>
+        <div class="tab-button" data-tab="test">测试</div>
     </div>
     <!-- 内容区域 -->
     <div id="content-area">
@@ -1223,365 +983,366 @@
                 </div>
             </div>
         </div>
-<div id="optimization-tab" class="tab-content hidden">
-    <div class="card mb-8">
-        <h2 class="section-title text-xl font-bold">参数优化设置</h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div>
-                <h3 class="text-lg font-bold mb-4">优化目标</h3>
-                <select id="optimization-target" class="param-input">
-                    <option value="quality">最大化质量评分</option>
-                    <option value="custom">自定义目标值</option>
-                </select>
-            </div>
-
-            <div>
-                <h3 class="text-lg font-bold mb-4">算法选择</h3>
-                <select id="algorithm-selection" class="param-input">
-                    <option value="genetic_algorithm" selected>遗传算法 (GA)</option>
-                    <option value="particle_swarm">粒子群优化 (PSO)</option>
-                    <option value="simulated_annealing">模拟退火 (SA)</option>
-                </select>
-            </div>
-
-            <div>
-                <h3 class="text-lg font-bold mb-4">迭代设置</h3>
-                <div class="flex items-center">
-                    <span class="mr-2">迭代次数:</span>
-                    <input type="number" id="max-iterations" class="param-input" value="10" min="5" max="50">
-                </div>
-                <div class="flex items-center mt-2">
-                    <span class="mr-2">种群大小:</span>
-                    <input type="number" id="population-size" class="param-input" value="50" min="10" max="100">
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-6">
-            <h3 class="text-lg font-bold mb-4">目标值设置</h3>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-700">
-                    <thead>
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            参数
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            目标值
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            最小值
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            最大值
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-800">
-                    <tr>
-                        <td class="px-4 py-3">大中片率</td>
-                        <td class="px-4 py-3"><input type="number" id="big-medium-target"
-                                                     class="param-input w-20" value="80"></td>
-                        <td class="px-4 py-3"><input type="number" id="big-medium-min" class="param-input w-20"
-                                                     value="75"></td>
-                        <td class="px-4 py-3"><input type="number" id="big-medium-max" class="param-input w-20"
-                                                     value="82"></td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3">叶含梗率</td>
-                        <td class="px-4 py-3"><input type="number" id="leaf-stem-target"
-                                                     class="param-input w-20" value="1.0" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="leaf-stem-min" class="param-input w-20"
-                                                     value="0.8" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="leaf-stem-max" class="param-input w-20"
-                                                     value="1.5" step="0.1"></td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3">梗含叶率</td>
-                        <td class="px-4 py-3"><input type="number" id="stem-leaf-target"
-                                                     class="param-input w-20" value="0.5" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="stem-leaf-min" class="param-input w-20"
-                                                     value="0.3" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="stem-leaf-max" class="param-input w-20"
-                                                     value="0.7" step="0.1"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="mb-6">
-            <h3 class="text-lg font-bold mb-4">数据输入方式</h3>
-
-            <!-- 输入方式切换按钮 -->
-            <div class="flex mb-4 bg-gray-800 rounded-lg p-1">
-                <button id="upload-file-mode-btn" class="flex-1 py-2 px-4 rounded-lg bg-green-700 text-white">
-                    上传CSV文件
-                </button>
-                <button id="manual-input-mode-btn" class="flex-1 py-2 px-4 rounded-lg text-gray-300 hover:bg-gray-700">
-                    手动输入参数
-                </button>
-            </div>
-
-            <!-- 上传文件模式 -->
-            <div id="file-upload-mode" class="mode-content">
-                <!-- 文件选择切换按钮 -->
-                <div class="flex mb-4 bg-gray-700 rounded-lg p-1">
-                    <button id="upload-new-btn" class="flex-1 py-2 px-4 rounded-lg bg-green-700 text-white">
-                        上传新文件
-                    </button>
-                    <button id="select-existing-btn"
-                            class="flex-1 py-2 px-4 rounded-lg text-gray-300 hover:bg-gray-700">选择已上传文件
-                    </button>
-                </div>
-
-                <!-- 上传新文件区域 -->
-                <div class="file-upload-area" id="optimization-file-upload">
-                    <span class="material-icons text-4xl mb-2">upload_file</span>
-                    <h3 class="text-lg font-bold">拖放文件或点击上传</h3>
-                    <p class="text-gray-400 mb-4">支持CSV格式的数据文件</p>
-                    <input type="file" id="optimization-file-input" class="hidden" accept=".csv">
-                    <button class="btn-primary" id="optimization-upload-btn">选择文件</button>
-                </div>
-
-                <!-- 选择已上传文件区域 -->
-                <div id="optimization-existing-files"
-                     class="hidden border border-gray-700 rounded-lg max-h-64 overflow-y-auto">
-                    <div class="p-4 text-center text-gray-500">
-                        <span class="material-icons text-3xl mb-2">refresh</span>
-                        <p>正在加载已上传文件...</p>
-                    </div>
-                </div>
-
-                <!-- 已选择文件信息显示 -->
-                <div id="optimization-file-info" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold" id="optimization-filename">filename.csv</h4>
-                            <p class="text-sm text-gray-400" id="optimization-filesize">大小: 0KB</p>
-                        </div>
-                        <button class="text-red-400 hover:text-red-300" id="optimization-remove-file">
-                            <span class="material-icons">delete</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 手动输入模式 -->
-            <div id="manual-input-mode" class="mode-content hidden">
-                <div class="bg-gray-800 p-6 rounded-lg">
-                    <h4 class="text-lg font-bold mb-4">请输入以下参数值：</h4>
-                    
-                    <!-- 参数输入网格 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- 待加工原烟数据记录 -->
-                        <div class="space-y-4">
-                            <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">待加工原烟数据记录</h5>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">水份（%）</label>
-                                <input type="number" id="manual-待加工原烟数据记录_水份（%）" class="param-input" value="20.2" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">温度（℃）</label>
-                                <input type="number" id="manual-待加工原烟数据记录_温度（℃）" class="param-input" value="25.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">烟碱含量（%）</label>
-                                <input type="number" id="manual-待加工原烟数据记录_烟碱含量（%）" class="param-input" value="2.5" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">叶梗比（%）</label>
-                                <input type="number" id="manual-待加工原烟数据记录_叶梗比（%）" class="param-input" value="15.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
-                                <input type="number" id="manual-待加工原烟数据记录_环境温度（℃）" class="param-input" value="22.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
-                                <input type="number" id="manual-待加工原烟数据记录_环境湿度（%）" class="param-input" value="60.0" step="0.1">
-                            </div>
-                        </div>
-
-                        <!-- 铺叶工段数据记录 -->
-                        <div class="space-y-4">
-                            <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">铺叶工段数据记录</h5>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
-                                <input type="number" id="manual-铺叶工段数据记录_环境温度（℃）" class="param-input" value="23.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
-                                <input type="number" id="manual-铺叶工段数据记录_环境湿度（%）" class="param-input" value="65.0" step="0.1">
-                            </div>
-                        </div>
-
-                        <!-- 回潮工段数据记录 -->
-                        <div class="space-y-4">
-                            <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">回潮工段数据记录</h5>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">潮后水份（%）</label>
-                                <input type="number" id="manual-回潮工段数据记录_潮后水份（%）" class="param-input" value="18.5" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">潮后温度（℃）</label>
-                                <input type="number" id="manual-回潮工段数据记录_潮后温度（℃）" class="param-input" value="45.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
-                                <input type="number" id="manual-回潮工段数据记录_环境温度（℃）" class="param-input" value="24.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
-                                <input type="number" id="manual-回潮工段数据记录_环境湿度（%）" class="param-input" value="70.0" step="0.1">
-                            </div>
-                        </div>
-
-                        <!-- 一润工段数据记录 -->
-                        <div class="space-y-4">
-                            <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">一润工段数据记录</h5>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润前水份（%）</label>
-                                <input type="number" id="manual-一润工段数据记录_润前水份（%）" class="param-input" value="16.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润前温度（℃）</label>
-                                <input type="number" id="manual-一润工段数据记录_润前温度（℃）" class="param-input" value="40.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润后水份（%）</label>
-                                <input type="number" id="manual-一润工段数据记录_润后水份（%）" class="param-input" value="18.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润后温度（℃）</label>
-                                <input type="number" id="manual-一润工段数据记录_润后温度（℃）" class="param-input" value="50.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
-                                <input type="number" id="manual-一润工段数据记录_环境温度（℃）" class="param-input" value="25.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
-                                <input type="number" id="manual-一润工段数据记录_环境湿度（%）" class="param-input" value="75.0" step="0.1">
-                            </div>
-                        </div>
-
-                        <!-- 二润工段数据记录 -->
-                        <div class="space-y-4">
-                            <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">二润工段数据记录</h5>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润前水份（%）</label>
-                                <input type="number" id="manual-二润工段数据记录_润前水份（%）" class="param-input" value="17.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润前温度（℃）</label>
-                                <input type="number" id="manual-二润工段数据记录_润前温度（℃）" class="param-input" value="45.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润后水份（%）</label>
-                                <input type="number" id="manual-二润工段数据记录_润后水份（%）" class="param-input" value="19.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">润后温度（℃）</label>
-                                <input type="number" id="manual-二润工段数据记录_润后温度（℃）" class="param-input" value="55.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
-                                <input type="number" id="manual-二润工段数据记录_环境温度（℃）" class="param-input" value="26.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
-                                <input type="number" id="manual-二润工段数据记录_环境湿度（%）" class="param-input" value="80.0" step="0.1">
-                            </div>
-                        </div>
-
-                        <!-- 打叶工段数据记录 -->
-                        <div class="space-y-4">
-                            <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">打叶工段数据记录</h5>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">打前水份（%）</label>
-                                <input type="number" id="manual-打叶工段数据记录_打前水份（%）" class="param-input" value="15.5" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">打前温度（℃）</label>
-                                <input type="number" id="manual-打叶工段数据记录_打前温度（℃）" class="param-input" value="35.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
-                                <input type="number" id="manual-打叶工段数据记录_环境湿度（%）" class="param-input" value="65.0" step="0.1">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
-                                <input type="number" id="manual-打叶工段数据记录_环境温度（℃）" class="param-input" value="27.0" step="0.1">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 操作按钮 -->
-                    <div class="mt-6 flex justify-center space-x-4">
-                        <button class="btn-secondary px-6 py-2" onclick="resetManualInputs()">
-                            <span class="material-icons mr-2">refresh</span>重置参数
-                        </button>
-                        <button class="btn-primary px-6 py-2" onclick="validateManualInputs()">
-                            <span class="material-icons mr-2">check_circle</span>验证参数
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex justify-center">
-            <button class="btn-secondary px-8 py-3 text-lg flex items-center" id="start-optimization">
-                <span class="material-icons mr-2">play_arrow</span> 开始优化
-            </button>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2 class="section-title text-xl font-bold">优化进度</h2>
-        <div id="optimization-progress" class="hidden">
-            <div class="optimization-animation mb-6" id="particle-animation">
-                <!-- 粒子会通过JS动态添加 -->
-            </div>
-
-            <div class="mb-6">
-                <div class="flex justify-between mb-1">
-                    <span>优化进度</span>
-                    <span id="progress-percent">0%</span>
-                </div>
-                <div class="progress-bar h-4">
-                    <div class="progress-value h-4" id="progress-value" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="p-4 bg-gray-800 rounded-lg">
-                    <div class="text-sm text-gray-400">迭代次数</div>
-                    <div class="text-xl font-bold" id="iteration-count">0/100</div>
-                </div>
-                <div class="p-4 bg-gray-800 rounded-lg">
-                    <div class="text-sm text-gray-400">当前最优值</div>
-                    <div class="text-xl font-bold text-green-400" id="current-best">0.00</div>
-                </div>
-                <div class="p-4 bg-gray-800 rounded-lg">
-                    <div class="text-sm text-gray-400">优化目标</div>
-                    <div class="text-xl font-bold">质量评分</div>
-                </div>
-            </div>
-
-            <!-- 这里会动态添加查看结果按钮 -->
-        </div>
-
-        <div id="optimization-placeholder" class="text-center py-12">
-            <span class="material-icons text-5xl text-gray-600 mb-4">tune</span>
-            <h3 class="text-xl font-bold mb-2">等待开始优化</h3>
-            <p class="text-gray-500">设置好参数并点击"开始优化"按钮</p>
-        </div>
-    </div>
-</div>
         
+        <!-- 参数优化设置 -->
+        <div id="optimization-tab" class="tab-content hidden">
+            <div class="card mb-8">
+                <h2 class="section-title text-xl font-bold">参数优化设置</h2>
 
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">优化目标</h3>
+                        <select id="optimization-target" class="param-input">
+                            <option value="quality">最大化质量评分</option>
+                            <option value="custom">自定义目标值</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">算法选择</h3>
+                        <select id="algorithm-selection" class="param-input">
+                            <option value="genetic_algorithm" selected>遗传算法 (GA)</option>
+                            <option value="particle_swarm">粒子群优化 (PSO)</option>
+                            <option value="simulated_annealing">模拟退火 (SA)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">迭代设置</h3>
+                        <div class="flex items-center">
+                            <span class="mr-2">迭代次数:</span>
+                            <input type="number" id="max-iterations" class="param-input" value="10" min="5" max="50">
+                        </div>
+                        <div class="flex items-center mt-2">
+                            <span class="mr-2">种群大小:</span>
+                            <input type="number" id="population-size" class="param-input" value="50" min="10" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold mb-4">目标值设置</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    参数
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    目标值
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    最小值
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    最大值
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800">
+                            <tr>
+                                <td class="px-4 py-3">大中片率</td>
+                                <td class="px-4 py-3"><input type="number" id="big-medium-target"
+                                                            class="param-input w-20" value="80"></td>
+                                <td class="px-4 py-3"><input type="number" id="big-medium-min" class="param-input w-20"
+                                                            value="75"></td>
+                                <td class="px-4 py-3"><input type="number" id="big-medium-max" class="param-input w-20"
+                                                            value="82"></td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3">叶含梗率</td>
+                                <td class="px-4 py-3"><input type="number" id="leaf-stem-target"
+                                                            class="param-input w-20" value="1.0" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="leaf-stem-min" class="param-input w-20"
+                                                            value="0.8" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="leaf-stem-max" class="param-input w-20"
+                                                            value="1.5" step="0.1"></td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3">梗含叶率</td>
+                                <td class="px-4 py-3"><input type="number" id="stem-leaf-target"
+                                                            class="param-input w-20" value="0.5" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="stem-leaf-min" class="param-input w-20"
+                                                            value="0.3" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="stem-leaf-max" class="param-input w-20"
+                                                            value="0.7" step="0.1"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold mb-4">数据输入方式</h3>
+
+                    <!-- 输入方式切换按钮 -->
+                    <div class="flex mb-4 bg-gray-800 rounded-lg p-1">
+                        <button id="upload-file-mode-btn" class="flex-1 py-2 px-4 rounded-lg bg-green-700 text-white">
+                            上传CSV文件
+                        </button>
+                        <button id="manual-input-mode-btn" class="flex-1 py-2 px-4 rounded-lg text-gray-300 hover:bg-gray-700">
+                            手动输入参数
+                        </button>
+                    </div>
+
+                    <!-- 上传文件模式 -->
+                    <div id="file-upload-mode" class="mode-content">
+                        <!-- 文件选择切换按钮 -->
+                        <div class="flex mb-4 bg-gray-700 rounded-lg p-1">
+                            <button id="upload-new-btn" class="flex-1 py-2 px-4 rounded-lg bg-green-700 text-white">
+                                上传新文件
+                            </button>
+                            <button id="select-existing-btn"
+                                    class="flex-1 py-2 px-4 rounded-lg text-gray-300 hover:bg-gray-700">选择已上传文件
+                            </button>
+                        </div>
+
+                        <!-- 上传新文件区域 -->
+                        <div class="file-upload-area" id="optimization-file-upload">
+                            <span class="material-icons text-4xl mb-2">upload_file</span>
+                            <h3 class="text-lg font-bold">拖放文件或点击上传</h3>
+                            <p class="text-gray-400 mb-4">支持CSV格式的数据文件</p>
+                            <input type="file" id="optimization-file-input" class="hidden" accept=".csv">
+                            <button class="btn-primary" id="optimization-upload-btn">选择文件</button>
+                        </div>
+
+                        <!-- 选择已上传文件区域 -->
+                        <div id="optimization-existing-files"
+                            class="hidden border border-gray-700 rounded-lg max-h-64 overflow-y-auto">
+                            <div class="p-4 text-center text-gray-500">
+                                <span class="material-icons text-3xl mb-2">refresh</span>
+                                <p>正在加载已上传文件...</p>
+                            </div>
+                        </div>
+
+                        <!-- 已选择文件信息显示 -->
+                        <div id="optimization-file-info" class="hidden mt-4 p-4 bg-gray-800 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold" id="optimization-filename">filename.csv</h4>
+                                    <p class="text-sm text-gray-400" id="optimization-filesize">大小: 0KB</p>
+                                </div>
+                                <button class="text-red-400 hover:text-red-300" id="optimization-remove-file">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 手动输入模式 -->
+                    <div id="manual-input-mode" class="mode-content hidden">
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-4">请输入以下参数值：</h4>
+                            
+                            <!-- 参数输入网格 -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <!-- 待加工原烟数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">待加工原烟数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">水份（%）</label>
+                                        <input type="number" id="manual-待加工原烟数据记录_水份（%）" class="param-input" value="20.2" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">温度（℃）</label>
+                                        <input type="number" id="manual-待加工原烟数据记录_温度（℃）" class="param-input" value="25.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">烟碱含量（%）</label>
+                                        <input type="number" id="manual-待加工原烟数据记录_烟碱含量（%）" class="param-input" value="2.5" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">叶梗比（%）</label>
+                                        <input type="number" id="manual-待加工原烟数据记录_叶梗比（%）" class="param-input" value="15.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="manual-待加工原烟数据记录_环境温度（℃）" class="param-input" value="22.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="manual-待加工原烟数据记录_环境湿度（%）" class="param-input" value="60.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 铺叶工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">铺叶工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="manual-铺叶工段数据记录_环境温度（℃）" class="param-input" value="23.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="manual-铺叶工段数据记录_环境湿度（%）" class="param-input" value="65.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 回潮工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">回潮工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">潮后水份（%）</label>
+                                        <input type="number" id="manual-回潮工段数据记录_潮后水份（%）" class="param-input" value="18.5" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">潮后温度（℃）</label>
+                                        <input type="number" id="manual-回潮工段数据记录_潮后温度（℃）" class="param-input" value="45.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="manual-回潮工段数据记录_环境温度（℃）" class="param-input" value="24.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="manual-回潮工段数据记录_环境湿度（%）" class="param-input" value="70.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 一润工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">一润工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前水份（%）</label>
+                                        <input type="number" id="manual-一润工段数据记录_润前水份（%）" class="param-input" value="16.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前温度（℃）</label>
+                                        <input type="number" id="manual-一润工段数据记录_润前温度（℃）" class="param-input" value="40.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后水份（%）</label>
+                                        <input type="number" id="manual-一润工段数据记录_润后水份（%）" class="param-input" value="18.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后温度（℃）</label>
+                                        <input type="number" id="manual-一润工段数据记录_润后温度（℃）" class="param-input" value="50.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="manual-一润工段数据记录_环境温度（℃）" class="param-input" value="25.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="manual-一润工段数据记录_环境湿度（%）" class="param-input" value="75.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 二润工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">二润工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前水份（%）</label>
+                                        <input type="number" id="manual-二润工段数据记录_润前水份（%）" class="param-input" value="17.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前温度（℃）</label>
+                                        <input type="number" id="manual-二润工段数据记录_润前温度（℃）" class="param-input" value="45.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后水份（%）</label>
+                                        <input type="number" id="manual-二润工段数据记录_润后水份（%）" class="param-input" value="19.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后温度（℃）</label>
+                                        <input type="number" id="manual-二润工段数据记录_润后温度（℃）" class="param-input" value="55.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="manual-二润工段数据记录_环境温度（℃）" class="param-input" value="26.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="manual-二润工段数据记录_环境湿度（%）" class="param-input" value="80.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 打叶工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">打叶工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">打前水份（%）</label>
+                                        <input type="number" id="manual-打叶工段数据记录_打前水份（%）" class="param-input" value="15.5" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">打前温度（℃）</label>
+                                        <input type="number" id="manual-打叶工段数据记录_打前温度（℃）" class="param-input" value="35.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="manual-打叶工段数据记录_环境湿度（%）" class="param-input" value="65.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="manual-打叶工段数据记录_环境温度（℃）" class="param-input" value="27.0" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="mt-6 flex justify-center space-x-4">
+                                <button class="btn-secondary px-6 py-2" onclick="resetManualInputs()">
+                                    <span class="material-icons mr-2">refresh</span>重置参数
+                                </button>
+                                <button class="btn-primary px-6 py-2" onclick="validateManualInputs()">
+                                    <span class="material-icons mr-2">check_circle</span>验证参数
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button class="btn-secondary px-8 py-3 text-lg flex items-center" id="start-optimization">
+                        <span class="material-icons mr-2">play_arrow</span> 开始优化
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title text-xl font-bold">优化进度</h2>
+                <div id="optimization-progress" class="hidden">
+                    <div class="optimization-animation mb-6" id="particle-animation">
+                        <!-- 粒子会通过JS动态添加 -->
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-1">
+                            <span>优化进度</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar h-4">
+                            <div class="progress-value h-4" id="progress-value" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">迭代次数</div>
+                            <div class="text-xl font-bold" id="iteration-count">0/100</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">当前最优值</div>
+                            <div class="text-xl font-bold text-green-400" id="current-best">0.00</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">优化目标</div>
+                            <div class="text-xl font-bold">质量评分</div>
+                        </div>
+                    </div>
+
+                    <!-- 这里会动态添加查看结果按钮 -->
+                </div>
+
+                <div id="optimization-placeholder" class="text-center py-12">
+                    <span class="material-icons text-5xl text-gray-600 mb-4">tune</span>
+                    <h3 class="text-xl font-bold mb-2">等待开始优化</h3>
+                    <p class="text-gray-500">设置好参数并点击"开始优化"按钮</p>
+                </div>
+            </div>
+        </div>
+        
         <!-- 结果分析 -->
         <div id="results-tab" class="tab-content hidden">
             <!-- 新增：优化结果文件选择区域 -->
@@ -1624,6 +1385,311 @@
                 </div>
             </div>
         </div>
+
+       
+        <!-- 测试 -->
+        <div id="test-tab" class="tab-content hidden">
+            <div class="card mb-8">
+                <h2 class="section-title text-xl font-bold">测试参数设置</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">优化目标</h3>
+                        <select id="test-optimization-target" class="param-input">
+                            <option value="quality">最大化质量评分</option>
+                            <option value="custom">自定义目标值</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">算法选择</h3>
+                        <select id="test-algorithm-selection" class="param-input">
+                            <option value="genetic_algorithm" selected>遗传算法 (GA)</option>
+                            <option value="particle_swarm">粒子群优化 (PSO)</option>
+                            <option value="simulated_annealing">模拟退火 (SA)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4">迭代设置</h3>
+                        <div class="flex items-center">
+                            <span class="mr-2">迭代次数:</span>
+                            <input type="number" id="test-max-iterations" class="param-input" value="10" min="5" max="50">
+                        </div>
+                        <div class="flex items-center mt-2">
+                            <span class="mr-2">种群大小:</span>
+                            <input type="number" id="test-population-size" class="param-input" value="50" min="10" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold mb-4">目标值设置</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    参数
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    目标值
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    最小值
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    最大值
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800">
+                            <tr>
+                                <td class="px-4 py-3">大中片率</td>
+                                <td class="px-4 py-3"><input type="number" id="test-big-medium-target"
+                                                            class="param-input w-20" value="80"></td>
+                                <td class="px-4 py-3"><input type="number" id="test-big-medium-min" class="param-input w-20"
+                                                            value="75"></td>
+                                <td class="px-4 py-3"><input type="number" id="test-big-medium-max" class="param-input w-20"
+                                                            value="82"></td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3">叶含梗率</td>
+                                <td class="px-4 py-3"><input type="number" id="test-leaf-stem-target"
+                                                            class="param-input w-20" value="1.0" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="test-leaf-stem-min" class="param-input w-20"
+                                                            value="0.8" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="test-leaf-stem-max" class="param-input w-20"
+                                                            value="1.5" step="0.1"></td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3">梗含叶率</td>
+                                <td class="px-4 py-3"><input type="number" id="test-stem-leaf-target"
+                                                            class="param-input w-20" value="0.5" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="test-stem-leaf-min" class="param-input w-20"
+                                                            value="0.3" step="0.1"></td>
+                                <td class="px-4 py-3"><input type="number" id="test-stem-leaf-max" class="param-input w-20"
+                                                            value="0.7" step="0.1"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold mb-4">手动输入参数</h3>
+                    <div id="test-manual-input-mode" class="mode-content">
+                        <div class="bg-gray-800 p-6 rounded-lg">
+                            <h4 class="text-lg font-bold mb-4">请输入以下参数值：</h4>
+                            
+                            <!-- 参数输入网格 -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <!-- 待加工原烟数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">待加工原烟数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">水份（%）</label>
+                                        <input type="number" id="test-manual-待加工原烟数据记录_水份（%）" class="param-input" value="20.2" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">温度（℃）</label>
+                                        <input type="number" id="test-manual-待加工原烟数据记录_温度（℃）" class="param-input" value="25.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">烟碱含量（%）</label>
+                                        <input type="number" id="test-manual-待加工原烟数据记录_烟碱含量（%）" class="param-input" value="2.5" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">叶梗比（%）</label>
+                                        <input type="number" id="test-manual-待加工原烟数据记录_叶梗比（%）" class="param-input" value="15.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="test-manual-待加工原烟数据记录_环境温度（℃）" class="param-input" value="22.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="test-manual-待加工原烟数据记录_环境湿度（%）" class="param-input" value="60.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 铺叶工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">铺叶工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="test-manual-铺叶工段数据记录_环境温度（℃）" class="param-input" value="23.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="test-manual-铺叶工段数据记录_环境湿度（%）" class="param-input" value="65.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 回潮工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">回潮工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">潮后水份（%）</label>
+                                        <input type="number" id="test-manual-回潮工段数据记录_潮后水份（%）" class="param-input" value="18.5" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">潮后温度（℃）</label>
+                                        <input type="number" id="test-manual-回潮工段数据记录_潮后温度（℃）" class="param-input" value="45.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="test-manual-回潮工段数据记录_环境温度（℃）" class="param-input" value="24.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="test-manual-回潮工段数据记录_环境湿度（%）" class="param-input" value="70.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 一润工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">一润工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前水份（%）</label>
+                                        <input type="number" id="test-manual-一润工段数据记录_润前水份（%）" class="param-input" value="16.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前温度（℃）</label>
+                                        <input type="number" id="test-manual-一润工段数据记录_润前温度（℃）" class="param-input" value="40.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后水份（%）</label>
+                                        <input type="number" id="test-manual-一润工段数据记录_润后水份（%）" class="param-input" value="18.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后温度（℃）</label>
+                                        <input type="number" id="test-manual-一润工段数据记录_润后温度（℃）" class="param-input" value="50.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="test-manual-一润工段数据记录_环境温度（℃）" class="param-input" value="25.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="test-manual-一润工段数据记录_环境湿度（%）" class="param-input" value="75.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 二润工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">二润工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前水份（%）</label>
+                                        <input type="number" id="test-manual-二润工段数据记录_润前水份（%）" class="param-input" value="17.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润前温度（℃）</label>
+                                        <input type="number" id="test-manual-二润工段数据记录_润前温度（℃）" class="param-input" value="45.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后水份（%）</label>
+                                        <input type="number" id="test-manual-二润工段数据记录_润后水份（%）" class="param-input" value="19.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">润后温度（℃）</label>
+                                        <input type="number" id="test-manual-二润工段数据记录_润后温度（℃）" class="param-input" value="55.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="test-manual-二润工段数据记录_环境温度（℃）" class="param-input" value="26.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="test-manual-二润工段数据记录_环境湿度（%）" class="param-input" value="80.0" step="0.1">
+                                    </div>
+                                </div>
+
+                                <!-- 打叶工段数据记录 -->
+                                <div class="space-y-4">
+                                    <h5 class="font-semibold text-green-400 border-b border-green-400 pb-2">打叶工段数据记录</h5>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">打前水份（%）</label>
+                                        <input type="number" id="test-manual-打叶工段数据记录_打前水份（%）" class="param-input" value="15.5" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">打前温度（℃）</label>
+                                        <input type="number" id="test-manual-打叶工段数据记录_打前温度（℃）" class="param-input" value="35.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境湿度（%）</label>
+                                        <input type="number" id="test-manual-打叶工段数据记录_环境湿度（%）" class="param-input" value="65.0" step="0.1">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">环境温度（℃）</label>
+                                        <input type="number" id="test-manual-打叶工段数据记录_环境温度（℃）" class="param-input" value="27.0" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 替换操作按钮部分 -->
+                            <div class="mt-6 flex justify-center space-x-4">
+                                <button id="reset-test-params-btn" class="btn-secondary px-6 py-2">
+                                    <span class="material-icons mr-2">refresh</span>重置参数
+                                </button>
+                                <button id="validate-test-params-btn" class="btn-primary px-6 py-2">
+                                    <span class="material-icons mr-2">check_circle</span>验证参数
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button class="btn-secondary px-8 py-3 text-lg flex items-center" id="start-test">
+                        <span class="material-icons mr-2">play_arrow</span> 开始测试
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title text-xl font-bold">测试进度</h2>
+                <div id="test-progress" class="hidden">
+                    <div class="optimization-animation mb-6" id="test-particle-animation">
+                        <!-- 粒子会通过JS动态添加 -->
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-1">
+                            <span>测试进度</span>
+                            <span id="test-progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar h-4">
+                            <div class="progress-value h-4" id="test-progress-value" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">迭代次数</div>
+                            <div class="text-xl font-bold" id="test-iteration-count">0/100</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">当前最优值</div>
+                            <div class="text-xl font-bold text-green-400" id="test-current-best">0.00</div>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <div class="text-sm text-gray-400">优化目标</div>
+                            <div class="text-xl font-bold">质量评分</div>
+                        </div>
+                    </div>
+
+                    <!-- 这里会动态添加查看结果按钮 -->
+                </div>
+
+                <div id="test-placeholder" class="text-center py-12">
+                    <span class="material-icons text-5xl text-gray-600 mb-4">science</span>
+                    <h3 class="text-xl font-bold mb-2">等待开始测试</h3>
+                    <p class="text-gray-500">设置好参数并点击"开始测试"按钮</p>
+                </div>
+            </div>
+        </div>
+        
     </div>
 </div>
 
@@ -3193,6 +3259,7 @@ function startProgressMonitoring(taskId) {
     }, 1000);
 }
 
+
 // 重置优化UI
 function resetOptimizationUI(completed = false) {
     const startBtn = document.getElementById('start-optimization');
@@ -3689,36 +3756,6 @@ function updateOptimizationResults(progress) {
     }
 }
 
-// 修改添加查看结果按钮的函数，确保点击后有明确的反馈
-function addViewResultsButton() {
-    // 检查是否已经存在按钮
-    if (document.getElementById('view-results-btn')) {
-        return;
-    }
-
-    // 创建新按钮
-    const resultsBtn = document.createElement('button');
-    resultsBtn.id = 'view-results-btn';
-    resultsBtn.className = 'btn-primary px-8 py-3 text-lg flex items-center mt-6 mx-auto';
-    resultsBtn.innerHTML = '<span class="material-icons mr-2">assessment</span> 查看优化结果';
-
-    // 添加点击事件并确保显示加载状态
-    resultsBtn.addEventListener('click', function () {
-        resultsBtn.disabled = true;
-        resultsBtn.innerHTML = '<span class="material-icons mr-2 animate-spin">refresh</span> 正在加载结果...';
-
-        // 延迟执行以显示加载状态
-        setTimeout(() => {
-            manualViewResults();
-            resultsBtn.disabled = false;
-            resultsBtn.innerHTML = '<span class="material-icons mr-2">assessment</span> 查看优化结果';
-        }, 300);
-    });
-
-    // 在进度区域添加按钮
-    const progressArea = document.getElementById('optimization-progress');
-    progressArea.appendChild(resultsBtn);
-}
 
 // 添加一个检查结果数据有效性的函数
 function validateOptimizationResults(progress) {
@@ -4557,9 +4594,6 @@ function loadModifyResultForm(resultFilePath) {
     "二润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"]
   };
   
-  // 定义不允许修改的字段
-  const excludedFields = ['大中片率', '叶含梗率', '梗含叶率', '综合得分'];
-  
   // 显示加载状态
   formContainer.innerHTML = '<div class="col-span-3 text-center py-4">加载中...</div>';
   
@@ -4570,11 +4604,8 @@ function loadModifyResultForm(resultFilePath) {
       if (data.success && data.data && Array.isArray(data.data)) {
         formContainer.innerHTML = '';
         
-        // 过滤掉不允许修改的字段
-        const filteredData = data.data.filter(item => !excludedFields.includes(item.key));
-        
         // 直接遍历有序数组，保证了显示顺序
-        filteredData.forEach(item => {
+        data.data.forEach(item => {
           const key = item.key;
           const value = String(item.value); // 确保值为字符串以便比较
           
@@ -4590,81 +4621,22 @@ function loadModifyResultForm(resultFilePath) {
             ).join('');
             
             fieldHtml = `
-              <div class="form-field-with-preview">
-                <div class="field-input-group">
-                  <label class="block text-sm font-medium mb-1">${key}</label>
-                  <select class="param-input w-full" name="${key}" data-original="${value}">
-                    ${optionsHtml}
-                  </select>
-                </div>
-                <button type="button" class="param-preview-btn" 
-                        data-param-name="${key}" 
-                        data-param-type="categorical" 
-                        data-param-options='${JSON.stringify(options)}' 
-                        data-current-value="${value}" 
-                        data-result-file="${resultFilePath}">
-                  <span class="material-icons">trending_up</span>
-                  预览
-                </button>
-              </div>
+              <label class="block text-sm font-medium mb-1">${key}</label>
+              <select class="param-input w-full" name="${key}" data-original="${value}">
+                ${optionsHtml}
+              </select>
             `;
           } else {
-            // 默认使用文本输入框（数值类型）
+            // 默认使用文本输入框
             fieldHtml = `
-              <div class="form-field-with-preview">
-                <div class="field-input-group">
-                  <label class="block text-sm font-medium mb-1">${key}</label>
-                  <input type="text" class="param-input w-full" 
-                         name="${key}" value="${value}" data-original="${value}">
-                </div>
-                <button type="button" class="param-preview-btn" 
-                        data-param-name="${key}" 
-                        data-param-type="numerical" 
-                        data-current-value="${value}" 
-                        data-result-file="${resultFilePath}">
-                  <span class="material-icons">trending_up</span>
-                  预览
-                </button>
-              </div>
+              <label class="block text-sm font-medium mb-1">${key}</label>
+              <input type="text" class="param-input w-full" 
+                     name="${key}" value="${value}" data-original="${value}">
             `;
           }
           
           fieldDiv.innerHTML = fieldHtml;
           formContainer.appendChild(fieldDiv);
-        });
-        
-        // 添加说明文字
-        const noteDiv = document.createElement('div');
-        noteDiv.className = 'col-span-3 p-3 bg-yellow-900 bg-opacity-30 border border-yellow-500 rounded-lg mt-4';
-        noteDiv.innerHTML = `
-          <div class="flex items-center text-yellow-300">
-            <span class="material-icons mr-2">info</span>
-            <span class="text-sm">注意：大中片率、叶含梗率、梗含叶率和综合得分为系统计算结果，不可修改</span>
-          </div>
-        `;
-        formContainer.appendChild(noteDiv);
-        
-        // 添加事件委托处理预览按钮点击
-        formContainer.addEventListener('click', function(event) {
-          if (event.target.closest('.param-preview-btn')) {
-            const btn = event.target.closest('.param-preview-btn');
-            const paramName = btn.dataset.paramName;
-            const paramType = btn.dataset.paramType;
-            const currentValue = btn.dataset.currentValue;
-            const resultFilePath = btn.dataset.resultFile;
-            let options = null;
-            
-            if (paramType === 'categorical' && btn.dataset.paramOptions) {
-              try {
-                options = JSON.parse(btn.dataset.paramOptions);
-              } catch (e) {
-                console.error('解析选项失败:', e);
-                options = [];
-              }
-            }
-            
-            showTrendPreview(paramName, paramType, options, currentValue, resultFilePath);
-          }
         });
       } else {
         formContainer.innerHTML = `<div class="col-span-3 text-center py-4 text-red-500">${data.message || '加载失败或数据格式不正确'}</div>`;
@@ -4718,15 +4690,7 @@ function saveModifiedResultToDatabase() {
   const modifiedData = {};
   let hasChanges = false;
   
-  // 定义不允许修改的字段
-  const excludedFields = ['大中片率', '叶含梗率', '梗含叶率', '综合得分'];
-  
   inputFields.forEach(input => {
-    // 跳过不允许修改的字段
-    if (excludedFields.includes(input.name)) {
-      return;
-    }
-    
     const originalValue = input.dataset.original;
     const currentValue = input.value.trim();
     
@@ -4786,861 +4750,776 @@ function saveModifiedResultToDatabase() {
     });
 }
 
-// ========================= 参数趋势预览功能 =========================
 
-// 显示趋势预览
-function showTrendPreview(paramName, paramType, options, currentValue, resultFilePath) {
-  console.log('显示趋势预览:', paramName, paramType, options, currentValue);
-  
-  const modal = document.getElementById('trend-preview-modal');
-  const title = document.getElementById('trend-modal-title');
-  const loading = document.getElementById('trend-loading');
-  const chartsContainer = document.getElementById('trend-charts-container');
-  
-  // 检查必要元素是否存在
-  if (!modal || !title || !loading || !chartsContainer) {
-    console.error('趋势预览相关元素不存在');
-    return;
-  }
-  
-  // 设置标题
-  title.textContent = `${paramName} - 趋势预览`;
-  
-  // 显示模态框和加载状态
-  modal.style.display = 'flex';
-  loading.style.display = 'block';
-  chartsContainer.style.display = 'none';
-  
-  // 生成趋势数据
-  if (paramType === 'categorical') {
-    console.log('生成分类型趋势数据:', options);
-    generateCategoricalTrend(paramName, options, currentValue, resultFilePath);
-  } else {
-    console.log('生成数值型趋势数据');
-    generateNumericalTrend(paramName, currentValue, resultFilePath);
-  }
-}
-
-// 生成分类参数趋势 - 使用RBFNN模型批量预测
-async function generateCategoricalTrend(paramName, options, currentValue, resultFilePath) {
-  try {
-    console.log('生成分类型趋势数据:', options);
+// 添加 Toast 通知函数
+function showToast(message, type = 'info') {
+    // 创建Toast元素
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 transition-opacity duration-300`;
     
-    // 获取基础参数
-    const baseParameters = await getCurrentParameters();
-    if (!baseParameters) {
-      throw new Error('无法获取基础参数');
+    // 根据类型设置样式
+    switch(type) {
+        case 'success':
+            toast.className += ' bg-green-600 text-white';
+            break;
+        case 'error':
+            toast.className += ' bg-red-600 text-white';
+            break;
+        case 'warning':
+            toast.className += ' bg-yellow-500 text-white';
+            break;
+        default:
+            toast.className += ' bg-gray-800 text-gray-100';
     }
     
-    // 调用后端API进行批量预测
-    const response = await fetch('/api/predict_parameter_impact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        base_parameters: baseParameters,
-        varying_parameter: paramName,
-        parameter_values: options
-      })
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // 显示后2秒淡出
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 2000);
+}
+
+// 如果fetchWithAuth未定义，创建一个简单的封装
+if (typeof fetchWithAuth === 'undefined') {
+    function fetchWithAuth(url, options = {}) {
+        // 在这里可以添加认证令牌等逻辑
+        return fetch(url, options);
+    }
+}
+
+// =================================================================
+// 测试模块 (Test Tab) JavaScript 逻辑
+// =================================================================
+let testPollInterval; // 用于存储测试进度轮询的定时器ID
+
+/**
+ * 从测试模块的表单中收集所有参数。
+ * @returns {object} 包含所有设置和手动输入参数的对象。
+ */
+function collectTestParameters() {
+    const manualInputs = {};
+    const inputElements = document.querySelectorAll('#test-manual-input-mode .param-input');
+    
+    inputElements.forEach(input => {
+        // 从input元素的ID中提取后端所需的参数名
+        const key = input.id.replace('test-manual-', '');
+        const value = parseFloat(input.value);
+        if (!isNaN(value)) {
+            manualInputs[key] = value;
+        }
     });
 
-    if (!response.ok) {
-      throw new Error(`预测请求失败: ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.message || '预测失败');
-    }
-
-    const predictions = data.predictions;
-    const labels = options;
-    const bigMediumRates = predictions.map(p => Math.round(p.big_medium_rate * 100) / 100);
-    const leafStemRates = predictions.map(p => Math.round(p.leaf_stem_rate * 100) / 100);
-    const stemLeafRates = predictions.map(p => Math.round(p.stem_leaf_rate * 100) / 100);
-    
-    renderTrendChart(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue);
-    generateTrendInsights(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue, 'categorical');
-    
-    document.getElementById('trend-loading').style.display = 'none';
-    document.getElementById('trend-charts-container').style.display = 'block';
-    
-  } catch (error) {
-    console.error('生成分类趋势失败:', error);
-    showTrendError('生成趋势预览失败: ' + error.message);
-  }
-}
-
-// 生成数值参数趋势 - 使用RBFNN模型批量预测
-async function generateNumericalTrend(paramName, currentValue, resultFilePath) {
-  try {
-    const baseValue = parseFloat(currentValue);
-    if (isNaN(baseValue)) {
-      showTrendError('参数值无效，无法生成趋势预览');
-      return;
-    }
-    
-    console.log('生成数值型趋势数据，基础值:', baseValue);
-    
-    // 生成±5范围内的值，步长0.5
-    const values = [];
-    for (let i = baseValue - 5; i <= baseValue + 5; i += 0.5) {
-      values.push(Math.round(i * 10) / 10); // 保留1位小数
-    }
-    
-    // 获取基础参数
-    const baseParameters = await getCurrentParameters();
-    if (!baseParameters) {
-      throw new Error('无法获取基础参数');
-    }
-    
-    // 调用后端API进行批量预测
-    const response = await fetch('/api/predict_parameter_impact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        base_parameters: baseParameters,
-        varying_parameter: paramName,
-        parameter_values: values
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`预测请求失败: ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data.success) {
-      throw new Error(data.message || '预测失败');
-    }
-
-    const predictions = data.predictions;
-    const labels = values.map(v => v.toString());
-    const bigMediumRates = predictions.map(p => Math.round(p.big_medium_rate * 100) / 100);
-    const leafStemRates = predictions.map(p => Math.round(p.leaf_stem_rate * 100) / 100);
-    const stemLeafRates = predictions.map(p => Math.round(p.stem_leaf_rate * 100) / 100);
-    
-    renderTrendChart(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue);
-    generateTrendInsights(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue, 'numerical');
-    
-    document.getElementById('trend-loading').style.display = 'none';
-    document.getElementById('trend-charts-container').style.display = 'block';
-    
-  } catch (error) {
-    console.error('生成数值趋势失败:', error);
-    showTrendError('生成趋势预览失败: ' + error.message);
-  }
-}
-
-// 获取当前所有参数值的函数
-async function getCurrentParameters() {
-  try {
-    const parameters = {};
-    
-    // 获取分类参数（与后端保持一致）
-    const categoricalParams = {
-      "回潮工段数据记录_回潮方式": ["半回", "全回"],
-      "一润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"],
-      "二润工段数据记录_润叶方式（蒸汽、加水、混合）": ["蒸汽", "加水", "混合"]
+    const settings = {
+        input_mode: 'manual',
+        method: document.getElementById('test-algorithm-selection').value,
+        max_iterations: parseInt(document.getElementById('test-max-iterations').value, 10),
+        population_size: parseInt(document.getElementById('test-population-size').value, 10),
+        target_values: {
+            big_medium_rate: parseFloat(document.getElementById('test-big-medium-target').value),
+            leaf_stem_rate: parseFloat(document.getElementById('test-leaf-stem-target').value),
+            stem_leaf_rate: parseFloat(document.getElementById('test-stem-leaf-target').value)
+        },
+        constraints: {
+            big_medium_rate: { 
+                min: parseFloat(document.getElementById('test-big-medium-min').value), 
+                max: parseFloat(document.getElementById('test-big-medium-max').value) 
+            },
+            leaf_stem_rate: { 
+                min: parseFloat(document.getElementById('test-leaf-stem-min').value), 
+                max: parseFloat(document.getElementById('test-leaf-stem-max').value) 
+            },
+            stem_leaf_rate: { 
+                min: parseFloat(document.getElementById('test-stem-leaf-min').value), 
+                max: parseFloat(document.getElementById('test-stem-leaf-max').value) 
+            }
+        },
+        manual_parameters: manualInputs
     };
-    
-    // 获取数值参数列表（与后端保持一致）
-    const numericParams = [
-      "铺叶工段数据记录_流量（kg/h)",
-      "打叶工段数据记录_一打_打辊参数（hz）",
-      "打叶工段数据记录_二打_打辊参数（hz）",
-      "打叶工段数据记录_三打_打辊参数（hz）",
-      "打叶工段数据记录_四打_打辊参数（hz）",
-      "打叶工段数据记录_风分参数（hz）_一分",
-      "打叶工段数据记录_风分参数（hz）_二分",
-      "打叶工段数据记录_风分参数（hz）_三分",
-      "打叶工段数据记录_风分参数（hz）_四分",
-      "打叶工段数据记录_风分参数（hz）_五分",
-      "打叶工段数据记录_风分参数（hz）_六分",
-      "打叶工段数据记录_风分参数（hz）_七分",
-      "打叶工段数据记录_风分参数（hz）_八分",
-      "打叶工段数据记录_风分参数（hz）_九分",
-      "打叶工段数据记录_风分参数（hz）_十分",
-      "打叶工段数据记录_风分参数（hz）_十一分"
-    ];
-    
-    // 添加RBFNN模型中需要的其他参数
-    const additionalParams = [
-      "待加工原烟数据记录_水份（%）",
-      "待加工原烟数据记录_温度（℃）",
-      "待加工原烟数据记录_烟碱含量（%）",
-      "待加工原烟数据记录_叶梗比（%）",
-      "待加工原烟数据记录_环境温度（℃）",
-      "待加工原烟数据记录_环境湿度（%）",
-      "铺叶工段数据记录_环境温度（℃）",
-      "铺叶工段数据记录_环境湿度（%）",
-      "回潮工段数据记录_潮后水份（%）",
-      "回潮工段数据记录_潮后温度（℃）",
-      "回潮工段数据记录_环境温度（℃）",
-      "回潮工段数据记录_环境湿度（%）",
-      "一润工段数据记录_润前水份（%）",
-      "一润工段数据记录_润前温度（℃）",
-      "一润工段数据记录_润后水份（%）",
-      "一润工段数据记录_润后温度（℃）",
-      "一润工段数据记录_环境温度（℃）",
-      "一润工段数据记录_环境湿度（%）",
-      "二润工段数据记录_润前水份（%）",
-      "二润工段数据记录_润前温度（℃）",
-      "二润工段数据记录_润后水份（%）",
-      "二润工段数据记录_润后温度（℃）",
-      "二润工段数据记录_环境温度（℃）",
-      "二润工段数据记录_环境湿度（%）",
-      "打叶工段数据记录_打前水份（%）",
-      "打叶工段数据记录_打前温度（℃）",
-      "打叶工段数据记录_环境湿度（%）",
-      "打叶工段数据记录_环境温度（℃）"
-    ];
-    
-    // 收集所有必需的参数
-    const allParams = [...Object.keys(categoricalParams), ...numericParams, ...additionalParams];
-    
-    // 从优化结果编辑界面或手动输入界面获取参数值
-    for (const paramName of allParams) {
-      let paramValue = null;
-      
-      // 尝试从编辑界面获取值
-      const editInput = document.querySelector(`[data-param="${paramName}"]`);
-      if (editInput) {
-        paramValue = editInput.type === 'number' ? parseFloat(editInput.value) : editInput.value;
-      } else {
-        // 尝试从手动输入界面获取值
-        const manualInput = document.getElementById(`manual-${paramName}`);
-        if (manualInput) {
-          paramValue = manualInput.type === 'number' ? parseFloat(manualInput.value) : manualInput.value;
-        } else {
-          // 使用默认值
-          if (categoricalParams[paramName]) {
-            paramValue = categoricalParams[paramName][0]; // 使用第一个选项作为默认值
-          } else {
-            // 数值参数的默认值
-            const defaultNumericValues = {
-              // 可优化参数
-              "铺叶工段数据记录_流量（kg/h)": 15000,
-              "打叶工段数据记录_一打_打辊参数（hz）": 40,
-              "打叶工段数据记录_二打_打辊参数（hz）": 40,
-              "打叶工段数据记录_三打_打辊参数（hz）": 40,
-              "打叶工段数据记录_四打_打辊参数（hz）": 40,
-              "打叶工段数据记录_风分参数（hz）_一分": 39,
-              "打叶工段数据记录_风分参数（hz）_二分": 39,
-              "打叶工段数据记录_风分参数（hz）_三分": 39,
-              "打叶工段数据记录_风分参数（hz）_四分": 39,
-              "打叶工段数据记录_风分参数（hz）_五分": 35,
-              "打叶工段数据记录_风分参数（hz）_六分": 35,
-              "打叶工段数据记录_风分参数（hz）_七分": 40,
-              "打叶工段数据记录_风分参数（hz）_八分": 37,
-              "打叶工段数据记录_风分参数（hz）_九分": 37,
-              "打叶工段数据记录_风分参数（hz）_十分": 41,
-              "打叶工段数据记录_风分参数（hz）_十一分": 41,
-              // 其他固定参数
-              "待加工原烟数据记录_水份（%）": 20.2,
-              "待加工原烟数据记录_温度（℃）": 25.0,
-              "待加工原烟数据记录_烟碱含量（%）": 2.5,
-              "待加工原烟数据记录_叶梗比（%）": 15.0,
-              "待加工原烟数据记录_环境温度（℃）": 22.0,
-              "待加工原烟数据记录_环境湿度（%）": 60.0,
-              "铺叶工段数据记录_环境温度（℃）": 23.0,
-              "铺叶工段数据记录_环境湿度（%）": 65.0,
-              "回潮工段数据记录_潮后水份（%）": 18.5,
-              "回潮工段数据记录_潮后温度（℃）": 45.0,
-              "回潮工段数据记录_环境温度（℃）": 24.0,
-              "回潮工段数据记录_环境湿度（%）": 70.0,
-              "一润工段数据记录_润前水份（%）": 16.0,
-              "一润工段数据记录_润前温度（℃）": 40.0,
-              "一润工段数据记录_润后水份（%）": 18.0,
-              "一润工段数据记录_润后温度（℃）": 50.0,
-              "一润工段数据记录_环境温度（℃）": 25.0,
-              "一润工段数据记录_环境湿度（%）": 75.0,
-              "二润工段数据记录_润前水份（%）": 17.0,
-              "二润工段数据记录_润前温度（℃）": 45.0,
-              "二润工段数据记录_润后水份（%）": 19.0,
-              "二润工段数据记录_润后温度（℃）": 55.0,
-              "二润工段数据记录_环境温度（℃）": 26.0,
-              "二润工段数据记录_环境湿度（%）": 80.0,
-              "打叶工段数据记录_打前水份（%）": 15.5,
-              "打叶工段数据记录_打前温度（℃）": 35.0,
-              "打叶工段数据记录_环境湿度（%）": 65.0,
-              "打叶工段数据记录_环境温度（℃）": 27.0
-            };
-            paramValue = defaultNumericValues[paramName] || 30;
-          }
-        }
-      }
-      
-      parameters[paramName] = paramValue;
-    }
-    
-    console.log('收集到的基础参数:', parameters);
-    return parameters;
-    
-  } catch (error) {
-    console.error('获取当前参数失败:', error);
-    return null;
-  }
+    console.log("📊 收集到的测试参数:", settings);
+    return settings;
 }
 
-// 使用RBFNN模型进行参数预测
-function simulateParameterPrediction(paramName, paramValue, resultFilePath) {
-  return new Promise(async (resolve, reject) => {
+/**
+ * 启动测试流程。
+ */
+ async function startTest() {
+    console.log('🚀 开始测试...');
+    if (!validateTestManualInputs()) return;
+
+    const startBtn = document.getElementById('start-test');
+    startBtn.disabled = true;
+    startBtn.innerHTML = `<span class="material-icons animate-spin mr-2">sync</span> 处理中...`;
+
+    const params = collectTestParameters();
+
     try {
-      console.log(`RBFNN预测 ${paramName}: ${paramValue}`);
-      
-      // 获取当前基础参数
-      const baseParameters = await getCurrentParameters();
-      if (!baseParameters) {
-        throw new Error('无法获取基础参数');
-      }
-      
-      // 调用后端API进行单点预测
-      const response = await fetch('/api/predict_parameter_impact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          base_parameters: baseParameters,
-          varying_parameter: paramName,
-          parameter_values: [paramValue]
-        })
-      });
+        // 清除之前的所有测试结果
+        const progressContainer = document.getElementById('test-progress');
+        // 移除测试结果指标
+        const oldResultMetrics = document.getElementById('test-result-metrics');
+        if (oldResultMetrics) oldResultMetrics.remove();
+        
+        // 移除结果操作按钮
+        const oldResultActions = document.getElementById('test-result-actions');
+        if (oldResultActions) oldResultActions.remove();
+        
+        // 移除结果预览区域
+        const oldResultPreview = document.getElementById('test-result-preview');
+        if (oldResultPreview) oldResultPreview.remove();
 
-      if (!response.ok) {
-        throw new Error(`预测请求失败: ${response.status}`);
-      }
+        const response = await fetchWithAuth('/api/optimize_parameters', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params),
+        });
 
-      const data = await response.json();
-      
-      if (!data.success) {
-        throw new Error(data.message || '预测失败');
-      }
+        const data = await response.json();
 
-      const prediction = data.predictions[0];
-      const result = {
-        big_medium_rate: Math.round(prediction.big_medium_rate * 100) / 100,
-        leaf_stem_rate: Math.round(prediction.leaf_stem_rate * 100) / 100,
-        stem_leaf_rate: Math.round(prediction.stem_leaf_rate * 100) / 100
-      };
-      
-      console.log(`RBFNN预测结果 ${paramValue}:`, result);
-      resolve(result);
-      
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || '启动测试失败');
+        }
+
+        showToast('测试任务已成功启动！', 'success');
+        document.getElementById('test-placeholder').classList.add('hidden');
+        document.getElementById('test-progress').classList.remove('hidden');
+        
+        // 初始化进度条UI
+        document.getElementById('test-progress-value').style.width = '0%';
+        document.getElementById('test-progress-percent').textContent = '0%';
+        document.getElementById('test-iteration-count').textContent = `0/${params.max_iterations}`;
+        document.getElementById('test-current-best').textContent = 'N/A';
+        
+        // 初始化粒子动画
+        createTestParticleAnimation();
+
+        // 开始轮询状态
+        testPollInterval = setInterval(() => pollTestStatus(data.task_id), 2000);
+
     } catch (error) {
-      console.error('参数预测错误:', error);
-      
-      // 出错时使用默认值作为后备
-      const fallbackResult = {
-        big_medium_rate: 86.7,
-        leaf_stem_rate: 1.2,
-        stem_leaf_rate: 0.6
-      };
-      
-      console.warn('使用默认值作为预测结果:', fallbackResult);
-      resolve(fallbackResult);
+        showToast(`错误: ${error.message}`, 'error');
+        startBtn.disabled = false;
+        startBtn.innerHTML = '<span class="material-icons mr-2">play_arrow</span> 开始测试';
     }
-  });
 }
 
-// 全局变量存储多个图表实例
-let trendCharts = {
-  chart1: null,
-  chart2: null,
-  chart3: null
-};
-
-// 渲染趋势图表 - 创建三个独立的图表
-function renderTrendChart(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue) {
-  // 销毁之前的图表
-  Object.keys(trendCharts).forEach(key => {
-    if (trendCharts[key]) {
-      trendCharts[key].destroy();
-      trendCharts[key] = null;
-    }
-  });
-  
-  // 找到当前值在标签中的索引
-  const currentIndex = labels.findIndex(label => label === currentValue);
-  
-  // 创建三个独立的图表
-  createIndividualChart('trend-chart-1', '大中片率 (%)', labels, bigMediumRates, currentIndex, '#4CAF50', 'chart1');
-  createIndividualChart('trend-chart-2', '叶含梗率 (%)', labels, leafStemRates, currentIndex, '#2196F3', 'chart2');
-  createIndividualChart('trend-chart-3', '梗含叶率 (%)', labels, stemLeafRates, currentIndex, '#FF5722', 'chart3');
-}
-
-// 创建单个图表的辅助函数
-function createIndividualChart(canvasId, title, labels, data, currentIndex, color, chartKey) {
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) {
-    console.error(`Canvas with id ${canvasId} not found`);
-    return;
-  }
-  
-  const chartCtx = ctx.getContext('2d');
-  
-  trendCharts[chartKey] = new Chart(chartCtx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: title,
-        data: data,
-        borderColor: color,
-        backgroundColor: color.replace('#', 'rgba(') + ', 0.1)',
-        borderWidth: 3,
-        pointRadius: labels.map((_, index) => index === currentIndex ? 8 : 5),
-        pointBackgroundColor: labels.map((_, index) => index === currentIndex ? '#FF9800' : color),
-        pointBorderColor: labels.map((_, index) => index === currentIndex ? '#FFF' : color),
-        pointBorderWidth: labels.map((_, index) => index === currentIndex ? 2 : 1),
-        tension: 0.3,
-        fill: true
-      }]
-    },
-    options: createChartOptions(title)
-  });
-}
-
-// 创建图表配置选项
-function createChartOptions(title) {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      title: {
-        display: true,
-        text: title,
-        color: '#E0E0E0',
-        font: {
-          size: 16,
-          weight: 'bold'
-        },
-        padding: 20
-      },
-      legend: {
-        display: false // 隐藏图例，因为标题已经说明了指标
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-        titleColor: '#E0E0E0',
-        bodyColor: '#E0E0E0',
-        borderColor: '#666',
-        borderWidth: 1,
-        cornerRadius: 8,
-        displayColors: false,
-        callbacks: {
-          title: function(context) {
-            return `参数值: ${context[0].label}`;
-          },
-          label: function(context) {
-            return `${title}: ${context.parsed.y.toFixed(2)}%`;
-          }
+/**
+ * 轮询测试任务的状态和进度。
+ * @param {string} taskId - 要轮询的任务ID。
+ */
+ async function pollTestStatus(taskId) {
+    try {
+        const response = await fetchWithAuth(`/api/optimization_progress/${taskId}`);
+        if (!response.ok) {
+            console.error('Polling failed, stopping.');
+            clearInterval(testPollInterval);
+            return;
         }
-      }
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: '参数值',
-          color: '#B0B0B0',
-          font: { size: 12 }
-        },
-        ticks: {
-          color: '#B0B0B0',
-          maxTicksLimit: 8,
-          font: { size: 11 }
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-          lineWidth: 1
+        
+        const result = await response.json();
+        if (result.success) {
+            const progress = result.progress;
+            
+            // 更新UI
+            const progressPercent = Math.min(progress.progress, 100);
+            document.getElementById('test-progress-value').style.width = `${progressPercent}%`;
+            document.getElementById('test-progress-percent').textContent = `${progressPercent.toFixed(0)}%`;
+            document.getElementById('test-iteration-count').textContent = `${progress.iteration}/${progress.max_iterations}`;
+            // 更新粒子动画
+            updateTestParticles(progressPercent);
+            if (progress.best_score) {
+                document.getElementById('test-current-best').textContent = progress.best_score.toFixed(4);
+            }
+            
+            if (progress.status === 'completed' || progress.status === 'failed' || progress.status === 'stopped') {
+                clearInterval(testPollInterval);
+                const startBtn = document.getElementById('start-test');
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<span class="material-icons mr-2">play_arrow</span> 开始测试';
+
+                if (progress.status === 'completed') {
+                    showToast('测试完成！', 'success');
+                    document.getElementById('test-progress-percent').textContent = '100%';
+                    document.getElementById('test-progress-value').style.width = '100%';
+                    
+                    // 保存结果数据到全局变量
+                    window.lastTestProgress = progress;
+                    
+                    // 添加查看详细结果按钮
+                    addTestViewResultsButton();
+                } else {
+                    showToast(`测试任务${progress.status}: ${progress.error || '未知错误'}`, 'error');
+                }
+            }
         }
-      },
-      y: {
-        title: {
-          display: true,
-          text: '预测值 (%)',
-          color: '#B0B0B0',
-          font: { size: 12 }
-        },
-        ticks: {
-          color: '#B0B0B0',
-          font: { size: 11 },
-          callback: function(value) {
-            return value.toFixed(1) + '%';
-          }
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-          lineWidth: 1
+    } catch (error) {
+        console.error('轮询测试状态时出错:', error);
+        clearInterval(testPollInterval);
+        showToast('轮询测试状态时出错', 'error');
+    }
+}
+
+/**
+ * 显示最终的测试结果。
+ * @param {object} progressData - 包含结果指标的进度数据。
+ */
+ function displayTestResults(progressData) {
+    const progressContainer = document.getElementById('test-progress');
+    const metrics = progressData.result_metrics;
+
+    if (metrics) {
+        
+        // 如果有结果文件，添加查看结果按钮和文件预览
+        if (progressData.result_file) {
+            // 提取文件名
+            const fileName = progressData.result_file.split('/').pop();
+            
+            
+            
+            // 添加事件监听器
+            document.getElementById('test-view-results-btn').addEventListener('click', () => {
+                // 切换预览区域显示状态
+                const previewArea = document.getElementById('test-result-preview');
+                previewArea.classList.toggle('hidden');
+                
+                // 如果当前显示，则加载预览内容
+                if (!previewArea.classList.contains('hidden')) {
+                    loadTestResultPreview(progressData.result_file);
+                }
+            });
+            
+            document.getElementById('test-download-results-btn').addEventListener('click', () => {
+                downloadTestResult(progressData.result_file);
+            });
+            
+            document.getElementById('test-result-toggle-btn').addEventListener('click', (e) => {
+                const contentArea = document.getElementById('test-result-preview-content');
+                const icon = e.currentTarget.querySelector('.material-icons');
+                
+                contentArea.classList.toggle('hidden');
+                
+                if (contentArea.classList.contains('hidden')) {
+                    icon.textContent = 'expand_more';
+                } else {
+                    icon.textContent = 'expand_less';
+                    // 加载预览内容（如果尚未加载）
+                    if (!contentArea.dataset.loaded) {
+                        loadTestResultPreview(progressData.result_file);
+                        contentArea.dataset.loaded = 'true';
+                    }
+                }
+            });
         }
-      }
-    },
-    interaction: {
-      intersect: false,
-      mode: 'index'
-    },
-    animation: {
-      duration: 1000,
-      easing: 'easeInOutQuart'
     }
-  };
 }
 
-// 生成趋势分析
-function generateTrendInsights(labels, bigMediumRates, leafStemRates, stemLeafRates, currentValue, paramType) {
-  const currentIndex = labels.findIndex(label => label === currentValue);
-  const insights = [];
-  
-  if (currentIndex !== -1) {
-    const currentBigMedium = bigMediumRates[currentIndex];
-    const currentLeafStem = leafStemRates[currentIndex];
-    const currentStemLeaf = stemLeafRates[currentIndex];
+/**
+ * 加载测试结果文件预览
+ * @param {string} filePath - 结果文件路径
+ */
+function loadTestResultPreview(filePath) {
+    const headerRow = document.getElementById('test-result-preview-header');
+    const previewBody = document.getElementById('test-result-preview-body');
     
-    // 找到最优值
-    const maxBigMediumIndex = bigMediumRates.indexOf(Math.max(...bigMediumRates));
-    const minLeafStemIndex = leafStemRates.indexOf(Math.min(...leafStemRates));
-    const minStemLeafIndex = stemLeafRates.indexOf(Math.min(...stemLeafRates));
+    // 清空现有内容
+    headerRow.innerHTML = '';
+    previewBody.innerHTML = '';
     
-    // 计算变化范围和趋势
-    const bigMediumRange = Math.max(...bigMediumRates) - Math.min(...bigMediumRates);
-    const leafStemRange = Math.max(...leafStemRates) - Math.min(...leafStemRates);
-    const stemLeafRange = Math.max(...stemLeafRates) - Math.min(...stemLeafRates);
-    
-    // 大中片率分析
-    const bigMediumDiff = bigMediumRates[maxBigMediumIndex] - currentBigMedium;
-    insights.push({
-      metric: '大中片率',
-      current: `${currentBigMedium.toFixed(2)}%`,
-      optimal: `${bigMediumRates[maxBigMediumIndex].toFixed(2)}%`,
-      optimalParam: labels[maxBigMediumIndex],
-      improvement: bigMediumDiff.toFixed(2),
-      trend: bigMediumDiff > 0 ? 'positive' : bigMediumDiff < 0 ? 'negative' : 'neutral',
-      range: bigMediumRange.toFixed(2),
-      sensitivity: bigMediumRange > 2 ? 'high' : bigMediumRange > 1 ? 'medium' : 'low'
-    });
-    
-    // 叶含梗率分析
-    const leafStemDiff = currentLeafStem - leafStemRates[minLeafStemIndex];
-    insights.push({
-      metric: '叶含梗率',
-      current: `${currentLeafStem.toFixed(2)}%`,
-      optimal: `${leafStemRates[minLeafStemIndex].toFixed(2)}%`,
-      optimalParam: labels[minLeafStemIndex],
-      improvement: (-leafStemDiff).toFixed(2),
-      trend: leafStemDiff > 0 ? 'positive' : leafStemDiff < 0 ? 'negative' : 'neutral',
-      range: leafStemRange.toFixed(2),
-      sensitivity: leafStemRange > 2 ? 'high' : leafStemRange > 1 ? 'medium' : 'low'
-    });
-    
-    // 梗含叶率分析
-    const stemLeafDiff = currentStemLeaf - stemLeafRates[minStemLeafIndex];
-    insights.push({
-      metric: '梗含叶率',
-      current: `${currentStemLeaf.toFixed(2)}%`,
-      optimal: `${stemLeafRates[minStemLeafIndex].toFixed(2)}%`,
-      optimalParam: labels[minStemLeafIndex],
-      improvement: (-stemLeafDiff).toFixed(2),
-      trend: stemLeafDiff > 0 ? 'positive' : stemLeafDiff < 0 ? 'negative' : 'neutral',
-      range: stemLeafRange.toFixed(2),
-      sensitivity: stemLeafRange > 2 ? 'high' : stemLeafRange > 1 ? 'medium' : 'low'
-    });
-  }
-  
-  // 渲染分析结果
-  const insightsContainer = document.getElementById('trend-insights-content');
-  insightsContainer.innerHTML = insights.map(insight => `
-    <div class="trend-insight-item">
-      <div class="flex justify-between items-start">
-        <div>
-          <div class="trend-metric">${insight.metric}</div>
-          <div class="text-sm text-gray-400">
-            当前: ${insight.current} → 最优: ${insight.optimal} (参数值: ${insight.optimalParam})
-          </div>
-          <div class="text-xs text-gray-500 mt-1">
-            参数敏感度: ${getSensitivityText(insight.sensitivity)} (变化范围: ${insight.range}%)
-          </div>
-        </div>
-        <div class="trend-value-${insight.trend} text-right">
-          <div class="font-bold">
-            ${insight.improvement > 0 ? '+' : ''}${insight.improvement}%
-          </div>
-          <div class="text-xs text-gray-400 mt-1">
-            ${getTrendText(insight.trend)}
-          </div>
-        </div>
-      </div>
-    </div>
-  `).join('');
-  
-  // 生成优化建议
-  generateOptimizationRecommendations(insights, paramType);
-}
-
-// 获取敏感度文本
-function getSensitivityText(sensitivity) {
-  switch(sensitivity) {
-    case 'high': return '高敏感';
-    case 'medium': return '中等敏感';
-    case 'low': return '低敏感';
-    default: return '未知';
-  }
-}
-
-// 获取趋势文本
-function getTrendText(trend) {
-  switch(trend) {
-    case 'positive': return '可提升';
-    case 'negative': return '已最优';
-    case 'neutral': return '无变化';
-    default: return '未知';
-  }
-}
-
-// 生成优化建议
-function generateOptimizationRecommendations(insights, paramType) {
-  const recommendations = [];
-  let overallScore = 0;
-  let improvableMetrics = 0;
-  
-  insights.forEach(insight => {
-    const improvement = parseFloat(insight.improvement);
-    if (improvement > 0) {
-      improvableMetrics++;
-      recommendations.push({
-        type: 'improvement',
-        metric: insight.metric,
-        suggestion: `调整参数至 ${insight.optimalParam} 可提升 ${insight.improvement}%`,
-        priority: improvement > 1 ? 'high' : improvement > 0.5 ? 'medium' : 'low',
-        sensitivity: insight.sensitivity
-      });
-    } else if (improvement === 0) {
-      recommendations.push({
-        type: 'optimal',
-        metric: insight.metric,
-        suggestion: `当前参数已达到最优状态`,
-        priority: 'info'
-      });
-    } else {
-      recommendations.push({
-        type: 'maintain',
-        metric: insight.metric,
-        suggestion: `当前参数表现良好，建议保持`,
-        priority: 'low'
-      });
-    }
-    
-    // 计算综合得分 (0-100)
-    const normalizedValue = Math.max(0, 100 + improvement * 10);
-    overallScore += normalizedValue;
-  });
-  
-  overallScore = Math.round(overallScore / insights.length);
-  
-  // 添加综合建议
-  if (improvableMetrics > 0) {
-    const highPriorityCount = recommendations.filter(r => r.priority === 'high').length;
-    if (highPriorityCount > 0) {
-      recommendations.unshift({
-        type: 'priority',
-        suggestion: `发现 ${improvableMetrics} 个可优化指标，建议优先调整高影响参数`,
-        priority: 'urgent'
-      });
-    } else {
-      recommendations.unshift({
-        type: 'general',
-        suggestion: `发现 ${improvableMetrics} 个可优化指标，建议逐步调整`,
-        priority: 'normal'
-      });
-    }
-  } else {
-    recommendations.unshift({
-      type: 'excellent',
-      suggestion: `所有指标表现优秀，当前参数配置已达到最优状态`,
-      priority: 'success'
-    });
-  }
-  
-  // 渲染建议
-  const recommendationsContainer = document.getElementById('trend-recommendations-content');
-  recommendationsContainer.innerHTML = `
-    <div class="mb-4 p-3 bg-blue-800 bg-opacity-40 rounded-lg border border-blue-400">
-      <div class="flex items-center justify-between mb-2">
-        <h5 class="font-bold text-blue-200">综合评分</h5>
-        <span class="text-2xl font-bold text-blue-300">${overallScore}/100</span>
-      </div>
-      <div class="text-sm text-blue-300">
-        ${getScoreDescription(overallScore)}
-      </div>
-    </div>
-    
-    <div class="space-y-3">
-      ${recommendations.map(rec => `
-        <div class="recommendation-item recommendation-${rec.priority}">
-          <div class="flex items-start">
-            <span class="material-icons mr-2 mt-0.5 text-lg">
-              ${getRecommendationIcon(rec.type)}
-            </span>
-            <div class="flex-1">
-              ${rec.metric ? `<div class="font-medium mb-1">${rec.metric}</div>` : ''}
-              <div class="text-sm">${rec.suggestion}</div>
-              ${rec.sensitivity ? `<div class="text-xs text-gray-400 mt-1">敏感度: ${getSensitivityText(rec.sensitivity)}</div>` : ''}
-            </div>
-            <span class="priority-badge priority-${rec.priority}">
-              ${getPriorityText(rec.priority)}
-            </span>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-// 获取评分描述
-function getScoreDescription(score) {
-  if (score >= 90) return '参数配置极佳，质量指标处于优秀水平';
-  if (score >= 80) return '参数配置良好，大部分指标表现优秀';
-  if (score >= 70) return '参数配置中等，存在一定优化空间';
-  if (score >= 60) return '参数配置待优化，建议调整关键参数';
-  return '参数配置需要显著改进，建议全面优化';
-}
-
-// 获取建议图标
-function getRecommendationIcon(type) {
-  switch(type) {
-    case 'improvement': return 'trending_up';
-    case 'optimal': return 'verified';
-    case 'maintain': return 'check_circle';
-    case 'priority': return 'priority_high';
-    case 'general': return 'info';
-    case 'excellent': return 'stars';
-    default: return 'lightbulb';
-  }
-}
-
-// 获取优先级文本
-function getPriorityText(priority) {
-  switch(priority) {
-    case 'urgent': return '紧急';
-    case 'high': return '高优先级';
-    case 'medium': return '中优先级';
-    case 'normal': return '一般';
-    case 'low': return '低优先级';
-    case 'success': return '优秀';
-    case 'info': return '信息';
-    default: return '';
-  }
-}
-
-// 显示趋势错误
-function showTrendError(message) {
-  const loading = document.getElementById('trend-loading');
-  if (loading) {
-    loading.innerHTML = `
-      <div class="text-center py-8">
-        <span class="material-icons text-4xl text-red-500 mb-2">error</span>
-        <p class="text-red-500">${message}</p>
-        <button onclick="closeTrendPreviewModal()" class="btn-secondary mt-4">关闭</button>
-      </div>
+    // 显示加载指示器
+    previewBody.innerHTML = `
+        <tr>
+            <td colspan="20" class="px-4 py-2 text-center">
+                <span class="material-icons animate-spin mr-2">refresh</span>
+                加载数据中...
+            </td>
+        </tr>
     `;
-  }
+    
+    // 构造API请求URL
+    const requestUrl = `/api/preview_optimization_result_file?file_path=${encodeURIComponent(filePath)}`;
+    
+    // 请求预览数据
+    fetchWithAuth(requestUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 清空加载指示器
+                headerRow.innerHTML = '';
+                previewBody.innerHTML = '';
+                
+                // 添加表头
+                data.data.columns.forEach(column => {
+                    headerRow.innerHTML += `<th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">${column}</th>`;
+                });
+                
+                // 添加数据行（最多显示5行）
+                const maxRows = Math.min(data.data.rows.length, 5);
+                for (let i = 0; i < maxRows; i++) {
+                    const row = data.data.rows[i];
+                    let rowHtml = '<tr>';
+                    row.forEach(cell => {
+                        rowHtml += `<td class="px-4 py-2 border-t border-gray-700">${cell !== null ? cell : '—'}</td>`;
+                    });
+                    rowHtml += '</tr>';
+                    previewBody.innerHTML += rowHtml;
+                }
+                
+                // 如果有更多行，显示提示
+                if (data.data.rows.length > 5) {
+                    previewBody.innerHTML += `
+                        <tr>
+                            <td colspan="${data.data.columns.length}" class="px-4 py-2 text-center text-gray-400 border-t border-gray-700">
+                                共 ${data.data.rows.length} 行数据，仅显示前 5 行
+                            </td>
+                        </tr>
+                    `;
+                }
+            } else {
+                previewBody.innerHTML = `
+                    <tr>
+                        <td colspan="20" class="px-4 py-2 text-center text-red-400">
+                            加载失败: ${data.message || '未知错误'}
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('加载预览数据失败:', error);
+            previewBody.innerHTML = `
+                <tr>
+                    <td colspan="20" class="px-4 py-2 text-center text-red-400">
+                        加载失败: ${error.message || '网络错误'}
+                    </td>
+                </tr>
+            `;
+        });
 }
 
-// 关闭趋势预览模态框
-function closeTrendPreviewModal() {
-  const modal = document.getElementById('trend-preview-modal');
-  modal.style.display = 'none';
-  
-  // 销毁所有图表以释放内存
-  Object.keys(trendCharts).forEach(key => {
-    if (trendCharts[key]) {
-      trendCharts[key].destroy();
-      trendCharts[key] = null;
-    }
-  });
-  
-  // 重置容器显示状态
-  const loading = document.getElementById('trend-loading');
-  const chartsContainer = document.getElementById('trend-charts-container');
-  if (loading) loading.style.display = 'block';
-  if (chartsContainer) chartsContainer.style.display = 'none';
+/**
+ * 下载测试结果文件
+ * @param {string} filePath - 结果文件路径
+ */
+function downloadTestResult(filePath) {
+    // 提取文件名
+    const fileName = filePath.split('/').pop();
+    
+    // 创建下载链接
+    const downloadUrl = `/api/download_optimization_result_file/${fileName}`;
+    
+    // 创建临时链接并触发下载
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast('开始下载文件...', 'info');
 }
 
-// 点击模态框外部关闭
-document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.getElementById('trend-preview-modal');
-  if (modal) {
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        closeTrendPreviewModal();
-      }
+/**
+ * 重置测试模块中的所有手动输入参数。
+ */
+function resetTestManualInputs() {
+    const inputElements = document.querySelectorAll('#test-manual-input-mode .param-input');
+    inputElements.forEach(input => {
+        // 重置为输入框的默认值，如果默认值不存在则清空
+        input.value = input.defaultValue || ''; 
     });
-  }
+    showToast('测试参数已重置。', 'info');
+}
+
+/**
+ * 验证测试模块中的手动输入参数是否都已填写。
+ * @returns {boolean} 如果所有参数都有效则返回 true，否则返回 false。
+ */
+function validateTestManualInputs() {
+    const inputElements = document.querySelectorAll('#test-manual-input-mode .param-input');
+    let allValid = true;
+    inputElements.forEach(input => {
+        if (input.value.trim() === '') {
+            allValid = false;
+            input.classList.add('border-red-500');
+        } else {
+            input.classList.remove('border-red-500');
+        }
+    });
+
+    if (allValid) {
+        showToast('参数验证通过。', 'success');
+    } else {
+        showToast('请填写所有手动输入参数。', 'error');
+    }
+    return allValid;
+}
+
+// 在页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('初始化测试模块事件监听器...');
+    
+    // 为测试模块的按钮绑定事件
+    const startTestBtn = document.getElementById('start-test');
+    if(startTestBtn) {
+        startTestBtn.addEventListener('click', startTest);
+        console.log('已绑定开始测试按钮');
+    }
+    
+    const resetBtn = document.getElementById('reset-test-params-btn');
+    if(resetBtn) {
+        resetBtn.addEventListener('click', resetTestManualInputs);
+        console.log('已绑定重置参数按钮');
+    }
+    
+    const validateBtn = document.getElementById('validate-test-params-btn');
+    if(validateBtn) {
+        validateBtn.addEventListener('click', validateTestManualInputs);
+        console.log('已绑定验证参数按钮');
+    }
 });
+/**
+ * 为测试模块创建粒子动画效果
+ * @param {string} containerId - 粒子容器的ID
+ */
+ function createTestParticleAnimation(containerId = 'test-particle-animation') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // 清空容器
+    container.innerHTML = '';
+    
+    // 创建粒子
+    const particleCount = 30;
+    const colors = ['#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107'];
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // 随机粒子样式
+        const size = Math.random() * 8 + 4; // 4-12px
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.backgroundColor = color;
+        particle.style.position = 'absolute';
+        particle.style.borderRadius = '50%';
+        particle.style.opacity = Math.random() * 0.6 + 0.4; // 0.4-1.0
+        
+        // 随机初始位置
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        // 应用动画
+        particle.style.animation = `float ${Math.random() * 8 + 5}s ease-in-out infinite`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        
+        container.appendChild(particle);
+    }
+}
 
+/**
+ * 更新测试进度时启动/更新粒子效果
+ * @param {number} progress - 当前进度百分比
+ */
+function updateTestParticles(progress) {
+    const container = document.getElementById('test-particle-animation');
+    if (!container) return;
+    
+    // 第一次更新时创建粒子
+    if (container.children.length === 0) {
+        createTestParticleAnimation();
+    }
+    
+    // 根据进度调整粒子活跃度
+    const particles = container.querySelectorAll('.particle');
+    particles.forEach(particle => {
+        // 随着进度增加粒子速度
+        const baseSpeed = 10; // 基础动画时间
+        const speedFactor = 1 - (progress / 200); // 进度越高，时间越短（速度越快）
+        const animationDuration = baseSpeed * speedFactor;
+        particle.style.animationDuration = `${Math.max(2, animationDuration)}s`;
+        
+        // 增加粒子亮度
+        particle.style.opacity = Math.min(1, 0.4 + (progress / 100) * 0.6);
+    });
+}
+
+/**
+ * 添加一个查看详细测试结果的按钮。
+ */
+ function addTestViewResultsButton() {
+    // 检查是否已经存在按钮
+    if (document.getElementById('test-view-detailed-results-btn')) {
+        return;
+    }
+
+    // 创建新按钮
+    const resultsBtn = document.createElement('button');
+    resultsBtn.id = 'test-view-detailed-results-btn';
+    resultsBtn.className = 'btn-primary px-8 py-3 text-lg flex items-center mt-6 mx-auto';
+    resultsBtn.innerHTML = '<span class="material-icons mr-2">assessment</span> 查看详细结果分析';
+
+    // 添加点击事件
+    resultsBtn.onclick = function() {
+        this.disabled = true;
+        this.innerHTML = '<span class="material-icons mr-2 animate-spin">refresh</span> 正在加载...';
+
+        try {
+            testManualViewResults();
+        } catch (error) {
+            console.error('查看测试结果错误:', error);
+            showToast('加载测试结果时出错: ' + error.message, 'error');
+        }
+
+        this.disabled = false;
+        this.innerHTML = '<span class="material-icons mr-2">assessment</span> 查看详细结果分析';
+    };
+
+    // 在测试进度区域添加按钮
+    const progressArea = document.getElementById('test-progress');
+    progressArea.appendChild(resultsBtn);
+}
+
+
+/**
+ * 手动查看测试结果并跳转到结果分析页。
+ */
+ function testManualViewResults() {
+    // 获取测试结果数据
+    const testData = window.lastTestProgress;
+    
+    // 切换到结果分析标签页
+    document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+    
+    document.querySelector('[data-tab="results"]').classList.add('active');
+    const resultsTab = document.getElementById('results-tab');
+    resultsTab.classList.remove('hidden');
+    
+    // 清空结果标签页内容，重新构建所需元素
+    resultsTab.innerHTML = '';
+    
+    if (testData && validateOptimizationResults(testData)) {
+        // 有数据时显示完整的结果卡片
+        const resultCard = document.createElement('div');
+        resultCard.className = 'card p-6 mb-8';
+        resultCard.innerHTML = `
+            <h2 class="text-xl font-bold mb-4">测试结果数据</h2>
+            <div class="bg-gray-800 p-4 rounded-lg mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-gray-700 rounded-lg text-center">
+                        <h3 class="text-sm text-gray-400 mb-2">大中片率</h3>
+                        <p class="text-3xl font-bold text-green-400">
+                            ${testData.result_metrics.big_medium_rate.toFixed(1)}%
+                        </p>
+                    </div>
+                    <div class="p-4 bg-gray-700 rounded-lg text-center">
+                        <h3 class="text-sm text-gray-400 mb-2">叶含梗率</h3>
+                        <p class="text-3xl font-bold text-green-400">
+                            ${testData.result_metrics.leaf_stem_rate.toFixed(1)}%
+                        </p>
+                    </div>
+                    <div class="p-4 bg-gray-700 rounded-lg text-center">
+                        <h3 class="text-sm text-gray-400 mb-2">梗含叶率</h3>
+                        <p class="text-3xl font-bold text-green-400">
+                            ${testData.result_metrics.stem_leaf_rate.toFixed(1)}%
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="text-xl font-bold mb-4">测试算法参数</h2>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="mb-2"><span class="font-bold">最优得分:</span> ${testData.best_score ? testData.best_score.toFixed(2) : '未知'}</p>
+                        <p class="mb-2"><span class="font-bold">迭代次数:</span> ${testData.iteration || 0}/${testData.max_iterations || '未知'}</p>
+                        <p class="mb-2"><span class="font-bold">优化方法:</span> ${testData.method || '未知'}</p>
+                    </div>
+                    <div>
+                        <p class="mb-2"><span class="font-bold">状态:</span> ${testData.status || '未知'}</p>
+                        <p class="mb-2"><span class="font-bold">完成时间:</span> ${testData.end_time ? new Date(testData.end_time).toLocaleString() : '未知'}</p>
+                        ${testData.result_file ? `<p class="mb-2"><span class="font-bold">结果文件:</span> ${testData.result_file.split('/').pop()}</p>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        resultsTab.appendChild(resultCard);
+        
+        // 如果有结果文件，添加下载和预览选项
+        if (testData.result_file) {
+            const downloadDiv = document.createElement('div');
+            downloadDiv.className = 'card p-6 mt-6';
+            
+            downloadDiv.innerHTML = `
+                <h2 class="text-xl font-bold mb-4">测试结果操作</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <button class="btn-primary px-6 py-3 text-lg inline-flex items-center">
+                            <span class="material-icons mr-2">download</span> 下载测试结果文件
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <button id="view-result-btn" class="btn-secondary px-6 py-3 text-lg inline-flex items-center">
+                            <span class="material-icons mr-2">visibility</span> 查看测试结果预览
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 结果预览区域 -->
+                <div id="optimization-result-preview" class="mt-6 hidden">
+                    <h3 class="text-lg font-bold mb-3">测试结果预览</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border border-gray-600">
+                            <thead class="bg-gray-800">
+                                <tr id="optimization-result-header"></tr>
+                            </thead>
+                            <tbody id="optimization-result-body"></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 结果操作按钮 -->
+                    <div class="flex justify-between mt-6">
+                        <div>
+                            <button id="save-to-db-btn" class="btn-success px-6 py-2 text-lg inline-flex items-center">
+                                <span class="material-icons mr-2">check_circle</span> 确认并保存到数据库
+                            </button>
+                        </div>
+                        <div>
+                            <button id="modify-result-btn" class="btn-warning px-6 py-2 text-lg inline-flex items-center">
+                                <span class="material-icons mr-2">edit</span> 修改结果
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 修改结果表单，默认隐藏 -->
+                    <div id="modify-result-form" class="mt-6 p-4 border border-gray-600 rounded hidden">
+                        <h3 class="text-lg font-bold mb-3">修改测试结果</h3>
+                        <div id="modify-result-fields" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                            <!-- 这里将由JavaScript动态填充表单字段 -->
+                        </div>
+                        <div class="flex justify-end mt-4 space-x-3">
+                            <button id="cancel-modify-btn" class="btn-secondary px-4 py-2">取消</button>
+                            <button id="save-modified-btn" class="btn-primary px-4 py-2">保存修改</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 绑定下载按钮点击事件
+            downloadDiv.querySelector('.btn-primary').onclick = function() {
+                const filename = testData.result_file.split('/').pop();
+                const downloadLink = document.createElement('a');
+                downloadLink.href = `/api/download_optimization_result_file/${filename}`;
+                downloadLink.download = filename;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                showToast(`正在下载文件: ${filename}`, 'success');
+            };
+            
+            resultsTab.appendChild(downloadDiv);
+            
+            // 绑定查看结果按钮事件
+            const viewResultBtn = downloadDiv.querySelector('#view-result-btn');
+            if (viewResultBtn) {
+                viewResultBtn.addEventListener('click', function() {
+                    const resultPreviewDiv = document.getElementById('optimization-result-preview');
+                    
+                    // 切换预览区域的显示/隐藏状态
+                    if (resultPreviewDiv.classList.contains('hidden')) {
+                        resultPreviewDiv.classList.remove('hidden');
+                        loadOptimizationResultPreview(testData.result_file);
+                    } else {
+                        resultPreviewDiv.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // 绑定保存到数据库按钮事件
+            const saveToDbBtn = downloadDiv.querySelector('#save-to-db-btn');
+            if (saveToDbBtn) {
+                saveToDbBtn.addEventListener('click', function() {
+                    saveResultToDatabase(testData.result_file);
+                });
+            }
+            
+            // 绑定修改结果按钮事件
+            const modifyResultBtn = downloadDiv.querySelector('#modify-result-btn');
+            if (modifyResultBtn) {
+                modifyResultBtn.addEventListener('click', function() {
+                    const modifyForm = document.getElementById('modify-result-form');
+                    modifyForm.classList.toggle('hidden');
+                    
+                    // 只有在首次点击时加载表单
+                    if (!modifyForm.dataset.loaded) {
+                        loadModifyResultForm(testData.result_file);
+                        modifyForm.dataset.loaded = 'true';
+                    }
+                });
+            }
+            
+            // 绑定取消修改按钮事件
+            const cancelModifyBtn = downloadDiv.querySelector('#cancel-modify-btn');
+            if (cancelModifyBtn) {
+                cancelModifyBtn.addEventListener('click', function() {
+                    document.getElementById('modify-result-form').classList.add('hidden');
+                });
+            }
+            
+            // 绑定保存修改按钮事件
+        const saveModifiedBtn = downloadDiv.querySelector('#save-modified-btn');
+        if (saveModifiedBtn) {
+            saveModifiedBtn.addEventListener('click', function() {
+                try {
+                    // 将测试数据临时保存到优化数据变量中
+                    const originalOptimizationData = window.optimizationData;
+                    const originalLastProgress = window.lastOptimizationProgress;
+                    
+                    // 设置全局变量为测试数据
+                    window.optimizationData = testData;
+                    window.lastOptimizationProgress = testData;
+                    
+                    // 调用原有的保存函数
+                    saveModifiedResultToDatabase();
+                    
+                    // 显示成功消息
+                    showToast('测试结果修改已保存', 'success');
+                    
+                    // 恢复原始优化数据变量（如果有）
+                    setTimeout(() => {
+                        if (originalOptimizationData) window.optimizationData = originalOptimizationData;
+                        if (originalLastProgress) window.lastOptimizationProgress = originalLastProgress;
+                    }, 1000);
+                } catch (error) {
+                    console.error('保存修改的测试结果时出错:', error);
+                    showToast('保存测试结果修改失败: ' + error.message, 'error');
+                }
+            });
+        }
+        }
+    } else {
+        // 无数据时显示提示
+        const noDataCard = document.createElement('div');
+        noDataCard.className = 'card p-6';
+        noDataCard.innerHTML = `
+            <div class="text-center py-12">
+                <span class="material-icons text-5xl text-gray-600 mb-4">info</span>
+                <h3 class="text-xl font-bold mb-2">无可用的测试结果数据</h3>
+                <p class="text-gray-500">未找到有效的测试结果，请确保测试已成功完成</p>
+            </div>
+        `;
+        resultsTab.appendChild(noDataCard);
+        showToast('没有可用的测试结果数据', 'error');
+    }
+}
 </script>
-
-<!-- 参数趋势预览模态框 -->
-<div id="trend-preview-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 1200px; width: 95%;">
-        <div class="modal-header">
-            <h3 id="trend-modal-title" class="text-xl font-bold">参数趋势预览</h3>
-            <button class="modal-close-btn" onclick="closeTrendPreviewModal()">
-                <span class="material-icons">close</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div id="trend-loading" class="text-center py-8">
-                <div class="spinner"></div>
-                <p class="mt-2 text-gray-400">正在生成趋势预览...</p>
-            </div>
-            <div id="trend-charts-container" style="display: none;">
-                <!-- 三个独立的图表容器 -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                    <!-- 大中片率图表 -->
-                    <div class="chart-container bg-gray-800 p-4 rounded-lg">
-                        <canvas id="trend-chart-1" width="300" height="250"></canvas>
-                    </div>
-                    
-                    <!-- 叶含梗率图表 -->
-                    <div class="chart-container bg-gray-800 p-4 rounded-lg">
-                        <canvas id="trend-chart-2" width="300" height="250"></canvas>
-                    </div>
-                    
-                    <!-- 梗含叶率图表 -->
-                    <div class="chart-container bg-gray-800 p-4 rounded-lg">
-                        <canvas id="trend-chart-3" width="300" height="250"></canvas>
-                    </div>
-                </div>
-                
-                <!-- 趋势分析总结 -->
-                <div id="trend-insights" class="p-4 bg-gray-800 rounded-lg">
-                    <h4 class="font-bold mb-3 flex items-center">
-                        <span class="material-icons mr-2">analytics</span>
-                        趋势分析总结
-                    </h4>
-                    <div id="trend-insights-content" class="space-y-3"></div>
-                </div>
-                
-                <!-- 操作建议 -->
-                <div id="trend-recommendations" class="mt-4 p-4 bg-blue-900 bg-opacity-30 rounded-lg border border-blue-500">
-                    <h4 class="font-bold mb-3 flex items-center text-blue-300">
-                        <span class="material-icons mr-2">lightbulb</span>
-                        优化建议
-                    </h4>
-                    <div id="trend-recommendations-content" class="text-sm text-blue-200">
-                        <!-- 建议内容将由JavaScript动态生成 -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>
