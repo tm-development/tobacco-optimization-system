@@ -305,12 +305,16 @@ def optimize_parameters():
             'method': optimization_method,
             'input_mode': input_mode
         }
+        
+        # 如果是手动输入模式，保存输入参数
+        if input_mode == 'manual':
+            optimization_progress[task_id]['input_parameters'] = manual_parameters
 
         # 在后台线程中执行优化
         import threading
         thread = threading.Thread(
             target=run_optimization,
-            args=(task_id, target_values, constraints, max_iterations, population_size, input_mode, manual_parameters)
+            args=(task_id, target_values, constraints, max_iterations, population_size, input_mode, manual_parameters if input_mode == 'manual' else None)
         )
         thread.daemon = True
         thread.start()
@@ -347,6 +351,8 @@ def run_optimization(task_id, target_values, constraints, max_iterations, popula
             print(f"📊 手动输入参数数量: {len(manual_parameters)}")
             print(f"📊 固定分类参数: {fixed_categorical_params}")
             
+            # 保存手动输入参数到优化进度中
+            optimization_progress[task_id]['input_parameters'] = manual_parameters
         else:
             print(f"📁 使用文件模式进行优化")
             
@@ -1181,12 +1187,18 @@ def save_optimization_result_to_database():
             return jsonify({'success': False, 'message': '未提供文件路径'})
             
         file_path_from_request = data['file_path']
-            
-        # 从请求路径中提取纯文件名
         filename = os.path.basename(file_path_from_request)
-        if '..' in filename:  # 安全检查
-            return jsonify({'success': False, 'message': '无效的文件名'})
-
+        
+        # 从文件名中提取任务ID
+        task_id = filename.replace('optimization_result_', '').replace('.csv', '')
+        
+        # 获取手动输入参数（如果存在）
+        input_params_json = None
+        if task_id in optimization_progress:
+            input_params = optimization_progress[task_id].get('input_parameters')
+            if input_params:
+                input_params_json = json.dumps(input_params, ensure_ascii=False)
+        
         # 使用项目根目录构建绝对路径
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
         abs_file_path = os.path.join(base_dir, 'uploads', 'data', 'results', filename)
@@ -1194,8 +1206,6 @@ def save_optimization_result_to_database():
         if not os.path.exists(abs_file_path):
             return jsonify({'success': False, 'message': f'文件不存在: {abs_file_path}'})
         
-        # 从文件名中提取任务ID
-        task_id = filename.replace('optimization_result_', '').replace('.csv', '')
         # 读取CSV文件最后一行（通常是最优结果）
         df = pd.read_csv(abs_file_path, encoding='gbk')
         
@@ -1225,7 +1235,6 @@ def save_optimization_result_to_database():
             if key in best_result:
                 try:
                     value = best_result[key]
-                    # 使用 pandas.notna 检查以正确处理 NaN 和 None
                     metrics_json[key] = float(value) if pd.notna(value) else None
                 except (ValueError, TypeError):
                     metrics_json[key] = None
@@ -1234,17 +1243,21 @@ def save_optimization_result_to_database():
         existing_result = OptimizationResult.query.filter_by(task_id=task_id).first()
         
         if existing_result:
-            # 更新现有记录
+            # 更新现有记录 - 同时保存到两个列
+            existing_result.input_parameters = input_params_json
             existing_result.parameters = json.dumps(params_json, ensure_ascii=False)
+            existing_result.modified_parameters = json.dumps(params_json, ensure_ascii=False)  # 同样的数据
             existing_result.metrics = json.dumps(metrics_json, ensure_ascii=False)
             existing_result.updated_at = datetime.now()
-            existing_result.is_modified = False
+            existing_result.is_modified = False  # 标记为未修改状态
             existing_result.file_path = abs_file_path
         else:
-            # 创建新记录
+            # 创建新记录 - 同时保存到两个列
             new_result = OptimizationResult(
                 task_id=task_id,
+                input_parameters=input_params_json,
                 parameters=json.dumps(params_json, ensure_ascii=False),
+                modified_parameters=json.dumps(params_json, ensure_ascii=False),  # 同样的数据
                 metrics=json.dumps(metrics_json, ensure_ascii=False),
                 file_path=abs_file_path,
                 created_at=datetime.now(),
@@ -1257,16 +1270,14 @@ def save_optimization_result_to_database():
         
         return jsonify({
             'success': True,
-            'message': '优化结果已成功保存到数据库',
+            'message': '优化结果已成功保存到数据库（同时保存到parameters和modified_parameters列）',
             'task_id': task_id
         })
         
     except Exception as e:
         # 回滚数据库事务
         db.session.rollback()
-        #current_app.logger.error(f"保存优化结果到数据库错误: {traceback.format_exc()}")
         return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
-
 @parameter_optimization.route('/api/save_modified_result_to_database', methods=['POST'])
 @user_or_admin_required
 def save_modified_result_to_database():
@@ -1303,23 +1314,23 @@ def save_modified_result_to_database():
             if key in best_result:
                 best_result[key] = value
 
-        params_json = {}
-        metrics_json = {}
+        # 分别处理修改后的参数和指标
+        modified_params_json = {}
+        modified_metrics_json = {}
 
         for key in categorical_vars.keys():
             if key in best_result:
-                params_json[key] = best_result[key]
+                modified_params_json[key] = best_result[key]
 
         for key in numeric_vars:
             if key in best_result:
                 try:
                     float_val = float(best_result[key])
-                    params_json[key] = float_val
+                    modified_params_json[key] = float_val
                     best_result[key] = float_val
                 except (ValueError, TypeError):
-                    params_json[key] = None
+                    modified_params_json[key] = None
                     best_result[key] = None
-                    current_app.logger.warning(f"Cannot convert value for numeric key '{key}'.")
 
         # 指标数据 - 使用中文键
         metric_keys = ['大中片率', '叶含梗率', '梗含叶率', '综合得分']
@@ -1327,13 +1338,13 @@ def save_modified_result_to_database():
             if key in best_result:
                 try:
                     float_val = float(best_result[key])
-                    metrics_json[key] = float_val
+                    modified_metrics_json[key] = float_val
                     best_result[key] = float_val
                 except (ValueError, TypeError):
-                    metrics_json[key] = None
+                    modified_metrics_json[key] = None
                     best_result[key] = None
-                    current_app.logger.warning(f"Cannot convert value for metric key '{key}'.")
         
+        # 保存修改后的CSV文件
         last_row_index = df.index[-1]
         for key, value in best_result.items():
             if key in df.columns:
@@ -1345,36 +1356,28 @@ def save_modified_result_to_database():
         existing_result = OptimizationResult.query.filter_by(task_id=task_id).first()
         
         if existing_result:
-            existing_result.parameters = json.dumps(params_json, ensure_ascii=False)
-            existing_result.metrics = json.dumps(metrics_json, ensure_ascii=False)
+            # 保持原始参数不变，只更新修改后的参数列
+            existing_result.modified_parameters = json.dumps(modified_params_json, ensure_ascii=False)
+            existing_result.modified_metrics = json.dumps(modified_metrics_json, ensure_ascii=False)
             existing_result.updated_at = datetime.now()
             existing_result.is_modified = True
             existing_result.file_path = modified_file_path
         else:
-            new_result = OptimizationResult(
-                task_id=task_id,
-                parameters=json.dumps(params_json, ensure_ascii=False),
-                metrics=json.dumps(metrics_json, ensure_ascii=False),
-                file_path=modified_file_path,
-                created_at=datetime.now(),
-                is_modified=True
-            )
-            db.session.add(new_result)
+            # 如果不存在原始记录，先创建原始记录
+            return jsonify({'success': False, 'message': '请先保存原始优化结果到数据库'})
         
         db.session.commit()
         
         return jsonify({
             'success': True,
-            'message': '修改后的优化结果已成功保存到数据库',
+            'message': '修改后的优化结果已保存到新列',
             'task_id': task_id,
             'modified_file_path': modified_file_path
         })
         
     except Exception as e:
         db.session.rollback()
-        #current_app.logger.error(f"--- ERROR in save_modified_result_to_database ---\n{traceback.format_exc()}")
         return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
-
 
 @parameter_optimization.route('/api/predict_parameter_impact', methods=['POST'])
 @user_or_admin_required
@@ -1717,3 +1720,7 @@ def predict_with_rbfnn_enhanced(parameters):
 def predict_with_rbfnn(parameters_data):
     """兼容性包装函数，调用增强版本"""
     return predict_with_rbfnn_enhanced(parameters_data)
+
+
+
+

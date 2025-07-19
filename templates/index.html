@@ -702,7 +702,7 @@
         <div class="tab-button" data-tab="model">模型管理</div>
         <div class="tab-button" data-tab="optimization">参数优化</div>
         <div class="tab-button" data-tab="results">结果分析</div>
-        <div class="tab-button" data-tab="test">测试</div>
+        <div class="tab-button" data-tab="test">领域专家模型优化部署</div>
     </div>
     <!-- 内容区域 -->
     <div id="content-area">
@@ -1230,10 +1230,10 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div>
-                <h3 class="text-lg font-bold mb-4">优化目标</h3>
-                <select id="optimization-target" class="param-input">
-                    <option value="quality">最大化质量评分</option>
-                    <option value="custom">自定义目标值</option>
+                <h3 class="text-lg font-bold mb-4">优化模式选择</h3>
+                <select id="optimization-mode" class="param-input" onchange="toggleTargetSettings()">
+                    <option value="auto">自动优化</option>
+                    <option value="manual">目标值优化</option>
                 </select>
             </div>
 
@@ -1259,7 +1259,7 @@
             </div>
         </div>
 
-        <div class="mb-6">
+        <div class="mb-6 hidden" id="target-values-settings">
             <h3 class="text-lg font-bold mb-4">目标值设置</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-700">
@@ -1271,12 +1271,6 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             目标值
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            最小值
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            最大值
-                        </th>
                     </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-800">
@@ -1284,28 +1278,16 @@
                         <td class="px-4 py-3">大中片率</td>
                         <td class="px-4 py-3"><input type="number" id="big-medium-target"
                                                      class="param-input w-20" value="80"></td>
-                        <td class="px-4 py-3"><input type="number" id="big-medium-min" class="param-input w-20"
-                                                     value="75"></td>
-                        <td class="px-4 py-3"><input type="number" id="big-medium-max" class="param-input w-20"
-                                                     value="82"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3">叶含梗率</td>
                         <td class="px-4 py-3"><input type="number" id="leaf-stem-target"
                                                      class="param-input w-20" value="1.0" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="leaf-stem-min" class="param-input w-20"
-                                                     value="0.8" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="leaf-stem-max" class="param-input w-20"
-                                                     value="1.5" step="0.1"></td>
                     </tr>
                     <tr>
                         <td class="px-4 py-3">梗含叶率</td>
                         <td class="px-4 py-3"><input type="number" id="stem-leaf-target"
                                                      class="param-input w-20" value="0.5" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="stem-leaf-min" class="param-input w-20"
-                                                     value="0.3" step="0.1"></td>
-                        <td class="px-4 py-3"><input type="number" id="stem-leaf-max" class="param-input w-20"
-                                                     value="0.7" step="0.1"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -1632,10 +1614,10 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div>
-                        <h3 class="text-lg font-bold mb-4">优化目标</h3>
-                        <select id="test-optimization-target" class="param-input">
-                            <option value="quality">最大化质量评分</option>
-                            <option value="custom">自定义目标值</option>
+                        <h3 class="text-lg font-bold mb-4">优化模式选择</h3>
+                        <select id="test-optimization-mode" class="param-input" onchange="toggleTestTargetSettings()">
+                            <option value="auto">自动优化</option>
+                            <option value="manual">目标值优化</option>
                         </select>
                     </div>
 
@@ -1661,7 +1643,7 @@
                     </div>
                 </div>
 
-                <div class="mb-6">
+                <div class="mb-6 hidden" id="test-target-values-settings">
                     <h3 class="text-lg font-bold mb-4">目标值设置</h3>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-700">
@@ -1673,12 +1655,6 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                                     目标值
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                    最小值
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                    最大值
-                                </th>
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-800">
@@ -1686,28 +1662,16 @@
                                 <td class="px-4 py-3">大中片率</td>
                                 <td class="px-4 py-3"><input type="number" id="test-big-medium-target"
                                                             class="param-input w-20" value="80"></td>
-                                <td class="px-4 py-3"><input type="number" id="test-big-medium-min" class="param-input w-20"
-                                                            value="75"></td>
-                                <td class="px-4 py-3"><input type="number" id="test-big-medium-max" class="param-input w-20"
-                                                            value="82"></td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-3">叶含梗率</td>
                                 <td class="px-4 py-3"><input type="number" id="test-leaf-stem-target"
                                                             class="param-input w-20" value="1.0" step="0.1"></td>
-                                <td class="px-4 py-3"><input type="number" id="test-leaf-stem-min" class="param-input w-20"
-                                                            value="0.8" step="0.1"></td>
-                                <td class="px-4 py-3"><input type="number" id="test-leaf-stem-max" class="param-input w-20"
-                                                            value="1.5" step="0.1"></td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-3">梗含叶率</td>
                                 <td class="px-4 py-3"><input type="number" id="test-stem-leaf-target"
                                                             class="param-input w-20" value="0.5" step="0.1"></td>
-                                <td class="px-4 py-3"><input type="number" id="test-stem-leaf-min" class="param-input w-20"
-                                                            value="0.3" step="0.1"></td>
-                                <td class="px-4 py-3"><input type="number" id="test-stem-leaf-max" class="param-input w-20"
-                                                            value="0.7" step="0.1"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -3346,6 +3310,10 @@ function initializeHome() {
 function startOptimization() {
     console.log('🚀 开始参数优化...');
 
+    // 获取优化模式
+    const optimizationMode = document.getElementById('optimization-mode').value;
+    console.log('🔧 优化模式:', optimizationMode);
+
     // 检查当前输入模式
     const isManualMode = !document.getElementById('manual-input-mode').classList.contains('hidden');
     
@@ -3363,35 +3331,24 @@ function startOptimization() {
         }
     }
 
-    // 收集参数设置
-    const targetValues = {
-        big_medium_rate: parseFloat(document.getElementById('big-medium-target').value),
-        leaf_stem_rate: parseFloat(document.getElementById('leaf-stem-target').value),
-        stem_leaf_rate: parseFloat(document.getElementById('stem-leaf-target').value)
-    };
-
-    const constraints = {
-        big_medium_rate: {
-            min: parseFloat(document.getElementById('big-medium-min').value),
-            max: parseFloat(document.getElementById('big-medium-max').value)
-        },
-        leaf_stem_rate: {
-            min: parseFloat(document.getElementById('leaf-stem-min').value),
-            max: parseFloat(document.getElementById('leaf-stem-max').value)
-        },
-        stem_leaf_rate: {
-            min: parseFloat(document.getElementById('stem-leaf-min').value),
-            max: parseFloat(document.getElementById('stem-leaf-max').value)
-        }
-    };
-
+    // 准备优化数据
     const optimizationData = {
-        target_values: targetValues,
-        constraints: constraints,
+        optimization_mode: optimizationMode,  // 添加优化模式
         method: document.getElementById('algorithm-selection').value,
         max_iterations: parseInt(document.getElementById('max-iterations').value),
         population_size: parseInt(document.getElementById('population-size').value)
     };
+
+    // 只有在目标值优化模式下才收集目标值设置
+    if (optimizationMode === 'manual') {
+        const targetValues = {
+            big_medium_rate: parseFloat(document.getElementById('big-medium-target').value),
+            leaf_stem_rate: parseFloat(document.getElementById('leaf-stem-target').value),
+            stem_leaf_rate: parseFloat(document.getElementById('stem-leaf-target').value)
+        };
+
+        optimizationData.target_values = targetValues;
+    }
 
     // 根据输入模式添加相应的数据
     if (isManualMode) {
@@ -3401,6 +3358,8 @@ function startOptimization() {
         optimizationData.input_mode = 'file';
         // 文件模式下后端会使用已上传的文件
     }
+
+    console.log('📋 优化参数:', optimizationData);
 
     // 显示优化进度区域
     document.getElementById('optimization-placeholder').classList.add('hidden');
@@ -4641,6 +4600,51 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// 切换目标值设置显示/隐藏
+function toggleTargetSettings() {
+    const optimizationMode = document.getElementById('optimization-mode').value;
+    const targetValuesSettings = document.getElementById('target-values-settings');
+    
+    if (optimizationMode === 'manual') {
+        // 目标值优化模式：显示目标值设置
+        targetValuesSettings.style.display = 'block';
+        targetValuesSettings.classList.remove('hidden');
+    } else {
+        // 自动优化模式：隐藏目标值设置
+        targetValuesSettings.style.display = 'none';
+        targetValuesSettings.classList.add('hidden');
+    }
+    
+    console.log(`🔄 优化模式切换: ${optimizationMode}, 目标值设置${optimizationMode === 'manual' ? '显示' : '隐藏'}`);
+}
+
+// 测试模块：切换目标值设置显示/隐藏
+function toggleTestTargetSettings() {
+    const optimizationMode = document.getElementById('test-optimization-mode').value;
+    const targetValuesSettings = document.getElementById('test-target-values-settings');
+    
+    if (optimizationMode === 'manual') {
+        // 目标值优化模式：显示目标值设置
+        targetValuesSettings.style.display = 'block';
+        targetValuesSettings.classList.remove('hidden');
+    } else {
+        // 自动优化模式：隐藏目标值设置
+        targetValuesSettings.style.display = 'none';
+        targetValuesSettings.classList.add('hidden');
+    }
+    
+    console.log(`🔄 测试模块优化模式切换: ${optimizationMode}, 目标值设置${optimizationMode === 'manual' ? '显示' : '隐藏'}`);
+}
+
+// 页面加载时初始化目标值设置的显示状态
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化目标值设置显示状态
+    setTimeout(() => {
+        toggleTargetSettings();
+        toggleTestTargetSettings(); // 同时初始化测试模块的目标值设置
+    }, 100);
+});
+
 // 重置手动输入参数
 function resetManualInputs() {
     const defaultValues = {
@@ -4907,7 +4911,7 @@ function loadModifyResultForm(resultFilePath) {
                         data-current-value="${value}" 
                         data-result-file="${resultFilePath}">
                   <span class="material-icons">trending_up</span>
-                  预览
+                  影响分析
                 </button>
               </div>
             `;
@@ -5957,32 +5961,26 @@ function collectTestParameters() {
         }
     });
 
+    // 获取优化模式
+    const optimizationMode = document.getElementById('test-optimization-mode').value;
+    
     const settings = {
         input_mode: 'manual',
         method: document.getElementById('test-algorithm-selection').value,
         max_iterations: parseInt(document.getElementById('test-max-iterations').value, 10),
         population_size: parseInt(document.getElementById('test-population-size').value, 10),
-        target_values: {
+        manual_parameters: manualInputs
+    };
+
+    // 只在目标值优化模式下收集目标值
+    if (optimizationMode === 'manual') {
+        settings.target_values = {
             big_medium_rate: parseFloat(document.getElementById('test-big-medium-target').value),
             leaf_stem_rate: parseFloat(document.getElementById('test-leaf-stem-target').value),
             stem_leaf_rate: parseFloat(document.getElementById('test-stem-leaf-target').value)
-        },
-        constraints: {
-            big_medium_rate: { 
-                min: parseFloat(document.getElementById('test-big-medium-min').value), 
-                max: parseFloat(document.getElementById('test-big-medium-max').value) 
-            },
-            leaf_stem_rate: { 
-                min: parseFloat(document.getElementById('test-leaf-stem-min').value), 
-                max: parseFloat(document.getElementById('test-leaf-stem-max').value) 
-            },
-            stem_leaf_rate: { 
-                min: parseFloat(document.getElementById('test-stem-leaf-min').value), 
-                max: parseFloat(document.getElementById('test-stem-leaf-max').value) 
-            }
-        },
-        manual_parameters: manualInputs
-    };
+        };
+    }
+
     console.log("📊 收集到的测试参数:", settings);
     return settings;
 }
