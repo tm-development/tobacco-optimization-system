@@ -16,6 +16,10 @@ from .user_management import user_or_admin_required
 from werkzeug.utils import secure_filename
 import json
 from ..models import db, OptimizationResult  # 导入数据库模型
+# 添加以下代码来忽略sklearn版本警告
+import warnings
+from sklearn.exceptions import InconsistentVersionWarning
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 parameter_optimization = Blueprint('parameter_optimization', __name__)
 @parameter_optimization.route('/api/test', methods=['GET'])
@@ -242,6 +246,7 @@ def optimize_parameters():
                 "待加工原烟数据记录_水份（%）",
                 "待加工原烟数据记录_温度（℃）",
                 "待加工原烟数据记录_烟碱含量（%）",
+                "待加工原烟数据记录_质量属性（稍差、合格、稍强）",  # 添加质量属性验证
                 "待加工原烟数据记录_叶梗比（%）",
                 "待加工原烟数据记录_环境温度（℃）",
                 "待加工原烟数据记录_环境湿度（%）",
@@ -337,13 +342,20 @@ def run_optimization(task_id, target_values, constraints, max_iterations, popula
         # 根据输入模式获取固定参数
         if input_mode == 'manual':
             print(f"🔧 使用手动输入参数进行优化")
+            print(f"🔍 接收到的手动参数: {manual_parameters}")
+            # 手动输入模式：从前端获取质量属性，而不是强制设为"合格"
+            quality_attr = manual_parameters.get(
+                "待加工原烟数据记录_质量属性（稍差、合格、稍强）", 
+                "合格"  # 如果前端没传，则使用默认值
+            )
             
-            # 手动输入模式：构造固定参数
-            # 添加默认的分类参数
             fixed_categorical_params = {
-                "待加工原烟数据记录_质量属性（稍差、合格、稍强）": "合格"  # 默认值
+                "待加工原烟数据记录_质量属性（稍差、合格、稍强）": quality_attr
             }
-            
+
+            print(f"📊 质量属性设置为: {quality_attr}")
+            print(f"📊 手动输入参数数量: {len(manual_parameters)}")
+            print(f"📊 固定分类参数: {fixed_categorical_params}")
             # 将手动参数列表化，便于后续处理
             fixed_categorical_param_list = [fixed_categorical_params]
             fixed_numeric_param_list = [manual_parameters]

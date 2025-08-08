@@ -14,5 +14,7 @@ python-dateutil==2.8.2
 itsdangerous==2.1.2
 PyJWT==2.8.0
 Flask-SQLAlchemy==3.0.5
+# MySQL 依赖（可选，当DATABASE_TYPE=mysql时需要）
 PyMySQL==1.1.0
 cryptography==41.0.3  # 用于PyMySQL的SSL支持
+# SQLite 已内置在Python中，无需额外依赖

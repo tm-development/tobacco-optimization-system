@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>烟草生产优化系统</title>
+    <title>天昌智慧复烤专家大模型系统</title>
     <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      href="{{ url_for('static', filename='css/tailwind.min.css') }}"
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      href="{{ url_for('static', filename='css/material-icons.css') }}"
       rel="stylesheet"
     />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
     <style>
       :root {
         --primary: #2e7d32;
@@ -23,6 +23,85 @@
         --card-bg: #1e1e1e;
         --text-primary: #e0e0e0;
         --text-secondary: #9e9e9e;
+      }
+
+      /* 修复测试模块的粒子动画样式 */
+      #test-particle-animation {
+        position: relative;
+        height: 120px;
+        overflow: hidden;
+        border-radius: 12px;
+        background: linear-gradient(
+          45deg,
+          rgba(46, 125, 50, 0.1),
+          rgba(30, 30, 30, 0.8)
+        );
+      }
+
+      #test-particle-animation .particle {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+      }
+
+      /* 添加粒子浮动动画 */
+      @keyframes float {
+        0% {
+          transform: translate(0, 0) rotate(0deg);
+          opacity: 0.7;
+        }
+        25% {
+          transform: translate(30px, -20px) rotate(90deg);
+          opacity: 0.9;
+        }
+        50% {
+          transform: translate(-20px, -40px) rotate(180deg);
+          opacity: 0.5;
+        }
+        75% {
+          transform: translate(-40px, -10px) rotate(270deg);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translate(0, 0) rotate(360deg);
+          opacity: 0.7;
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-15px);
+        }
+      }
+
+      /* 为不同的粒子提供不同的动画效果 */
+      #test-particle-animation .particle:nth-child(3n) {
+        animation: float 2s ease-in-out infinite;
+      }
+
+      #test-particle-animation .particle:nth-child(3n + 1) {
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      #test-particle-animation .particle:nth-child(3n + 2) {
+        animation: bounce 1s ease-in-out infinite;
       }
 
       body {
@@ -683,6 +762,109 @@
           height: 200px !important;
         }
       }
+
+      /* 参数范围设置样式 */
+      .param-with-range-setting {
+        position: relative;
+        background: rgba(31, 41, 55, 0.5);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .param-with-range-setting:hover {
+        border-color: rgba(59, 130, 246, 0.5);
+        background: rgba(31, 41, 55, 0.7);
+      }
+
+      .param-main-input {
+        margin-bottom: 8px;
+      }
+
+      .param-range-settings {
+        background: rgba(17, 24, 39, 0.8);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        border-radius: 6px;
+        padding: 12px;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .param-range-settings.show {
+        display: block !important;
+      }
+
+      .param-range-toggle-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.5);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #60a5fa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .param-range-toggle-btn:hover {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.7);
+        color: #93c5fd;
+        transform: scale(1.1);
+      }
+
+      .param-range-toggle-btn.active {
+        background: rgba(59, 130, 246, 0.5);
+        border-color: #3b82f6;
+        color: white;
+      }
+
+      .param-range-toggle-btn .material-icons {
+        font-size: 18px;
+      }
+
+      /* 范围输入框样式 */
+      .param-range-settings .param-input {
+        font-size: 12px;
+        padding: 6px 8px;
+        height: auto;
+      }
+
+      .param-group {
+        background: rgba(17, 24, 39, 0.3);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+      }
+
+      .param-group h4 {
+        border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 640px) {
+        .param-range-settings .grid {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        
+        .param-range-toggle-btn {
+          position: static;
+          margin-top: 8px;
+          width: 100%;
+          border-radius: 6px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -691,11 +873,15 @@
       <div class="flex justify-between items-center mb-10">
         <div class="flex items-center">
           <div
-            class="w-12 h-12 rounded-full bg-green-700 flex items-center justify-center mr-4"
+            class="w-12 h-12 rounded-full bg-white flex items-center justify-center mr-4"
           >
-            <span class="material-icons text-white">local_florist</span>
+            <img
+              src="{{ url_for('static', filename='image/logo/tct.png') }}"
+              alt="天昌智慧复烤"
+              class="w-8 h-8 object-contain"
+            />
           </div>
-          <h1 class="text-2xl font-bold">烟草生产优化系统</h1>
+          <h1 class="text-2xl font-bold">天昌智慧复烤专家大模型系统</h1>
         </div>
         <div class="flex space-x-4">
           <button
@@ -1132,9 +1318,9 @@
                       >待加工原烟数据记录_质量属性（稍差、合格、稍强）</label
                     >
                     <select class="param-input">
-                      <option>合格</option>
-                      <option>稍差</option>
-                      <option>稍强</option>
+                      <option value="稍差">较好</option>
+                      <option value="合格" selected>良好</option>
+                      <option value="稍强">优秀</option>
                     </select>
                   </div>
                   <div>
@@ -1835,6 +2021,18 @@
                           step="0.1"
                         />
                       </div>
+                      <!-- 添加质量属性选择框 -->
+                      <label class="block text-sm font-medium mb-1"
+                        >质量属性</label
+                      >
+                      <select
+                        id="manual-待加工原烟数据记录_质量属性（稍差、合格、稍强）"
+                        class="param-input"
+                      >
+                        <option value="稍差">较好</option>
+                        <option value="合格" selected>良好</option>
+                        <option value="稍强">优秀</option>
+                      </select>
                       <div>
                         <label class="block text-sm font-medium mb-1"
                           >叶梗比（%）</label
@@ -2446,421 +2644,1755 @@
                   <h4 class="text-lg font-bold mb-4">请输入以下参数值：</h4>
 
                   <!-- 参数输入网格 -->
-                  <div
-                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                  >
+                  <div class="space-y-4">
                     <!-- 待加工原烟数据记录 -->
-                    <div class="space-y-4">
-                      <h5
-                        class="font-semibold text-green-400 border-b border-green-400 pb-2"
-                      >
-                        待加工原烟数据记录
-                      </h5>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >水份（%）</label
+                    <div class="param-group">
+                      <h4 class="text-lg font-semibold mb-3 text-blue-400">待加工原烟数据记录</h4>
+                      
+                      <!-- 水份参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            水份（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-待加工原烟数据记录_水份（%）"
+                            class="param-input"
+                            value="20.2"
+                            step="0.1"
+                            min="0"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-待加工原烟数据记录_水份（%）"
+                                class="param-input text-xs"
+                                value="15"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-待加工原烟数据记录_水份（%）"
+                                class="param-input text-xs"
+                                value="25"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-待加工原烟数据记录_水份（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('待加工原烟数据记录_水份（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-待加工原烟数据记录_水份（%）"
-                          class="param-input"
-                          value="20.2"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >温度（℃）</label
+
+                      <!-- 温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-待加工原烟数据记录_温度（℃）"
+                            class="param-input"
+                            value="25.0"
+                            step="0.1"
+                            min="0"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-待加工原烟数据记录_温度（℃）"
+                                class="param-input text-xs"
+                                value="15"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-待加工原烟数据记录_温度（℃）"
+                                class="param-input text-xs"
+                                value="35"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-待加工原烟数据记录_温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('待加工原烟数据记录_温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-待加工原烟数据记录_温度（℃）"
-                          class="param-input"
-                          value="25.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >烟碱含量（%）</label
+
+                      <!-- 烟碱含量参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            烟碱含量（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-待加工原烟数据记录_烟碱含量（%）"
+                            class="param-input"
+                            value="2.5"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-待加工原烟数据记录_烟碱含量（%）"
+                                class="param-input text-xs"
+                                value="1"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-待加工原烟数据记录_烟碱含量（%）"
+                                class="param-input text-xs"
+                                value="4"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-待加工原烟数据记录_烟碱含量（%）"
+                                class="param-input text-xs"
+                                value="10"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('待加工原烟数据记录_烟碱含量（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-待加工原烟数据记录_烟碱含量（%）"
-                          class="param-input"
-                          value="2.5"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
+
+                      <!-- 质量属性选择框（保持原样） -->
                       <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >叶梗比（%）</label
-                        >
-                        <input
-                          type="number"
-                          id="test-manual-待加工原烟数据记录_叶梗比（%）"
+                        <label class="block text-sm font-medium mb-1">质量属性</label>
+                        <select
+                          id="test-manual-待加工原烟数据记录_质量属性（稍差、合格、稍强）"
                           class="param-input"
-                          value="15.0"
-                          step="0.1"
-                        />
+                        >
+                          <option value="稍差">较好</option>
+                          <option value="合格" selected>良好</option>
+                          <option value="稍强">优秀</option>
+                        </select>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境温度（℃）</label
+
+                      <!-- 叶梗比参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            叶梗比（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-待加工原烟数据记录_叶梗比（%）"
+                            class="param-input"
+                            value="15.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-待加工原烟数据记录_叶梗比（%）"
+                                class="param-input text-xs"
+                                value="10"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-待加工原烟数据记录_叶梗比（%）"
+                                class="param-input text-xs"
+                                value="20"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-待加工原烟数据记录_叶梗比（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('待加工原烟数据记录_叶梗比（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-待加工原烟数据记录_环境温度（℃）"
-                          class="param-input"
-                          value="22.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境湿度（%）</label
+
+                      <!-- 环境温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-待加工原烟数据记录_环境温度（℃）"
+                            class="param-input"
+                            value="22.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-待加工原烟数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="18"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-待加工原烟数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="28"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-待加工原烟数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('待加工原烟数据记录_环境温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-待加工原烟数据记录_环境湿度（%）"
-                          class="param-input"
-                          value="60.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
+                      </div>
+
+                      <!-- 环境湿度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境湿度（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-待加工原烟数据记录_环境湿度（%）"
+                            class="param-input"
+                            value="60.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-待加工原烟数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="50"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-待加工原烟数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="70"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-待加工原烟数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('待加工原烟数据记录_环境湿度（%）')"
+                        >
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
                     </div>
 
                     <!-- 铺叶工段数据记录 -->
-                    <div class="space-y-4">
-                      <h5
-                        class="font-semibold text-green-400 border-b border-green-400 pb-2"
-                      >
+                    <div class="param-group">
+                      <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         铺叶工段数据记录
-                      </h5>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境温度（℃）</label
+                      </h4>
+                      
+                      <!-- 环境温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-铺叶工段数据记录_环境温度（℃）"
+                            class="param-input"
+                            value="23.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-铺叶工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="20"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-铺叶工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="30"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-铺叶工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('铺叶工段数据记录_环境温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-铺叶工段数据记录_环境温度（℃）"
-                          class="param-input"
-                          value="23.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境湿度（%）</label
+
+                      <!-- 环境湿度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境湿度（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-铺叶工段数据记录_环境湿度（%）"
+                            class="param-input"
+                            value="65.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-铺叶工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="55"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-铺叶工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="75"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-铺叶工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('铺叶工段数据记录_环境湿度（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-铺叶工段数据记录_环境湿度（%）"
-                          class="param-input"
-                          value="65.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
                     </div>
 
                     <!-- 回潮工段数据记录 -->
-                    <div class="space-y-4">
-                      <h5
-                        class="font-semibold text-green-400 border-b border-green-400 pb-2"
-                      >
+                    <div class="param-group">
+                      <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         回潮工段数据记录
-                      </h5>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >潮后水份（%）</label
+                      </h4>
+                      
+                      <!-- 潮后水份参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            潮后水份（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-回潮工段数据记录_潮后水份（%）"
+                            class="param-input"
+                            value="18.5"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-回潮工段数据记录_潮后水份（%）"
+                                class="param-input text-xs"
+                                value="15"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-回潮工段数据记录_潮后水份（%）"
+                                class="param-input text-xs"
+                                value="22"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-回潮工段数据记录_潮后水份（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('回潮工段数据记录_潮后水份（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-回潮工段数据记录_潮后水份（%）"
-                          class="param-input"
-                          value="18.5"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >潮后温度（℃）</label
+
+                      <!-- 潮后温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            潮后温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-回潮工段数据记录_潮后温度（℃）"
+                            class="param-input"
+                            value="45.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-回潮工段数据记录_潮后温度（℃）"
+                                class="param-input text-xs"
+                                value="35"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-回潮工段数据记录_潮后温度（℃）"
+                                class="param-input text-xs"
+                                value="55"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-回潮工段数据记录_潮后温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('回潮工段数据记录_潮后温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-回潮工段数据记录_潮后温度（℃）"
-                          class="param-input"
-                          value="45.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境温度（℃）</label
+
+                      <!-- 环境温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-回潮工段数据记录_环境温度（℃）"
+                            class="param-input"
+                            value="24.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-回潮工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="20"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-回潮工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="30"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-回潮工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('回潮工段数据记录_环境温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-回潮工段数据记录_环境温度（℃）"
-                          class="param-input"
-                          value="24.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境湿度（%）</label
+
+                      <!-- 环境湿度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境湿度（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-回潮工段数据记录_环境湿度（%）"
+                            class="param-input"
+                            value="70.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-回潮工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="60"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-回潮工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="80"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-回潮工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('回潮工段数据记录_环境湿度（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-回潮工段数据记录_环境湿度（%）"
-                          class="param-input"
-                          value="70.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
                     </div>
 
                     <!-- 一润工段数据记录 -->
-                    <div class="space-y-4">
-                      <h5
-                        class="font-semibold text-green-400 border-b border-green-400 pb-2"
-                      >
+                    <div class="param-group">
+                      <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         一润工段数据记录
-                      </h5>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润前水份（%）</label
+                      </h4>
+                      
+                      <!-- 润前水份参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润前水份（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-一润工段数据记录_润前水份（%）"
+                            class="param-input"
+                            value="16.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-一润工段数据记录_润前水份（%）"
+                                class="param-input text-xs"
+                                value="12"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-一润工段数据记录_润前水份（%）"
+                                class="param-input text-xs"
+                                value="20"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-一润工段数据记录_润前水份（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('一润工段数据记录_润前水份（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-一润工段数据记录_润前水份（%）"
-                          class="param-input"
-                          value="16.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润前温度（℃）</label
+
+                      <!-- 润前温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润前温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-一润工段数据记录_润前温度（℃）"
+                            class="param-input"
+                            value="40.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-一润工段数据记录_润前温度（℃）"
+                                class="param-input text-xs"
+                                value="30"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-一润工段数据记录_润前温度（℃）"
+                                class="param-input text-xs"
+                                value="50"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-一润工段数据记录_润前温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('一润工段数据记录_润前温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-一润工段数据记录_润前温度（℃）"
-                          class="param-input"
-                          value="40.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润后水份（%）</label
+
+                      <!-- 润后水份参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润后水份（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-一润工段数据记录_润后水份（%）"
+                            class="param-input"
+                            value="18.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-一润工段数据记录_润后水份（%）"
+                                class="param-input text-xs"
+                                value="15"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-一润工段数据记录_润后水份（%）"
+                                class="param-input text-xs"
+                                value="22"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-一润工段数据记录_润后水份（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('一润工段数据记录_润后水份（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-一润工段数据记录_润后水份（%）"
-                          class="param-input"
-                          value="18.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润后温度（℃）</label
+
+                      <!-- 润后温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润后温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-一润工段数据记录_润后温度（℃）"
+                            class="param-input"
+                            value="50.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-一润工段数据记录_润后温度（℃）"
+                                class="param-input text-xs"
+                                value="40"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-一润工段数据记录_润后温度（℃）"
+                                class="param-input text-xs"
+                                value="60"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-一润工段数据记录_润后温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('一润工段数据记录_润后温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-一润工段数据记录_润后温度（℃）"
-                          class="param-input"
-                          value="50.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境温度（℃）</label
+
+                      <!-- 环境温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-一润工段数据记录_环境温度（℃）"
+                            class="param-input"
+                            value="25.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-一润工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="20"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-一润工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="30"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-一润工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('一润工段数据记录_环境温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-一润工段数据记录_环境温度（℃）"
-                          class="param-input"
-                          value="25.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境湿度（%）</label
+
+                      <!-- 环境湿度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境湿度（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-一润工段数据记录_环境湿度（%）"
+                            class="param-input"
+                            value="75.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-一润工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="65"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-一润工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="85"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-一润工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('一润工段数据记录_环境湿度（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-一润工段数据记录_环境湿度（%）"
-                          class="param-input"
-                          value="75.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
                     </div>
 
                     <!-- 二润工段数据记录 -->
-                    <div class="space-y-4">
-                      <h5
-                        class="font-semibold text-green-400 border-b border-green-400 pb-2"
-                      >
+                    <div class="param-group">
+                      <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         二润工段数据记录
-                      </h5>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润前水份（%）</label
+                      </h4>
+                      
+                      <!-- 润前水份参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润前水份（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-二润工段数据记录_润前水份（%）"
+                            class="param-input"
+                            value="17.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-二润工段数据记录_润前水份（%）"
+                                class="param-input text-xs"
+                                value="14"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-二润工段数据记录_润前水份（%）"
+                                class="param-input text-xs"
+                                value="22"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-二润工段数据记录_润前水份（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('二润工段数据记录_润前水份（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-二润工段数据记录_润前水份（%）"
-                          class="param-input"
-                          value="17.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润前温度（℃）</label
+
+                      <!-- 润前温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润前温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-二润工段数据记录_润前温度（℃）"
+                            class="param-input"
+                            value="45.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-二润工段数据记录_润前温度（℃）"
+                                class="param-input text-xs"
+                                value="35"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-二润工段数据记录_润前温度（℃）"
+                                class="param-input text-xs"
+                                value="55"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-二润工段数据记录_润前温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('二润工段数据记录_润前温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-二润工段数据记录_润前温度（℃）"
-                          class="param-input"
-                          value="45.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润后水份（%）</label
+
+                      <!-- 润后水份参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润后水份（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-二润工段数据记录_润后水份（%）"
+                            class="param-input"
+                            value="19.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-二润工段数据记录_润后水份（%）"
+                                class="param-input text-xs"
+                                value="16"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-二润工段数据记录_润后水份（%）"
+                                class="param-input text-xs"
+                                value="24"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-二润工段数据记录_润后水份（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('二润工段数据记录_润后水份（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-二润工段数据记录_润后水份（%）"
-                          class="param-input"
-                          value="19.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >润后温度（℃）</label
+
+                      <!-- 润后温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            润后温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-二润工段数据记录_润后温度（℃）"
+                            class="param-input"
+                            value="55.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-二润工段数据记录_润后温度（℃）"
+                                class="param-input text-xs"
+                                value="45"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-二润工段数据记录_润后温度（℃）"
+                                class="param-input text-xs"
+                                value="65"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-二润工段数据记录_润后温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('二润工段数据记录_润后温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-二润工段数据记录_润后温度（℃）"
-                          class="param-input"
-                          value="55.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境温度（℃）</label
+
+                      <!-- 环境温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-二润工段数据记录_环境温度（℃）"
+                            class="param-input"
+                            value="26.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-二润工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="22"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-二润工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="32"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-二润工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('二润工段数据记录_环境温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-二润工段数据记录_环境温度（℃）"
-                          class="param-input"
-                          value="26.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境湿度（%）</label
+
+                      <!-- 环境湿度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境湿度（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-二润工段数据记录_环境湿度（%）"
+                            class="param-input"
+                            value="80.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-二润工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="70"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-二润工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="90"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-二润工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('二润工段数据记录_环境湿度（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-二润工段数据记录_环境湿度（%）"
-                          class="param-input"
-                          value="80.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
                     </div>
 
                     <!-- 打叶工段数据记录 -->
-                    <div class="space-y-4">
-                      <h5
-                        class="font-semibold text-green-400 border-b border-green-400 pb-2"
-                      >
+                    <div class="param-group">
+                      <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         打叶工段数据记录
-                      </h5>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >打前水份（%）</label
+                      </h4>
+                      
+                      <!-- 打前水份参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            打前水份（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-打叶工段数据记录_打前水份（%）"
+                            class="param-input"
+                            value="15.5"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-打叶工段数据记录_打前水份（%）"
+                                class="param-input text-xs"
+                                value="12"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-打叶工段数据记录_打前水份（%）"
+                                class="param-input text-xs"
+                                value="20"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-打叶工段数据记录_打前水份（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('打叶工段数据记录_打前水份（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-打叶工段数据记录_打前水份（%）"
-                          class="param-input"
-                          value="15.5"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >打前温度（℃）</label
+
+                      <!-- 打前温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            打前温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-打叶工段数据记录_打前温度（℃）"
+                            class="param-input"
+                            value="35.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-打叶工段数据记录_打前温度（℃）"
+                                class="param-input text-xs"
+                                value="25"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-打叶工段数据记录_打前温度（℃）"
+                                class="param-input text-xs"
+                                value="45"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-打叶工段数据记录_打前温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('打叶工段数据记录_打前温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-打叶工段数据记录_打前温度（℃）"
-                          class="param-input"
-                          value="35.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境湿度（%）</label
+
+                      <!-- 环境湿度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境湿度（%）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-打叶工段数据记录_环境湿度（%）"
+                            class="param-input"
+                            value="65.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-打叶工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="55"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-打叶工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="75"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-打叶工段数据记录_环境湿度（%）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('打叶工段数据记录_环境湿度（%）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-打叶工段数据记录_环境湿度（%）"
-                          class="param-input"
-                          value="65.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
-                      <div>
-                        <label class="block text-sm font-medium mb-1"
-                          >环境温度（℃）</label
+
+                      <!-- 环境温度参数 -->
+                      <div class="param-with-range-setting">
+                        <div class="param-main-input">
+                          <label class="block text-sm font-medium text-gray-300 mb-2">
+                            环境温度（℃）
+                          </label>
+                          <input
+                            type="number"
+                            id="test-manual-打叶工段数据记录_环境温度（℃）"
+                            class="param-input"
+                            value="27.0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div class="param-range-settings hidden">
+                          <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最小值</label>
+                              <input
+                                type="number"
+                                id="range-min-打叶工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="22"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">最大值</label>
+                              <input
+                                type="number"
+                                id="range-max-打叶工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="32"
+                                step="0.1"
+                              />
+                            </div>
+                            <div>
+                              <label class="block text-xs text-gray-400 mb-1">变化率(%)</label>
+                              <input
+                                type="number"
+                                id="range-rate-打叶工段数据记录_环境温度（℃）"
+                                class="param-input text-xs"
+                                value="5"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="param-range-toggle-btn"
+                          onclick="toggleParamRangeSettings('打叶工段数据记录_环境温度（℃）')"
                         >
-                        <input
-                          type="number"
-                          id="test-manual-打叶工段数据记录_环境温度（℃）"
-                          class="param-input"
-                          value="27.0"
-                          step="0.1"
-                        />
+                          <span class="material-icons">tune</span>
+                        </button>
                       </div>
                     </div>
                   </div>
 
-                  <!-- 替换操作按钮部分 -->
-                  <div class="mt-6 flex justify-center space-x-4">
-                    <button
-                      id="reset-test-params-btn"
-                      class="btn-secondary px-6 py-2"
-                    >
-                      <span class="material-icons mr-2">refresh</span>重置参数
-                    </button>
-                    <button
-                      id="validate-test-params-btn"
-                      class="btn-primary px-6 py-2"
-                    >
-                      <span class="material-icons mr-2">check_circle</span
-                      >验证参数
-                    </button>
-                    <button
-                      id="update-test-data-btn"
-                      class="btn-primary px-6 py-2"
-                    >
-                      <span class="material-icons mr-2">update</span>更新数据
-                    </button>
+                  <!-- 添加全局更新范围控制按钮 -->
+                  <div class="mt-6 space-y-4">
+                    <div class="flex justify-center space-x-4">
+                      <button
+                        id="toggle-all-range-settings"
+                        class="btn-secondary px-6 py-2"
+                        onclick="toggleAllRangeSettings()"
+                      >
+                        <span class="material-icons mr-2">settings</span>显示所有范围设置
+                      </button>
+                      <button
+                        id="reset-all-ranges"
+                        class="btn-secondary px-6 py-2"
+                        onclick="resetAllRangeSettings()"
+                      >
+                        <span class="material-icons mr-2">restore</span>重置所有范围
+                      </button>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="flex justify-center space-x-4">
+                      <button
+                        id="reset-test-params-btn"
+                        class="btn-secondary px-6 py-2"
+                      >
+                        <span class="material-icons mr-2">refresh</span>重置参数
+                      </button>
+                      <button
+                        id="validate-test-params-btn"
+                        class="btn-primary px-6 py-2"
+                      >
+                        <span class="material-icons mr-2">check_circle</span>验证参数
+                      </button>
+                      <button
+                        id="update-test-data-btn"
+                        class="btn-primary px-6 py-2"
+                      >
+                        <span class="material-icons mr-2">update</span>更新数据
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2937,10 +4469,9 @@
           <!-- 测试结果分析区域 -->
           <div id="test-results-analysis" class="card mt-6 hidden">
             <h2 class="section-title text-xl font-bold">测试结果分析</h2>
-            
+
             <!-- 优化结果文件选择区域 -->
             <div class="mb-6">
-              
               <!-- 数据预览区域 -->
               <div id="test-result-preview-container" class="mt-4 hidden">
                 <h3 class="text-lg font-bold mb-2">数据预览 (前5行)</h3>
@@ -3478,6 +5009,33 @@
           console.error("设置活跃模型错误:", error);
           showMessage("设置模型失败", "error");
         }
+      }
+
+      // 添加列名简化映射函数 - 放在工具函数区域
+      function simplifyColumnNames(columns) {
+        const columnMapping = {
+          回潮工段数据记录_回潮方式: "回潮方式",
+          "一润工段数据记录_润叶方式（蒸汽、加水、混合）": "一润工段润叶方式",
+          "二润工段数据记录_润叶方式（蒸汽、加水、混合）": "二润工段润叶方式",
+          "铺叶工段数据记录_流量（kg/h)": "铺叶工段流量(kg/h)",
+          "打叶工段数据记录_一打_打辊参数（hz）": "一打_打辊参数(hz)",
+          "打叶工段数据记录_二打_打辊参数（hz）": "二打_打辊参数(hz)",
+          "打叶工段数据记录_三打_打辊参数（hz）": "三打_打辊参数(hz)",
+          "打叶工段数据记录_四打_打辊参数（hz）": "四打_打辊参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_一分": "一分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_二分": "二分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_三分": "三分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_四分": "四分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_五分": "五分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_六分": "六分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_七分": "七分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_八分": "八分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_九分": "九分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_十分": "十分风分参数(hz)",
+          "打叶工段数据记录_风分参数（hz）_十一分": "十一分风分参数(hz)",
+        };
+
+        return columns.map((column) => columnMapping[column] || column);
       }
 
       // 显示消息
@@ -5423,7 +6981,7 @@
   `;
       }
 
-      // 预览结果文件
+      // 预览结果文件 - 使用简化列名
       async function previewResultFile() {
         const select = document.getElementById("result-file-select");
         const fileName = select.value;
@@ -5450,10 +7008,12 @@
           const data = await response.json();
 
           if (data.success && data.preview) {
-            // 显示表头
+            // 显示表头 - 使用简化列名
             if (data.columns && data.columns.length > 0) {
+              const simplifiedColumns = simplifyColumnNames(data.columns);
+
               document.getElementById("result-preview-header").innerHTML =
-                data.columns
+                simplifiedColumns
                   .map(
                     (col) =>
                       `<th class="border border-gray-600 px-2 py-1 text-left text-xs text-gray-300">${col}</th>`
@@ -5461,23 +7021,27 @@
                   .join("");
             }
 
-            // 显示数据行
+            // 显示数据行 - 使用原始列名获取数据
             if (data.preview.length > 0) {
               document.getElementById("result-preview-body").innerHTML =
                 data.preview
                   .map(
                     (row) => `
-            <tr class="hover:bg-gray-800">
-              ${data.columns
-                .map(
-                  (col) =>
-                    `<td class="border border-gray-600 px-2 py-1 text-xs text-gray-300">${
-                      row[col] !== undefined ? row[col] : ""
-                    }</td>`
-                )
-                .join("")}
-            </tr>
-          `
+                <tr class="hover:bg-gray-800">
+                  ${data.columns
+                    .map(
+                      (originalCol) =>
+                        `<td class="border border-gray-600 px-2 py-1 text-xs text-gray-300">${
+                          row[originalCol] !== undefined
+                            ? typeof row[originalCol] === "number"
+                              ? row[originalCol].toFixed(2)
+                              : row[originalCol]
+                            : ""
+                        }</td>`
+                    )
+                    .join("")}
+                </tr>
+              `
                   )
                   .join("");
             } else {
@@ -5742,19 +7306,19 @@
           <div class="p-4 bg-gray-700 rounded-lg text-center">
             <h3 class="text-sm text-gray-400 mb-2">大中片率</h3>
             <p class="text-3xl font-bold text-green-400">
-              ${optimizationData.result_metrics.big_medium_rate.toFixed(1)}%
+              ${optimizationData.result_metrics.big_medium_rate.toFixed(2)}%
             </p>
           </div>
           <div class="p-4 bg-gray-700 rounded-lg text-center">
             <h3 class="text-sm text-gray-400 mb-2">叶含梗率</h3>
             <p class="text-3xl font-bold text-green-400">
-              ${optimizationData.result_metrics.leaf_stem_rate.toFixed(1)}%
+              ${optimizationData.result_metrics.leaf_stem_rate.toFixed(2)}%
             </p>
           </div>
           <div class="p-4 bg-gray-700 rounded-lg text-center">
             <h3 class="text-sm text-gray-400 mb-2">梗含叶率</h3>
             <p class="text-3xl font-bold text-green-400">
-              ${optimizationData.result_metrics.stem_leaf_rate.toFixed(1)}%
+              ${optimizationData.result_metrics.stem_leaf_rate.toFixed(2)}%
             </p>
           </div>
         </div>
@@ -6112,6 +7676,7 @@
           "待加工原烟数据记录_水份（%）": 20.2,
           "待加工原烟数据记录_温度（℃）": 25.0,
           "待加工原烟数据记录_烟碱含量（%）": 2.5,
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）": "合格", // 添加质量属性
           "待加工原烟数据记录_叶梗比（%）": 15.0,
           "待加工原烟数据记录_环境温度（℃）": 22.0,
           "待加工原烟数据记录_环境湿度（%）": 60.0,
@@ -6149,12 +7714,13 @@
         showMessage("参数已重置为默认值", "success");
       }
 
-      // 验证手动输入参数
+      // 修改 validateManualInputs 函数以支持质量属性选择框验证
       function validateManualInputs() {
         const paramNames = [
           "待加工原烟数据记录_水份（%）",
           "待加工原烟数据记录_温度（℃）",
           "待加工原烟数据记录_烟碱含量（%）",
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）", // 添加质量属性
           "待加工原烟数据记录_叶梗比（%）",
           "待加工原烟数据记录_环境温度（℃）",
           "待加工原烟数据记录_环境湿度（%）",
@@ -6188,13 +7754,26 @@
         for (const paramName of paramNames) {
           const input = document.getElementById(`manual-${paramName}`);
           if (input) {
-            const value = parseFloat(input.value);
-            if (isNaN(value) || value < 0) {
-              allValid = false;
-              invalidParams.push(paramName);
-              input.classList.add("border-red-500");
+            // 检查是否为选择框
+            if (input.tagName === "SELECT") {
+              // 对于选择框，检查是否有选择值
+              if (!input.value || input.value.trim() === "") {
+                allValid = false;
+                invalidParams.push(paramName);
+                input.classList.add("border-red-500");
+              } else {
+                input.classList.remove("border-red-500");
+              }
             } else {
-              input.classList.remove("border-red-500");
+              // 对于数字输入框，检查是否为有效数字
+              const value = parseFloat(input.value);
+              if (isNaN(value) || value < 0) {
+                allValid = false;
+                invalidParams.push(paramName);
+                input.classList.add("border-red-500");
+              } else {
+                input.classList.remove("border-red-500");
+              }
             }
           } else {
             allValid = false;
@@ -6216,12 +7795,13 @@
         return allValid;
       }
 
-      // 获取手动输入的参数数据
+      // 修改 getManualInputData 函数以支持质量属性选择框
       function getManualInputData() {
         const paramNames = [
           "待加工原烟数据记录_水份（%）",
           "待加工原烟数据记录_温度（℃）",
           "待加工原烟数据记录_烟碱含量（%）",
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）", // 添加质量属性
           "待加工原烟数据记录_叶梗比（%）",
           "待加工原烟数据记录_环境温度（℃）",
           "待加工原烟数据记录_环境湿度（%）",
@@ -6253,14 +7833,21 @@
         for (const paramName of paramNames) {
           const input = document.getElementById(`manual-${paramName}`);
           if (input) {
-            manualData[paramName] = parseFloat(input.value);
+            // 检查是否为选择框
+            if (input.tagName === "SELECT") {
+              // 对于选择框，直接获取选择的文本值
+              manualData[paramName] = input.value;
+            } else {
+              // 对于数字输入框，转换为浮点数
+              manualData[paramName] = parseFloat(input.value);
+            }
           }
         }
 
         return manualData;
       }
 
-      // 加载优化结果预览
+      // 加载优化结果预览 - 使用简化列名
       function loadOptimizationResultPreview(resultFilePath) {
         const headerEl = document.getElementById("optimization-result-header");
         const bodyEl = document.getElementById("optimization-result-body");
@@ -6286,26 +7873,42 @@
               headerEl.innerHTML = "";
               bodyEl.innerHTML = "";
 
-              // 渲染表头
+              // 渲染表头 - 使用简化列名
               if (data.data.columns && data.data.columns.length > 0) {
-                data.data.columns.forEach((column) => {
+                const simplifiedColumns = simplifyColumnNames(
+                  data.data.columns
+                );
+
+                simplifiedColumns.forEach((column) => {
                   const th = document.createElement("th");
-                  th.className = "px-4 py-2 text-left text-white";
-                  th.textContent = column;
+                  th.className =
+                    "px-4 py-2 text-left text-white border border-gray-600";
+                  th.textContent = column; // 使用简化后的列名
                   headerEl.appendChild(th);
                 });
               }
 
-              // 渲染表格数据
+              // 渲染表格数据 - 使用原始列名获取数据
               if (data.data.rows && data.data.rows.length > 0) {
                 data.data.rows.forEach((row) => {
                   const tr = document.createElement("tr");
-                  tr.className = "border-t border-gray-600";
+                  tr.className = "border-t border-gray-600 hover:bg-gray-700";
 
-                  row.forEach((cell) => {
+                  // 使用原始列名顺序来获取数据
+                  data.data.columns.forEach((originalColumn, index) => {
                     const td = document.createElement("td");
-                    td.className = "px-4 py-2";
-                    td.textContent = cell;
+                    td.className = "px-4 py-2 border border-gray-600";
+
+                    // 获取对应位置的数据
+                    const cellValue = row[index];
+
+                    // 格式化显示值
+                    if (typeof cellValue === "number") {
+                      td.textContent = cellValue.toFixed(2);
+                    } else {
+                      td.textContent = cellValue || "";
+                    }
+
                     tr.appendChild(td);
                   });
 
@@ -6328,7 +7931,7 @@
           });
       }
 
-      // 加载修改结果表单
+      // 修改 loadModifyResultForm 函数
       function loadModifyResultForm(resultFilePath) {
         const formContainer = document.getElementById("modify-result-fields");
 
@@ -6345,6 +7948,18 @@
             "加水",
             "混合",
           ],
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）": [
+            "稍差",
+            "合格",
+            "稍强",
+          ],
+        };
+
+        // 定义质量属性的值到显示文本的映射
+        const qualityAttributeDisplayMap = {
+          稍差: "较好",
+          合格: "良好",
+          稍强: "优秀",
         };
 
         // 定义不允许修改的字段
@@ -6372,63 +7987,72 @@
 
               // 直接遍历有序数组，保证了显示顺序
               filteredData.forEach((item) => {
-                const key = item.key;
+                const originalKey = item.key; // 原始列名
                 const value = String(item.value); // 确保值为字符串以便比较
+
+                // 使用简化列名进行显示
+                const displayKey = simplifyColumnNames([originalKey])[0];
 
                 const fieldDiv = document.createElement("div");
                 fieldDiv.className = "form-field";
 
                 let fieldHtml = "";
                 // 检查是否是需要特殊处理的字段
-                if (selectOptionsMap.hasOwnProperty(key)) {
-                  const options = selectOptionsMap[key];
+                if (selectOptionsMap.hasOwnProperty(originalKey)) {
+                  const options = selectOptionsMap[originalKey];
                   const optionsHtml = options
-                    .map(
-                      (opt) =>
-                        `<option value="${opt}" ${
-                          opt === value ? "selected" : ""
-                        }>${opt}</option>`
-                    )
+                    .map((opt) => {
+                      // 应用质量属性映射
+                      const displayText =
+                        originalKey ===
+                        "待加工原烟数据记录_质量属性（稍差、合格、稍强）"
+                          ? qualityAttributeDisplayMap[opt] || opt
+                          : opt;
+
+                      return `<option value="${opt}" ${
+                        opt === value ? "selected" : ""
+                      }>${displayText}</option>`;
+                    })
                     .join("");
 
                   fieldHtml = `
-              <div class="form-field-with-preview">
-                <div class="field-input-group">
-                  <label class="block text-sm font-medium mb-1">${key}</label>
-                  <select class="param-input w-full" name="${key}" data-original="${value}">
-                    ${optionsHtml}
-                  </select>
-                </div>
-                <button type="button" class="param-preview-btn" 
-                        data-param-name="${key}" 
-                        data-param-type="categorical" 
-                        data-param-options='${JSON.stringify(options)}' 
-                        data-current-value="${value}" 
-                        data-result-file="${resultFilePath}">
-                  <span class="material-icons">trending_up</span>
-                  影响分析
-                </button>
-              </div>
-            `;
+                    <div class="form-field-with-preview">
+                      <div class="field-input-group">
+                        <label class="block text-sm font-medium mb-1">${displayKey}</label>
+                        <select class="param-input w-full" name="${originalKey}" data-original="${value}">
+                          ${optionsHtml}
+                        </select>
+                      </div>
+                      <button type="button" class="param-preview-btn" 
+                              data-param-name="${originalKey}" 
+                              data-param-type="categorical" 
+                              data-param-options='${JSON.stringify(options)}' 
+                              data-current-value="${value}" 
+                              data-result-file="${resultFilePath}">
+                        <span class="material-icons">trending_up</span>
+                        影响分析
+                      </button>
+                    </div>
+                  `;
                 } else {
                   // 默认使用文本输入框（数值类型）
                   fieldHtml = `
-              <div class="form-field-with-preview">
-                <div class="field-input-group">
-                  <label class="block text-sm font-medium mb-1">${key}</label>
-                  <input type="text" class="param-input w-full" 
-                         name="${key}" value="${value}" data-original="${value}">
-                </div>
-                <button type="button" class="param-preview-btn" 
-                        data-param-name="${key}" 
-                        data-param-type="numerical" 
-                        data-current-value="${value}" 
-                        data-result-file="${resultFilePath}">
-                  <span class="material-icons">trending_up</span>
-                  影响分析
-                </button>
-              </div>
-            `;
+                    <div class="form-field-with-preview">
+                      <div class="field-input-group">
+                        <label class="block text-sm font-medium mb-1">${displayKey}</label>
+                        <input type="text" class="param-input w-full" 
+                              name="${originalKey}" value="${value}" data-original="${value}">
+                      </div>
+                      <button type="button" class="param-preview-btn" 
+                              data-param-name="${originalKey}" 
+                              data-param-type="numerical" 
+                              data-current-value="${value}" 
+                              data-result-file="${resultFilePath}">
+                        <span class="material-icons">trending_up</span>
+                        影响分析
+                      </button>
+                    </div>
+                  `;
                 }
 
                 fieldDiv.innerHTML = fieldHtml;
@@ -6440,11 +8064,11 @@
               noteDiv.className =
                 "col-span-3 p-3 bg-yellow-900 bg-opacity-30 border border-yellow-500 rounded-lg mt-4";
               noteDiv.innerHTML = `
-          <div class="flex items-center text-yellow-300">
-            <span class="material-icons mr-2">info</span>
-            <span class="text-sm">注意：大中片率、叶含梗率、梗含叶率和综合得分为系统计算结果，不可修改</span>
-          </div>
-        `;
+                <div class="flex items-center text-yellow-300">
+                  <span class="material-icons mr-2">info</span>
+                  <span class="text-sm">注意：大中片率、叶含梗率、梗含叶率和综合得分为系统计算结果，不可修改</span>
+                </div>
+              `;
               formContainer.appendChild(noteDiv);
 
               // 添加事件委托处理预览按钮点击
@@ -6854,6 +8478,11 @@
               "加水",
               "混合",
             ],
+            "待加工原烟数据记录_质量属性（稍差、合格、稍强）": [
+              "稍差",
+              "合格",
+              "稍强",
+            ], // 添加质量属性
           };
 
           // 获取数值参数列表（与后端保持一致）
@@ -7705,16 +9334,60 @@
        */
       function collectTestParameters() {
         const manualInputs = {};
-        const inputElements = document.querySelectorAll(
-          "#test-manual-input-mode .param-input"
-        );
 
-        inputElements.forEach((input) => {
-          // 从input元素的ID中提取后端所需的参数名
-          const key = input.id.replace("test-manual-", "");
-          const value = parseFloat(input.value);
-          if (!isNaN(value)) {
-            manualInputs[key] = value;
+        // 数字类型参数
+        const numericParams = [
+          "待加工原烟数据记录_水份（%）",
+          "待加工原烟数据记录_温度（℃）",
+          "待加工原烟数据记录_烟碱含量（%）",
+          "待加工原烟数据记录_叶梗比（%）",
+          "待加工原烟数据记录_环境温度（℃）",
+          "待加工原烟数据记录_环境湿度（%）",
+          "铺叶工段数据记录_环境温度（℃）",
+          "铺叶工段数据记录_环境湿度（%）",
+          "回潮工段数据记录_潮后水份（%）",
+          "回潮工段数据记录_潮后温度（℃）",
+          "回潮工段数据记录_环境温度（℃）",
+          "回潮工段数据记录_环境湿度（%）",
+          "一润工段数据记录_润前水份（%）",
+          "一润工段数据记录_润前温度（℃）",
+          "一润工段数据记录_润后水份（%）",
+          "一润工段数据记录_润后温度（℃）",
+          "一润工段数据记录_环境温度（℃）",
+          "一润工段数据记录_环境湿度（%）",
+          "二润工段数据记录_润前水份（%）",
+          "二润工段数据记录_润前温度（℃）",
+          "二润工段数据记录_润后水份（%）",
+          "二润工段数据记录_润后温度（℃）",
+          "二润工段数据记录_环境温度（℃）",
+          "二润工段数据记录_环境湿度（%）",
+          "打叶工段数据记录_打前水份（%）",
+          "打叶工段数据记录_打前温度（℃）",
+          "打叶工段数据记录_环境湿度（%）",
+          "打叶工段数据记录_环境温度（℃）",
+        ];
+
+        // 分类类型参数
+        const categoricalParams = [
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）",
+        ];
+
+        // 收集数字参数
+        numericParams.forEach((paramName) => {
+          const input = document.getElementById(`test-manual-${paramName}`);
+          if (input) {
+            const value = parseFloat(input.value);
+            if (!isNaN(value)) {
+              manualInputs[paramName] = value;
+            }
+          }
+        });
+
+        // 收集分类参数
+        categoricalParams.forEach((paramName) => {
+          const input = document.getElementById(`test-manual-${paramName}`);
+          if (input) {
+            manualInputs[paramName] = input.value;
           }
         });
 
@@ -8079,14 +9752,46 @@
        * 重置测试模块中的所有手动输入参数。
        */
       function resetTestManualInputs() {
-        const inputElements = document.querySelectorAll(
-          "#test-manual-input-mode .param-input"
-        );
-        inputElements.forEach((input) => {
-          // 重置为输入框的默认值，如果默认值不存在则清空
-          input.value = input.defaultValue || "";
-        });
-        showToast("测试参数已重置。", "info");
+        const defaultValues = {
+          "待加工原烟数据记录_水份（%）": 20.2,
+          "待加工原烟数据记录_温度（℃）": 25.0,
+          "待加工原烟数据记录_烟碱含量（%）": 2.5,
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）": "合格", // 添加质量属性
+          "待加工原烟数据记录_叶梗比（%）": 15.0,
+          "待加工原烟数据记录_环境温度（℃）": 22.0,
+          "待加工原烟数据记录_环境湿度（%）": 60.0,
+          "铺叶工段数据记录_环境温度（℃）": 23.0,
+          "铺叶工段数据记录_环境湿度（%）": 65.0,
+          "回潮工段数据记录_潮后水份（%）": 18.5,
+          "回潮工段数据记录_潮后温度（℃）": 45.0,
+          "回潮工段数据记录_环境温度（℃）": 24.0,
+          "回潮工段数据记录_环境湿度（%）": 70.0,
+          "一润工段数据记录_润前水份（%）": 16.0,
+          "一润工段数据记录_润前温度（℃）": 40.0,
+          "一润工段数据记录_润后水份（%）": 18.0,
+          "一润工段数据记录_润后温度（℃）": 50.0,
+          "一润工段数据记录_环境温度（℃）": 25.0,
+          "一润工段数据记录_环境湿度（%）": 75.0,
+          "二润工段数据记录_润前水份（%）": 17.0,
+          "二润工段数据记录_润前温度（℃）": 45.0,
+          "二润工段数据记录_润后水份（%）": 19.0,
+          "二润工段数据记录_润后温度（℃）": 55.0,
+          "二润工段数据记录_环境温度（℃）": 26.0,
+          "二润工段数据记录_环境湿度（%）": 80.0,
+          "打叶工段数据记录_打前水份（%）": 15.5,
+          "打叶工段数据记录_打前温度（℃）": 35.0,
+          "打叶工段数据记录_环境湿度（%）": 65.0,
+          "打叶工段数据记录_环境温度（℃）": 27.0,
+        };
+
+        for (const [paramName, defaultValue] of Object.entries(defaultValues)) {
+          const input = document.getElementById(`test-manual-${paramName}`);
+          if (input) {
+            input.value = defaultValue;
+          }
+        }
+
+        showToast("测试参数已重置为默认值", "success");
       }
 
       /**
@@ -8094,24 +9799,81 @@
        * @returns {boolean} 如果所有参数都有效则返回 true，否则返回 false。
        */
       function validateTestManualInputs() {
-        const inputElements = document.querySelectorAll(
-          "#test-manual-input-mode .param-input"
-        );
+        const paramNames = [
+          "待加工原烟数据记录_水份（%）",
+          "待加工原烟数据记录_温度（℃）",
+          "待加工原烟数据记录_烟碱含量（%）",
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）", // 添加质量属性
+          "待加工原烟数据记录_叶梗比（%）",
+          "待加工原烟数据记录_环境温度（℃）",
+          "待加工原烟数据记录_环境湿度（%）",
+          "铺叶工段数据记录_环境温度（℃）",
+          "铺叶工段数据记录_环境湿度（%）",
+          "回潮工段数据记录_潮后水份（%）",
+          "回潮工段数据记录_潮后温度（℃）",
+          "回潮工段数据记录_环境温度（℃）",
+          "回潮工段数据记录_环境湿度（%）",
+          "一润工段数据记录_润前水份（%）",
+          "一润工段数据记录_润前温度（℃）",
+          "一润工段数据记录_润后水份（%）",
+          "一润工段数据记录_润后温度（℃）",
+          "一润工段数据记录_环境温度（℃）",
+          "一润工段数据记录_环境湿度（%）",
+          "二润工段数据记录_润前水份（%）",
+          "二润工段数据记录_润前温度（℃）",
+          "二润工段数据记录_润后水份（%）",
+          "二润工段数据记录_润后温度（℃）",
+          "二润工段数据记录_环境温度（℃）",
+          "二润工段数据记录_环境湿度（%）",
+          "打叶工段数据记录_打前水份（%）",
+          "打叶工段数据记录_打前温度（℃）",
+          "打叶工段数据记录_环境湿度（%）",
+          "打叶工段数据记录_环境温度（℃）",
+        ];
+
         let allValid = true;
-        inputElements.forEach((input) => {
-          if (input.value.trim() === "") {
-            allValid = false;
-            input.classList.add("border-red-500");
+        const invalidParams = [];
+
+        for (const paramName of paramNames) {
+          const input = document.getElementById(`test-manual-${paramName}`);
+          if (input) {
+            if (input.tagName === "SELECT") {
+              // 对于选择框，检查是否有选择值
+              if (!input.value || input.value.trim() === "") {
+                allValid = false;
+                invalidParams.push(paramName);
+                input.classList.add("border-red-500");
+              } else {
+                input.classList.remove("border-red-500");
+              }
+            } else {
+              // 对于数字输入框，检查是否为有效数字
+              const value = parseFloat(input.value);
+              if (isNaN(value) || value < 0) {
+                allValid = false;
+                invalidParams.push(paramName);
+                input.classList.add("border-red-500");
+              } else {
+                input.classList.remove("border-red-500");
+              }
+            }
           } else {
-            input.classList.remove("border-red-500");
+            allValid = false;
+            invalidParams.push(paramName);
           }
-        });
+        }
 
         if (allValid) {
-          showToast("参数验证通过。", "success");
+          showToast("所有测试参数验证通过", "success");
         } else {
-          showToast("请填写所有手动输入参数。", "error");
+          showToast(
+            `参数验证失败，请检查以下参数：${invalidParams
+              .slice(0, 3)
+              .join(", ")}${invalidParams.length > 3 ? "等" : ""}`,
+            "error"
+          );
         }
+
         return allValid;
       }
 
@@ -8160,10 +9922,10 @@
         // 绑定预览按钮事件
         const loadResultBtn = document.getElementById("test-load-result-btn");
         if (loadResultBtn) {
-          loadResultBtn.addEventListener("click", function() {
+          loadResultBtn.addEventListener("click", function () {
             const select = document.getElementById("test-result-file-select");
             const fileName = select.value;
-            
+
             if (!fileName) {
               showToast("请先选择一个结果文件", "error");
               return;
@@ -8174,12 +9936,14 @@
         }
 
         // 绑定下载按钮事件
-        const downloadResultBtn = document.getElementById("test-download-result-btn");
+        const downloadResultBtn = document.getElementById(
+          "test-download-result-btn"
+        );
         if (downloadResultBtn) {
-          downloadResultBtn.addEventListener("click", function() {
+          downloadResultBtn.addEventListener("click", function () {
             const select = document.getElementById("test-result-file-select");
             const fileName = select.value;
-            
+
             if (!fileName) {
               showToast("请先选择一个结果文件", "error");
               return;
@@ -8190,12 +9954,16 @@
         }
 
         // 绑定文件选择事件
-        const resultFileSelect = document.getElementById("test-result-file-select");
+        const resultFileSelect = document.getElementById(
+          "test-result-file-select"
+        );
         if (resultFileSelect) {
-          resultFileSelect.addEventListener("change", function() {
+          resultFileSelect.addEventListener("change", function () {
             const fileName = this.value;
-            const fileInfoDiv = document.getElementById("test-result-file-info");
-            
+            const fileInfoDiv = document.getElementById(
+              "test-result-file-info"
+            );
+
             if (fileName) {
               fileInfoDiv.textContent = `已选择文件: ${fileName}`;
             } else {
@@ -8205,18 +9973,19 @@
         }
       }
 
-      /**
-       * 加载测试结果预览 - 使用与结果分析部分相同的API
-       */
+      // 修改 loadTestResultPreview 函数
       function loadTestResultPreview(fileName) {
-        const previewContainer = document.getElementById("test-result-preview-container");
+        const previewContainer = document.getElementById(
+          "test-result-preview-container"
+        );
         const headerRow = document.getElementById("test-result-preview-header");
         const bodyElement = document.getElementById("test-result-preview-body");
 
         // 显示加载状态
         previewContainer.classList.remove("hidden");
-        headerRow.innerHTML = '<th class="border border-gray-600 px-4 py-2">加载中...</th>';
-        bodyElement.innerHTML = '';
+        headerRow.innerHTML =
+          '<th class="border border-gray-600 px-4 py-2">加载中...</th>';
+        bodyElement.innerHTML = "";
 
         fetch(`/api/preview_optimization_result/${fileName}`)
           .then((response) => response.json())
@@ -8226,9 +9995,10 @@
               headerRow.innerHTML = "";
               bodyElement.innerHTML = "";
 
-              // 创建表头
+              // 创建表头 - 使用简化的列名
               if (data.columns && data.columns.length > 0) {
-                data.columns.forEach((header) => {
+                const simplifiedColumns = simplifyColumnNames(data.columns);
+                simplifiedColumns.forEach((header) => {
                   const th = document.createElement("th");
                   th.className = "border border-gray-600 px-4 py-2 text-left";
                   th.textContent = header;
@@ -8242,10 +10012,11 @@
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-gray-700";
 
-                data.columns.forEach((header) => {
+                // 使用原始列名来获取数据，但显示简化的列名
+                data.columns.forEach((originalColumn) => {
                   const td = document.createElement("td");
                   td.className = "border border-gray-600 px-4 py-2";
-                  const value = row[header];
+                  const value = row[originalColumn];
                   if (typeof value === "number") {
                     td.textContent = value.toFixed(2);
                   } else {
@@ -8257,93 +10028,145 @@
                 bodyElement.appendChild(tr);
               });
 
-              showToast(`测试结果预览加载成功（显示前${previewData.length}行）`, "success");
+              showToast(
+                `测试结果预览加载成功（显示前${previewData.length}行）`,
+                "success"
+              );
             } else {
-              headerRow.innerHTML = '<th class="border border-gray-600 px-4 py-2 text-center">加载失败</th>';
-              bodyElement.innerHTML = '<tr><td class="border border-gray-600 px-4 py-2 text-center text-gray-400">无预览数据</td></tr>';
-              showToast("加载测试结果预览失败: " + (data.message || "无预览数据"), "error");
+              headerRow.innerHTML =
+                '<th class="border border-gray-600 px-4 py-2 text-center">加载失败</th>';
+              bodyElement.innerHTML =
+                '<tr><td class="border border-gray-600 px-4 py-2 text-center text-gray-400">无预览数据</td></tr>';
+              showToast(
+                "加载测试结果预览失败: " + (data.message || "无预览数据"),
+                "error"
+              );
             }
           })
           .catch((error) => {
             console.error("Error loading test result preview:", error);
-            headerRow.innerHTML = '<th class="border border-gray-600 px-4 py-2 text-center">加载错误</th>';
-            bodyElement.innerHTML = '<tr><td class="border border-gray-600 px-4 py-2 text-center text-red-400">网络错误</td></tr>';
+            headerRow.innerHTML =
+              '<th class="border border-gray-600 px-4 py-2 text-center">加载错误</th>';
+            bodyElement.innerHTML =
+              '<tr><td class="border border-gray-600 px-4 py-2 text-center text-red-400">网络错误</td></tr>';
             showToast("加载测试结果预览时发生错误", "error");
           });
       }
       /**
-       * 为测试模块创建粒子动画效果
-       * @param {string} containerId - 粒子容器的ID
+       * 为测试模块创建粒子动画效果 - 加快频率版本
        */
       function createTestParticleAnimation(
         containerId = "test-particle-animation"
       ) {
         const container = document.getElementById(containerId);
-        if (!container) return;
+        if (!container) {
+          console.error(`找不到粒子容器: ${containerId}`);
+          return;
+        }
+
+        console.log("🎯 创建测试模块粒子动画");
 
         // 清空容器
         container.innerHTML = "";
 
         // 创建粒子
-        const particleCount = 30;
-        const colors = ["#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107"];
+        const particleCount = 25;
+        const colors = [
+          "#4CAF50",
+          "#8BC34A",
+          "#CDDC39",
+          "#FFEB3B",
+          "#FFC107",
+          "#FF9800",
+        ];
 
         for (let i = 0; i < particleCount; i++) {
           const particle = document.createElement("div");
           particle.className = "particle";
 
           // 随机粒子样式
-          const size = Math.random() * 8 + 4; // 4-12px
+          const size = Math.random() * 6 + 4; // 4-10px
           const color = colors[Math.floor(Math.random() * colors.length)];
 
+          // 设置基础样式
           particle.style.width = `${size}px`;
           particle.style.height = `${size}px`;
           particle.style.backgroundColor = color;
           particle.style.position = "absolute";
           particle.style.borderRadius = "50%";
-          particle.style.opacity = Math.random() * 0.6 + 0.4; // 0.4-1.0
+          particle.style.boxShadow = `0 0 ${size}px ${color}40`;
 
           // 随机初始位置
-          particle.style.left = `${Math.random() * 100}%`;
-          particle.style.top = `${Math.random() * 100}%`;
+          particle.style.left = `${Math.random() * 90 + 5}%`;
+          particle.style.top = `${Math.random() * 90 + 5}%`;
 
-          // 应用动画
-          particle.style.animation = `float ${
-            Math.random() * 8 + 5
-          }s ease-in-out infinite`;
-          particle.style.animationDelay = `${Math.random() * 5}s`;
+          // 随机透明度
+          particle.style.opacity = Math.random() * 0.4 + 0.6; // 0.6-1.0
 
+          // 减少随机延迟，让动画更快开始
+          particle.style.animationDelay = `${Math.random() * 1}s`; // 从3s改为1s
+
+          // 添加到容器
           container.appendChild(particle);
         }
+
+        console.log(`✅ 已创建 ${particleCount} 个测试粒子`);
       }
 
       /**
-       * 更新测试进度时启动/更新粒子效果
-       * @param {number} progress - 当前进度百分比
+       * 更新测试进度时启动/更新粒子效果 - 加快频率版本
        */
       function updateTestParticles(progress) {
         const container = document.getElementById("test-particle-animation");
-        if (!container) return;
+        if (!container) {
+          console.warn("找不到测试粒子容器");
+          return;
+        }
 
         // 第一次更新时创建粒子
         if (container.children.length === 0) {
+          console.log("🎯 首次更新时创建粒子");
           createTestParticleAnimation();
         }
 
         // 根据进度调整粒子活跃度
         const particles = container.querySelectorAll(".particle");
-        particles.forEach((particle) => {
-          // 随着进度增加粒子速度
-          const baseSpeed = 10; // 基础动画时间
-          const speedFactor = 1 - progress / 200; // 进度越高，时间越短（速度越快）
-          const animationDuration = baseSpeed * speedFactor;
+        console.log(`🔄 更新 ${particles.length} 个粒子，进度: ${progress}%`);
+
+        particles.forEach((particle, index) => {
+          // 根据进度调整动画速度 - 更激进的加速
+          const baseSpeed = 2; // 基础动画时间（秒）- 从4s改为2s
+          const speedMultiplier = 1 + progress / 50; // 更快的加速倍率
+          const animationDuration = baseSpeed / speedMultiplier;
+
+          // 应用新的动画持续时间，最小值降低到0.5秒
           particle.style.animationDuration = `${Math.max(
-            2,
+            0.5,
             animationDuration
           )}s`;
 
-          // 增加粒子亮度
-          particle.style.opacity = Math.min(1, 0.4 + (progress / 100) * 0.6);
+          // 根据进度调整粒子亮度和大小
+          const baseOpacity = 0.6;
+          const maxOpacity = 1.0;
+          const progressOpacity =
+            baseOpacity + (progress / 100) * (maxOpacity - baseOpacity);
+          particle.style.opacity = Math.min(maxOpacity, progressOpacity);
+
+          // 随着进度增加，粒子逐渐变大和变亮
+          const currentSize = parseFloat(particle.style.width);
+          const sizeBoost = 1 + progress / 200; // 最多增加50%
+          particle.style.transform = `scale(${sizeBoost})`;
+
+          // 高进度时添加特殊效果
+          if (progress > 80) {
+            particle.style.boxShadow = `0 0 ${currentSize * 2}px ${
+              particle.style.backgroundColor
+            }`;
+            particle.style.filter = "brightness(1.2)";
+          } else if (progress > 50) {
+            particle.style.boxShadow = `0 0 ${currentSize}px ${particle.style.backgroundColor}40`;
+            particle.style.filter = "brightness(1.1)";
+          }
         });
       }
 
@@ -8391,42 +10214,424 @@
        * 更新测试模块中的手动输入参数数据
        * 在原有数值基础上进行小范围随机调整
        */
+      /**
+       * 切换单个参数的范围设置显示状态
+       */
+      function toggleParamRangeSettings(paramName) {
+        const rangeSettings = document.querySelector(`.param-with-range-setting input[id="test-manual-${paramName}"]`)?.closest('.param-with-range-setting')?.querySelector('.param-range-settings');
+        const toggleBtn = document.querySelector(`[onclick="toggleParamRangeSettings('${paramName}')"]`);
+        
+        if (rangeSettings) {
+          const isHidden = rangeSettings.classList.contains('hidden');
+          
+          if (isHidden) {
+            rangeSettings.classList.remove('hidden');
+            rangeSettings.classList.add('show');
+            toggleBtn?.classList.add('active');
+          } else {
+            rangeSettings.classList.add('hidden');
+            rangeSettings.classList.remove('show');
+            toggleBtn?.classList.remove('active');
+          }
+        }
+      }
+
+      /**
+       * 切换所有参数的范围设置显示状态
+       */
+      function toggleAllRangeSettings() {
+        const allRangeSettings = document.querySelectorAll('.param-range-settings');
+        const allToggleBtns = document.querySelectorAll('.param-range-toggle-btn');
+        
+        // 检查当前状态 - 如果大部分是隐藏的，则显示所有；否则隐藏所有
+        const hiddenCount = Array.from(allRangeSettings).filter(el => 
+          el.classList.contains('hidden')
+        ).length;
+        
+        const shouldShow = hiddenCount > allRangeSettings.length / 2;
+        
+        allRangeSettings.forEach((settings, index) => {
+          if (shouldShow) {
+            settings.classList.remove('hidden');
+            settings.classList.add('show');
+            allToggleBtns[index]?.classList.add('active');
+          } else {
+            settings.classList.add('hidden');
+            settings.classList.remove('show');
+            allToggleBtns[index]?.classList.remove('active');
+          }
+        });
+        
+        const toggleAllBtn = document.getElementById('toggle-all-range-settings');
+        if (toggleAllBtn) {
+          const icon = toggleAllBtn.querySelector('.material-icons');
+          const textNode = Array.from(toggleAllBtn.childNodes).find(node => node.nodeType === 3);
+          
+          if (shouldShow) {
+            if (textNode) textNode.textContent = '隐藏所有范围设置';
+          } else {
+            if (textNode) textNode.textContent = '显示所有范围设置';
+          }
+        }
+        
+        showToast(shouldShow ? '已显示所有参数范围设置' : '已隐藏所有参数范围设置', 'info');
+      }
+
+      /**
+       * 重置所有参数的范围设置为默认值
+       */
+      function resetAllRangeSettings() {
+        const defaultRanges = {
+          '待加工原烟数据记录_水份（%）': { min: 15, max: 25, rate: 5 },
+          '待加工原烟数据记录_温度（℃）': { min: 15, max: 35, rate: 5 },
+          '待加工原烟数据记录_烟碱含量（%）': { min: 1, max: 4, rate: 10 },
+          '待加工原烟数据记录_叶梗比（%）': { min: 10, max: 20, rate: 5 },
+          '待加工原烟数据记录_环境温度（℃）': { min: 18, max: 28, rate: 5 },
+          '待加工原烟数据记录_环境湿度（%）': { min: 50, max: 70, rate: 5 },
+          '铺叶工段数据记录_环境温度（℃）': { min: 20, max: 30, rate: 5 },
+          '铺叶工段数据记录_环境湿度（%）': { min: 55, max: 75, rate: 5 },
+          '回潮工段数据记录_潮后水份（%）': { min: 15, max: 22, rate: 5 },
+          '回潮工段数据记录_潮后温度（℃）': { min: 35, max: 55, rate: 5 },
+          '回潮工段数据记录_环境温度（℃）': { min: 20, max: 30, rate: 5 },
+          '回潮工段数据记录_环境湿度（%）': { min: 60, max: 80, rate: 5 },
+          '一润工段数据记录_润前水份（%）': { min: 12, max: 20, rate: 5 },
+          '一润工段数据记录_润前温度（℃）': { min: 30, max: 50, rate: 5 },
+          '一润工段数据记录_润后水份（%）': { min: 15, max: 22, rate: 5 },
+          '一润工段数据记录_润后温度（℃）': { min: 40, max: 60, rate: 5 },
+          '一润工段数据记录_环境温度（℃）': { min: 20, max: 30, rate: 5 },
+          '一润工段数据记录_环境湿度（%）': { min: 65, max: 85, rate: 5 },
+          '二润工段数据记录_润前水份（%）': { min: 14, max: 22, rate: 5 },
+          '二润工段数据记录_润前温度（℃）': { min: 35, max: 55, rate: 5 },
+          '二润工段数据记录_润后水份（%）': { min: 16, max: 24, rate: 5 },
+          '二润工段数据记录_润后温度（℃）': { min: 45, max: 65, rate: 5 },
+          '二润工段数据记录_环境温度（℃）': { min: 22, max: 32, rate: 5 },
+          '二润工段数据记录_环境湿度（%）': { min: 70, max: 90, rate: 5 },
+          '打叶工段数据记录_打前水份（%）': { min: 12, max: 20, rate: 5 },
+          '打叶工段数据记录_打前温度（℃）': { min: 25, max: 45, rate: 5 },
+          '打叶工段数据记录_环境湿度（%）': { min: 55, max: 75, rate: 5 },
+          '打叶工段数据记录_环境温度（℃）': { min: 22, max: 32, rate: 5 }
+        };
+        
+        let resetCount = 0;
+        
+        Object.entries(defaultRanges).forEach(([paramName, range]) => {
+          const minInput = document.getElementById(`range-min-${paramName}`);
+          const maxInput = document.getElementById(`range-max-${paramName}`);
+          const rateInput = document.getElementById(`range-rate-${paramName}`);
+          
+          if (minInput && maxInput && rateInput) {
+            minInput.value = range.min;
+            maxInput.value = range.max;
+            rateInput.value = range.rate;
+            resetCount++;
+          }
+        });
+        
+        showToast(`已重置 ${resetCount} 个参数的范围设置`, 'success');
+      }
+
+      /**
+       * 获取指定参数的更新范围设置
+       */
+      function getParamUpdateRange(paramName) {
+        const minInput = document.getElementById(`range-min-${paramName}`);
+        const maxInput = document.getElementById(`range-max-${paramName}`);
+        const rateInput = document.getElementById(`range-rate-${paramName}`);
+        
+        if (minInput && maxInput && rateInput) {
+          return {
+            min: parseFloat(minInput.value) || 0,
+            max: parseFloat(maxInput.value) || 100,
+            rate: parseFloat(rateInput.value) || 5
+          };
+        }
+        
+        // 返回默认范围
+        return { min: 0, max: 100, rate: 5 };
+      }
+
+      /**
+       * 业务约束验证函数
+       */
+      function validateBusinessConstraints(paramData, showWarnings = true) {
+        const warnings = [];
+        const adjustments = [];
+        
+        // 约束1：根据待加工原烟质量属性调整相关参数
+        const qualityAttr = document.getElementById('test-manual-待加工原烟数据记录_质量属性（稍差、合格、稍强）');
+        if (qualityAttr) {
+          const quality = qualityAttr.value;
+          
+          if (quality === '稍差') {
+            // 稍差烟叶需要更高的水份和温度处理
+            if (paramData['一润工段数据记录_润后水份（%）'] < 18) {
+              paramData['一润工段数据记录_润后水份（%）'] = 18.5;
+              adjustments.push(`稍差烟叶：一润工段润后水份调整为 18.5%`);
+            }
+            if (paramData['一润工段数据记录_润后温度（℃）'] < 50) {
+              paramData['一润工段数据记录_润后温度（℃）'] = 52;
+              adjustments.push(`稍差烟叶：一润工段润后温度调整为 52℃`);
+            }
+          } else if (quality === '稍强') {
+            // 稍强烟叶需要较低的处理参数
+            if (paramData['一润工段数据记录_润后水份（%）'] > 17) {
+              paramData['一润工段数据记录_润后水份（%）'] = 16.5;
+              adjustments.push(`稍强烟叶：一润工段润后水份调整为 16.5%`);
+            }
+            if (paramData['一润工段数据记录_润后温度（℃）'] > 48) {
+              paramData['一润工段数据记录_润后温度（℃）'] = 46;
+              adjustments.push(`稍强烟叶：一润工段润后温度调整为 46℃`);
+            }
+          }
+        }
+        
+        // 约束2：二润工段润前水份及润前温度应低于一润工段润后水份及润后温度
+        if (paramData['二润工段数据记录_润前水份（%）'] >= paramData['一润工段数据记录_润后水份（%）']) {
+          const adjustment = paramData['一润工段数据记录_润后水份（%）'] - 0.5;
+          paramData['二润工段数据记录_润前水份（%）'] = Math.max(12, adjustment);
+          adjustments.push(`二润工段润前水份调整为 ${paramData['二润工段数据记录_润前水份（%）']}%`);
+        }
+        
+        if (paramData['二润工段数据记录_润前温度（℃）'] >= paramData['一润工段数据记录_润后温度（℃）']) {
+          const adjustment = paramData['一润工段数据记录_润后温度（℃）'] - 2;
+          paramData['二润工段数据记录_润前温度（℃）'] = Math.max(30, adjustment);
+          adjustments.push(`二润工段润前温度调整为 ${paramData['二润工段数据记录_润前温度（℃）']}℃`);
+        }
+        
+        // 约束3：一润工段润前应低于润后
+        if (paramData['一润工段数据记录_润前水份（%）'] >= paramData['一润工段数据记录_润后水份（%）']) {
+          const gap = 2;
+          paramData['一润工段数据记录_润前水份（%）'] = Math.max(12, paramData['一润工段数据记录_润后水份（%）'] - gap);
+          adjustments.push(`一润工段润前水份调整为 ${paramData['一润工段数据记录_润前水份（%）']}%`);
+        }
+        
+        if (paramData['一润工段数据记录_润前温度（℃）'] >= paramData['一润工段数据记录_润后温度（℃）']) {
+          const gap = 5;
+          paramData['一润工段数据记录_润前温度（℃）'] = Math.max(30, paramData['一润工段数据记录_润后温度（℃）'] - gap);
+          adjustments.push(`一润工段润前温度调整为 ${paramData['一润工段数据记录_润前温度（℃）']}℃`);
+        }
+        
+        // 约束3：二润工段润前应低于润后
+        if (paramData['二润工段数据记录_润前水份（%）'] >= paramData['二润工段数据记录_润后水份（%）']) {
+          const gap = 2;
+          paramData['二润工段数据记录_润前水份（%）'] = Math.max(14, paramData['二润工段数据记录_润后水份（%）'] - gap);
+          adjustments.push(`二润工段润前水份调整为 ${paramData['二润工段数据记录_润前水份（%）']}%`);
+        }
+        
+        if (paramData['二润工段数据记录_润前温度（℃）'] >= paramData['二润工段数据记录_润后温度（℃）']) {
+          const gap = 5;
+          paramData['二润工段数据记录_润前温度（℃）'] = Math.max(35, paramData['二润工段数据记录_润后温度（℃）'] - gap);
+          adjustments.push(`二润工段润前温度调整为 ${paramData['二润工段数据记录_润前温度（℃）']}℃`);
+        }
+        
+        // 约束4：待加工原烟叶梗比应在27~33之间
+        if (paramData['待加工原烟数据记录_叶梗比（%）'] < 27) {
+          paramData['待加工原烟数据记录_叶梗比（%）'] = 27;
+          adjustments.push(`叶梗比调整为 27%（最小值限制）`);
+        } else if (paramData['待加工原烟数据记录_叶梗比（%）'] > 33) {
+          paramData['待加工原烟数据记录_叶梗比（%）'] = 33;
+          adjustments.push(`叶梗比调整为 33%（最大值限制）`);
+        }
+        
+        // 约束5：环境温湿度应接近
+        const envParams = {
+          temp: [
+            paramData['待加工原烟数据记录_环境温度（℃）'],
+            paramData['铺叶工段数据记录_环境温度（℃）'],
+            paramData['回潮工段数据记录_环境温度（℃）']
+          ],
+          humidity: [
+            paramData['待加工原烟数据记录_环境湿度（%）'],
+            paramData['铺叶工段数据记录_环境湿度（%）'],
+            paramData['回潮工段数据记录_环境湿度（%）']
+          ]
+        };
+        
+        // 计算平均值并调整使其接近
+        const avgTemp = envParams.temp.reduce((a, b) => a + b, 0) / envParams.temp.length;
+        const avgHumidity = envParams.humidity.reduce((a, b) => a + b, 0) / envParams.humidity.length;
+        
+        const tempTolerance = 3; // 温度容差±3℃
+        const humidityTolerance = 5; // 湿度容差±5%
+        
+        // 调整温度使其在容差范围内
+        ['待加工原烟数据记录_环境温度（℃）', '铺叶工段数据记录_环境温度（℃）', '回潮工段数据记录_环境温度（℃）'].forEach(param => {
+          if (Math.abs(paramData[param] - avgTemp) > tempTolerance) {
+            const adjustment = avgTemp + (Math.random() - 0.5) * tempTolerance * 2;
+            paramData[param] = Math.round(adjustment * 10) / 10;
+            adjustments.push(`${param.split('_')[0]}环境温度调整为 ${paramData[param]}℃`);
+          }
+        });
+        
+        // 调整湿度使其在容差范围内
+        ['待加工原烟数据记录_环境湿度（%）', '铺叶工段数据记录_环境湿度（%）', '回潮工段数据记录_环境湿度（%）'].forEach(param => {
+          if (Math.abs(paramData[param] - avgHumidity) > humidityTolerance) {
+            const adjustment = avgHumidity + (Math.random() - 0.5) * humidityTolerance * 2;
+            paramData[param] = Math.round(adjustment * 10) / 10;
+            adjustments.push(`${param.split('_')[0]}环境湿度调整为 ${paramData[param]}%`);
+          }
+        });
+        
+        if (showWarnings && adjustments.length > 0) {
+          showToast(`业务约束调整: ${adjustments.slice(0, 3).join(', ')}${adjustments.length > 3 ? '等' : ''}`, 'warning');
+          console.log('业务约束调整详情:', adjustments);
+        }
+        
+        return {
+          paramData,
+          adjustments,
+          isValid: true
+        };
+      }
+
+      /**
+       * 应用约束的参数范围获取函数
+       */
+      function getConstrainedParamRange(paramName, currentData) {
+        let range = getParamUpdateRange(paramName);
+        
+        // 根据业务约束调整范围
+        switch (paramName) {
+          case '待加工原烟数据记录_叶梗比（%）':
+            range.min = Math.max(range.min, 27);
+            range.max = Math.min(range.max, 33);
+            break;
+            
+          case '二润工段数据记录_润前水份（%）':
+            if (currentData['一润工段数据记录_润后水份（%）']) {
+              range.max = Math.min(range.max, currentData['一润工段数据记录_润后水份（%）'] - 0.5);
+            }
+            break;
+            
+          case '二润工段数据记录_润前温度（℃）':
+            if (currentData['一润工段数据记录_润后温度（℃）']) {
+              range.max = Math.min(range.max, currentData['一润工段数据记录_润后温度（℃）'] - 2);
+            }
+            break;
+            
+          case '一润工段数据记录_润前水份（%）':
+            if (currentData['一润工段数据记录_润后水份（%）']) {
+              range.max = Math.min(range.max, currentData['一润工段数据记录_润后水份（%）'] - 2);
+            }
+            break;
+            
+          case '一润工段数据记录_润前温度（℃）':
+            if (currentData['一润工段数据记录_润后温度（℃）']) {
+              range.max = Math.min(range.max, currentData['一润工段数据记录_润后温度（℃）'] - 5);
+            }
+            break;
+        }
+        
+        // 确保范围有效性
+        if (range.min >= range.max) {
+          range.min = range.max - 1;
+        }
+        
+        return range;
+      }
+
+      /**
+       * 修改后的更新测试数据函数 - 使用每个参数的自定义范围和业务约束
+       */
       function updateTestManualData() {
         const inputElements = document.querySelectorAll(
           "#test-manual-input-mode .param-input"
         );
         let updatedCount = 0;
+        const paramData = {};
 
         console.log(
           "开始更新测试参数数据，找到输入框数量:",
           inputElements.length
         );
 
+        // 第一步：收集所有当前值
         inputElements.forEach((input) => {
-          const currentValue = parseFloat(input.value);
-          if (!isNaN(currentValue)) {
-            // 在原值基础上进行±5%的随机调整
-            const variation = currentValue * 0.05; // 5%变化范围
-            const randomFactor = (Math.random() - 0.5) * 2; // -1到1之间的随机数
-            const newValue = currentValue + variation * randomFactor;
+          if (input.id.startsWith('range-')) {
+            return;
+          }
+          
+          if (input.tagName === "SELECT") {
+            const paramName = input.id.replace('test-manual-', '');
+            paramData[paramName] = input.value;
+          } else {
+            const currentValue = parseFloat(input.value);
+            if (!isNaN(currentValue)) {
+              const paramName = input.id.replace('test-manual-', '');
+              paramData[paramName] = currentValue;
+            }
+          }
+        });
 
-            // 确保新值为正数，并保留1位小数
-            const finalValue = Math.max(0.1, Math.round(newValue * 10) / 10);
-            input.value = finalValue;
-            updatedCount++;
+        // 第二步：更新数值参数
+        inputElements.forEach((input) => {
+          if (input.id.startsWith('range-')) {
+            return;
+          }
+          
+          if (input.tagName === "SELECT") {
+            // 对于选择框，随机选择一个选项
+            const options = Array.from(input.options);
+            if (options.length > 0) {
+              const randomIndex = Math.floor(Math.random() * options.length);
+              input.selectedIndex = randomIndex;
+              const paramName = input.id.replace('test-manual-', '');
+              paramData[paramName] = input.value;
+              updatedCount++;
+              console.log(`更新参数 ${input.id}: 选择了 ${input.value}`);
+            }
+          } else {
+            // 对于数字输入框，使用约束范围进行更新
+            const currentValue = parseFloat(input.value);
+            if (!isNaN(currentValue)) {
+              const paramName = input.id.replace('test-manual-', '');
+              const range = getConstrainedParamRange(paramName, paramData);
+              
+              // 计算新值
+              let newValue;
+              
+              // 基于变化率的更新
+              const variation = currentValue * (range.rate / 100);
+              const randomFactor = (Math.random() - 0.5) * 2;
+              newValue = currentValue + variation * randomFactor;
+              
+              // 确保新值在约束范围内
+              newValue = Math.max(range.min, Math.min(range.max, newValue));
+              
+              // 确保新值为正数，并保留1位小数
+              const finalValue = Math.max(0.1, Math.round(newValue * 10) / 10);
+              paramData[paramName] = finalValue;
+              updatedCount++;
 
-            console.log(
-              `更新参数 ${input.id}: ${currentValue} -> ${finalValue}`
-            );
+              console.log(
+                `更新参数 ${paramName}: ${currentValue} -> ${finalValue} (约束范围: ${range.min}-${range.max}, 变化率: ${range.rate}%)`
+              );
+            }
+          }
+        });
+
+        // 第三步：应用业务约束验证和调整
+        const validationResult = validateBusinessConstraints(paramData, true);
+        
+        // 第四步：将调整后的值应用到输入框
+        Object.entries(validationResult.paramData).forEach(([paramName, value]) => {
+          const input = document.getElementById(`test-manual-${paramName}`);
+          if (input && input.tagName !== "SELECT") {
+            input.value = value;
           }
         });
 
         if (updatedCount > 0) {
           showToast(`已更新 ${updatedCount} 个参数的数据`, "success");
+          if (validationResult.adjustments.length > 0) {
+            setTimeout(() => {
+              showToast(`已应用 ${validationResult.adjustments.length} 项业务约束调整`, "info");
+            }, 1500);
+          }
           console.log(`📊 成功更新了 ${updatedCount} 个测试参数`);
         } else {
           showToast("没有找到可更新的参数", "warning");
-          console.warn("没有找到有效的数值参数进行更新");
+          console.warn("没有找到有效的参数进行更新");
         }
       }
 
@@ -8438,13 +10643,17 @@
         const testData = window.lastTestProgress;
 
         // 显示测试结果分析区域
-        const testResultsAnalysis = document.getElementById("test-results-analysis");
+        const testResultsAnalysis = document.getElementById(
+          "test-results-analysis"
+        );
         if (testResultsAnalysis) {
           testResultsAnalysis.classList.remove("hidden");
         }
 
         // 清空测试结果操作容器，重新构建所需元素
-        const operationsContainer = document.getElementById("test-result-operations-container");
+        const operationsContainer = document.getElementById(
+          "test-result-operations-container"
+        );
         operationsContainer.innerHTML = "";
 
         if (testData && validateOptimizationResults(testData)) {
@@ -8459,7 +10668,7 @@
                         <h3 class="text-sm text-gray-400 mb-2">大中片率</h3>
                         <p class="text-3xl font-bold text-green-400">
                             ${testData.result_metrics.big_medium_rate.toFixed(
-                              1
+                              2
                             )}%
                         </p>
                     </div>
@@ -8467,7 +10676,7 @@
                         <h3 class="text-sm text-gray-400 mb-2">叶含梗率</h3>
                         <p class="text-3xl font-bold text-green-400">
                             ${testData.result_metrics.leaf_stem_rate.toFixed(
-                              1
+                              2
                             )}%
                         </p>
                     </div>
@@ -8475,7 +10684,7 @@
                         <h3 class="text-sm text-gray-400 mb-2">梗含叶率</h3>
                         <p class="text-3xl font-bold text-green-400">
                             ${testData.result_metrics.stem_leaf_rate.toFixed(
-                              1
+                              2
                             )}%
                         </p>
                     </div>
@@ -8510,7 +10719,7 @@
                         ${
                           testData.result_file
                             ? `<p class="mb-2"><span class="font-bold">结果文件:</span> ${testData.result_file
-                                .replace(/\\/g, '/')
+                                .replace(/\\/g, "/")
                                 .split("/")
                                 .pop()}</p>`
                             : ""
@@ -8584,7 +10793,7 @@
 
             // 绑定下载按钮点击事件
             downloadDiv.querySelector(".btn-primary").onclick = function () {
-              let filename = testData.result_file.replace(/\\/g, '/'); // 将Windows路径分隔符转换为Unix风格
+              let filename = testData.result_file.replace(/\\/g, "/"); // 将Windows路径分隔符转换为Unix风格
               filename = filename.split("/").pop(); // 提取文件名
               downloadTestResultFile(filename);
             };
@@ -8610,7 +10819,9 @@
             }
 
             // 绑定保存到数据库按钮事件
-            const saveToDbBtn = downloadDiv.querySelector("#test-save-to-db-btn");
+            const saveToDbBtn = downloadDiv.querySelector(
+              "#test-save-to-db-btn"
+            );
             if (saveToDbBtn) {
               saveToDbBtn.addEventListener("click", function () {
                 saveTestResultToDatabase(testData.result_file);
@@ -8618,12 +10829,14 @@
             }
 
             // 绑定修改结果按钮事件
-            const modifyResultBtn =
-              downloadDiv.querySelector("#test-modify-result-btn");
+            const modifyResultBtn = downloadDiv.querySelector(
+              "#test-modify-result-btn"
+            );
             if (modifyResultBtn) {
               modifyResultBtn.addEventListener("click", function () {
-                const modifyForm =
-                  document.getElementById("test-modify-result-form");
+                const modifyForm = document.getElementById(
+                  "test-modify-result-form"
+                );
                 modifyForm.classList.toggle("hidden");
 
                 // 只有在首次点击时加载表单
@@ -8635,8 +10848,9 @@
             }
 
             // 绑定取消修改按钮事件
-            const cancelModifyBtn =
-              downloadDiv.querySelector("#test-cancel-modify-btn");
+            const cancelModifyBtn = downloadDiv.querySelector(
+              "#test-cancel-modify-btn"
+            );
             if (cancelModifyBtn) {
               cancelModifyBtn.addEventListener("click", function () {
                 document
@@ -8646,8 +10860,9 @@
             }
 
             // 绑定保存修改按钮事件
-            const saveModifiedBtn =
-              downloadDiv.querySelector("#test-save-modified-btn");
+            const saveModifiedBtn = downloadDiv.querySelector(
+              "#test-save-modified-btn"
+            );
             if (saveModifiedBtn) {
               saveModifiedBtn.addEventListener("click", function () {
                 saveTestModifiedResultToDatabase(testData.result_file);
@@ -8680,7 +10895,7 @@
         }
 
         // 确保文件名不包含路径，处理Windows和Unix路径分隔符
-        let cleanFileName = filename.replace(/\\/g, '/'); // 将Windows路径分隔符转换为Unix风格
+        let cleanFileName = filename.replace(/\\/g, "/"); // 将Windows路径分隔符转换为Unix风格
         cleanFileName = cleanFileName.split("/").pop(); // 提取文件名
 
         // 创建下载链接
@@ -8699,16 +10914,24 @@
        */
       function loadTestOptimizationResultPreview(filePath) {
         // 确保只使用文件名，不包含路径，处理Windows和Unix路径分隔符
-        let fileName = filePath.replace(/\\/g, '/'); // 将Windows路径分隔符转换为Unix风格
+        let fileName = filePath.replace(/\\/g, "/"); // 将Windows路径分隔符转换为Unix风格
         fileName = fileName.split("/").pop(); // 提取文件名
-        console.log('Original path:', filePath, 'Extracted filename:', fileName);
+        console.log(
+          "Original path:",
+          filePath,
+          "Extracted filename:",
+          fileName
+        );
         fetch(`/api/preview_optimization_result/${fileName}`)
           .then((response) => response.json())
           .then((data) => {
             if (data.success && data.preview) {
               displayTestOptimizationResultPreview(data.preview, data.columns);
             } else {
-              showToast("加载测试结果预览失败: " + (data.message || "无预览数据"), "error");
+              showToast(
+                "加载测试结果预览失败: " + (data.message || "无预览数据"),
+                "error"
+              );
             }
           })
           .catch((error) => {
@@ -8717,19 +10940,22 @@
           });
       }
 
-      /**
-       * 显示测试结果预览数据
-       */
+      // 同时修改 displayTestOptimizationResultPreview 函数
       function displayTestOptimizationResultPreview(data, headers) {
-        const headerRow = document.getElementById("test-optimization-result-header");
-        const bodyElement = document.getElementById("test-optimization-result-body");
+        const headerRow = document.getElementById(
+          "test-optimization-result-header"
+        );
+        const bodyElement = document.getElementById(
+          "test-optimization-result-body"
+        );
 
         // 清空现有内容
         headerRow.innerHTML = "";
         bodyElement.innerHTML = "";
 
-        // 创建表头
-        headers.forEach((header) => {
+        // 创建表头 - 使用简化的列名
+        const simplifiedHeaders = simplifyColumnNames(headers);
+        simplifiedHeaders.forEach((header) => {
           const th = document.createElement("th");
           th.className = "border border-gray-600 px-4 py-2 text-left";
           th.textContent = header;
@@ -8741,10 +10967,11 @@
           const tr = document.createElement("tr");
           tr.className = "hover:bg-gray-700";
 
-          headers.forEach((header) => {
+          // 使用原始列名来获取数据
+          headers.forEach((originalHeader) => {
             const td = document.createElement("td");
             td.className = "border border-gray-600 px-4 py-2";
-            const value = row[header];
+            const value = row[originalHeader];
             if (typeof value === "number") {
               td.textContent = value.toFixed(2);
             } else {
@@ -8772,7 +10999,8 @@
         const saveBtn = document.getElementById("test-save-to-db-btn");
         if (saveBtn) {
           saveBtn.disabled = true;
-          saveBtn.innerHTML = '<span class="material-icons mr-2 animate-spin">refresh</span> 保存中...';
+          saveBtn.innerHTML =
+            '<span class="material-icons mr-2 animate-spin">refresh</span> 保存中...';
         }
 
         fetch("/api/save_optimization_result_to_database", {
@@ -8800,7 +11028,8 @@
             // 恢复按钮状态
             if (saveBtn) {
               saveBtn.disabled = false;
-              saveBtn.innerHTML = '<span class="material-icons mr-2">check_circle</span> 确认并保存到数据库';
+              saveBtn.innerHTML =
+                '<span class="material-icons mr-2">check_circle</span> 确认并保存到数据库';
             }
           });
       }
@@ -8810,10 +11039,14 @@
        */
       function loadTestModifyResultForm(filePath) {
         // 确保只使用文件名，不包含路径，处理Windows和Unix路径分隔符
-        let fileName = filePath.replace(/\\/g, '/'); // 将Windows路径分隔符转换为Unix风格
+        let fileName = filePath.replace(/\\/g, "/"); // 将Windows路径分隔符转换为Unix风格
         fileName = fileName.split("/").pop(); // 提取文件名
-        
-        fetch(`/api/get_optimization_result_data?file_path=${encodeURIComponent(fileName)}`)
+
+        fetch(
+          `/api/get_optimization_result_data?file_path=${encodeURIComponent(
+            fileName
+          )}`
+        )
           .then((response) => response.json())
           .then((data) => {
             if (data.success && data.data && Array.isArray(data.data)) {
@@ -8829,10 +11062,12 @@
       }
 
       /**
-       * 创建测试结果修改表单
+       * 创建测试结果修改表单 - 使用简化列名
        */
       function createTestModifyResultForm(data, filePath) {
-        const fieldsContainer = document.getElementById("test-modify-result-fields");
+        const fieldsContainer = document.getElementById(
+          "test-modify-result-fields"
+        );
         fieldsContainer.innerHTML = "";
 
         // 定义需要转为下拉选择框的字段及其选项
@@ -8848,42 +11083,62 @@
             "加水",
             "混合",
           ],
+          "待加工原烟数据记录_质量属性（稍差、合格、稍强）": [
+            "稍差",
+            "合格",
+            "稍强",
+          ], // 添加质量属性
         };
 
         // 定义不允许修改的字段
         const excludedFields = ["大中片率", "叶含梗率", "梗含叶率", "综合得分"];
 
+        // 定义质量属性的值到显示文本的映射
+        const qualityAttributeDisplayMap = {
+          稍差: "较好",
+          合格: "良好",
+          稍强: "优秀",
+        };
+
         // 直接遍历有序数组，保证了显示顺序
         data.forEach((item) => {
-          const key = item.key;
+          const originalKey = item.key; // 原始列名
           const value = item.value;
 
           // 跳过不允许修改的字段
-          if (excludedFields.includes(key)) {
+          if (excludedFields.includes(originalKey)) {
             return;
           }
+
+          // 使用简化列名进行显示
+          const displayKey = simplifyColumnNames([originalKey])[0];
 
           let fieldHtml = "";
 
           // 检查是否需要转为下拉选择框
-          if (selectOptionsMap.hasOwnProperty(key)) {
-            const options = selectOptionsMap[key];
+          if (selectOptionsMap.hasOwnProperty(originalKey)) {
+            const options = selectOptionsMap[originalKey];
             let optionsHtml = "";
             options.forEach((option) => {
               const selected = option === value ? "selected" : "";
-              optionsHtml += `<option value="${option}" ${selected}>${option}</option>`;
+              const displayText =
+                originalKey ===
+                "待加工原烟数据记录_质量属性（稍差、合格、稍强）"
+                  ? qualityAttributeDisplayMap[option] || option
+                  : option;
+              optionsHtml += `<option value="${option}" ${selected}>${displayText}</option>`;
             });
 
             fieldHtml = `
               <div class="form-field-with-preview">
                 <div class="field-input-group">
-                  <label class="block text-sm font-medium mb-1">${key}</label>
-                  <select class="param-input w-full" name="${key}" data-original="${value}">
+                  <label class="block text-sm font-medium mb-1">${displayKey}</label>
+                  <select class="param-input w-full" name="${originalKey}" data-original="${value}">
                     ${optionsHtml}
                   </select>
                 </div>
                 <button type="button" class="param-preview-btn" 
-                        data-param-name="${key}" 
+                        data-param-name="${originalKey}" 
                         data-param-type="categorical" 
                         data-param-options='${JSON.stringify(options)}' 
                         data-current-value="${value}" 
@@ -8898,12 +11153,12 @@
             fieldHtml = `
               <div class="form-field-with-preview">
                 <div class="field-input-group">
-                  <label class="block text-sm font-medium mb-1">${key}</label>
+                  <label class="block text-sm font-medium mb-1">${displayKey}</label>
                   <input type="text" class="param-input w-full" 
-                         name="${key}" value="${value}" data-original="${value}">
+                        name="${originalKey}" value="${value}" data-original="${value}">
                 </div>
                 <button type="button" class="param-preview-btn" 
-                        data-param-name="${key}" 
+                        data-param-name="${originalKey}" 
                         data-param-type="numerical" 
                         data-current-value="${value}" 
                         data-result-file="${filePath}">
@@ -8917,6 +11172,18 @@
           fieldsContainer.innerHTML += fieldHtml;
         });
 
+        // 添加说明文字
+        const noteDiv = document.createElement("div");
+        noteDiv.className =
+          "col-span-3 p-3 bg-yellow-900 bg-opacity-30 border border-yellow-500 rounded-lg mt-4";
+        noteDiv.innerHTML = `
+          <div class="flex items-center text-yellow-300">
+            <span class="material-icons mr-2">info</span>
+            <span class="text-sm">注意：大中片率、叶含梗率、梗含叶率和综合得分为系统计算结果，不可修改</span>
+          </div>
+        `;
+        fieldsContainer.appendChild(noteDiv);
+
         // 为测试模块的参数趋势预览按钮添加事件监听器
         fieldsContainer.addEventListener("click", function (event) {
           if (event.target.closest(".param-preview-btn")) {
@@ -8929,9 +11196,7 @@
               .querySelector(".param-input");
             if (inputElement) {
               currentValue = inputElement.value; // 获取用户当前输入的值
-              console.log(
-                `📊 实时获取参数值 - ${paramName}: ${currentValue}`
-              );
+              console.log(`📊 实时获取参数值 - ${paramName}: ${currentValue}`);
             } else {
               currentValue = btn.dataset.currentValue; // 备用方案
               console.warn(
@@ -9010,7 +11275,8 @@
         const saveBtn = document.getElementById("test-save-modified-btn");
         if (saveBtn) {
           saveBtn.disabled = true;
-          saveBtn.innerHTML = '<span class="material-icons mr-2 animate-spin">refresh</span> 保存中...';
+          saveBtn.innerHTML =
+            '<span class="material-icons mr-2 animate-spin">refresh</span> 保存中...';
         }
 
         const submitData = {
@@ -9031,7 +11297,9 @@
             if (data.success) {
               showToast("修改后的测试结果已成功保存到数据库！", "success");
               // 隐藏修改表单
-              document.getElementById("test-modify-result-form").classList.add("hidden");
+              document
+                .getElementById("test-modify-result-form")
+                .classList.add("hidden");
               // 重新加载预览
               loadTestOptimizationResultPreview(filePath);
             } else {
@@ -9046,7 +11314,8 @@
             // 恢复按钮状态
             if (saveBtn) {
               saveBtn.disabled = false;
-              saveBtn.innerHTML = '<span class="material-icons mr-2">save</span> 保存修改';
+              saveBtn.innerHTML =
+                '<span class="material-icons mr-2">save</span> 保存修改';
             }
           });
       }
@@ -9066,7 +11335,7 @@
           .then((data) => {
             if (data.success) {
               select.innerHTML = '<option value="">选择结果文件</option>';
-              
+
               if (data.files && data.files.length > 0) {
                 // 按日期降序排列，最新的在前面
                 const sortedFiles = data.files.sort(

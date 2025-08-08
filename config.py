@@ -11,18 +11,28 @@ class Config:
     SESSION_PERMANENT = False
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
     
-    # MySQL数据库配置
+    # MySQL数据库配置（保留，如需要可切换回MySQL）
     MYSQL_HOST = os.environ.get('MYSQL_HOST') or 'localhost'
     MYSQL_PORT = os.environ.get('MYSQL_PORT') or '3306'
     MYSQL_USER = os.environ.get('MYSQL_USER') or 'root'
-    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or 'ZH4630026'
+    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD') or '123456'
     MYSQL_DB = os.environ.get('MYSQL_DB') or 'tobacco'
     
-    # 数据库配置
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+    # SQLite数据库配置
+    DATABASE_TYPE = os.environ.get('DATABASE_TYPE') or 'sqlite'  # 可选: 'mysql' 或 'sqlite'
+    SQLITE_DB_PATH = os.environ.get('SQLITE_DB_PATH') or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tobacco.db')
+    
+    # 数据库配置 - 根据类型选择
+    if DATABASE_TYPE.lower() == 'mysql':
+        SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+        SQLALCHEMY_POOL_RECYCLE = 280  # 连接回收时间，避免MySQL的wait_timeout问题
+        SQLALCHEMY_POOL_SIZE = 10      # 连接池大小
+    else:
+        # 默认使用SQLite
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{SQLITE_DB_PATH}"
+        # SQLite不需要连接池配置
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_POOL_RECYCLE = 280  # 连接回收时间，避免MySQL的wait_timeout问题
-    SQLALCHEMY_POOL_SIZE = 10      # 连接池大小
     
     # 文件上传配置
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
@@ -38,7 +48,11 @@ class Config:
     print(f"📂 配置的模型目录: {MODEL_FOLDER}")
     print(f"📋 允许的数据文件扩展名: {ALLOWED_DATA_EXTENSIONS}")
     print(f"📋 允许的模型文件扩展名: {ALLOWED_MODEL_EXTENSIONS}")
-    print(f"🗃️ 数据库连接: MySQL ({MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB})")
+    print(f"🗃️ 数据库类型: {DATABASE_TYPE}")
+    if DATABASE_TYPE.lower() == 'mysql':
+        print(f"🗃️ MySQL数据库连接: {MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}")
+    else:
+        print(f"🗃️ SQLite数据库路径: {SQLITE_DB_PATH}")
     
     # 优化算法配置
     OPTIMIZATION_CONFIG = {
