@@ -8388,10 +8388,18 @@
 
           console.log("生成数值型趋势数据，基础值:", baseValue);
 
-          // 生成±5范围内的值，步长0.5
+          // 生成参数值范围 - 为铺叶工段流量设置特殊步长和范围
           const values = [];
-          for (let i = baseValue - 5; i <= baseValue + 5; i += 0.5) {
-            values.push(Math.round(i * 10) / 10); // 保留1位小数
+          if (paramName === "铺叶工段数据记录_流量（kg/h)") {
+            // 铺叶工段流量：范围-5000到+5000，步长1000
+            for (let i = baseValue - 5000; i <= baseValue + 5000; i += 1000) {
+              values.push(Math.round(i)); // 保留整数
+            }
+          } else {
+            // 其他参数：保持原有设置，范围±5，步长0.5
+            for (let i = baseValue - 5; i <= baseValue + 5; i += 0.5) {
+              values.push(Math.round(i * 10) / 10); // 保留1位小数
+            }
           }
 
           // 获取基础参数
@@ -10433,7 +10441,20 @@
           adjustments.push(`叶梗比调整为 33%（最大值限制）`);
         }
         
-        // 约束5：环境温湿度应接近
+        // 约束5：打叶工段打前水份和打前温度应低于二润工段润后水份和润后温度
+        if (paramData['打叶工段数据记录_打前水份（%）'] >= paramData['二润工段数据记录_润后水份（%）']) {
+          const adjustment = paramData['二润工段数据记录_润后水份（%）'] - 1;
+          paramData['打叶工段数据记录_打前水份（%）'] = Math.max(12, adjustment);
+          adjustments.push(`打叶工段打前水份调整为 ${paramData['打叶工段数据记录_打前水份（%）']}%`);
+        }
+        
+        if (paramData['打叶工段数据记录_打前温度（℃）'] >= paramData['二润工段数据记录_润后温度（℃）']) {
+          const adjustment = paramData['二润工段数据记录_润后温度（℃）'] - 3;
+          paramData['打叶工段数据记录_打前温度（℃）'] = Math.max(25, adjustment);
+          adjustments.push(`打叶工段打前温度调整为 ${paramData['打叶工段数据记录_打前温度（℃）']}℃`);
+        }
+        
+        // 约束6：环境温湿度应接近
         const envParams = {
           temp: [
             paramData['待加工原烟数据记录_环境温度（℃）'],
@@ -10518,6 +10539,18 @@
           case '一润工段数据记录_润前温度（℃）':
             if (currentData['一润工段数据记录_润后温度（℃）']) {
               range.max = Math.min(range.max, currentData['一润工段数据记录_润后温度（℃）'] - 5);
+            }
+            break;
+            
+          case '打叶工段数据记录_打前水份（%）':
+            if (currentData['二润工段数据记录_润后水份（%）']) {
+              range.max = Math.min(range.max, currentData['二润工段数据记录_润后水份（%）'] - 1);
+            }
+            break;
+            
+          case '打叶工段数据记录_打前温度（℃）':
+            if (currentData['二润工段数据记录_润后温度（℃）']) {
+              range.max = Math.min(range.max, currentData['二润工段数据记录_润后温度（℃）'] - 3);
             }
             break;
         }
