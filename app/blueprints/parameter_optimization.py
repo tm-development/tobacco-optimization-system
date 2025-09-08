@@ -38,7 +38,6 @@ categorical_vars = OrderedDict({
 
 # 数值型变量
 numeric_vars = [
-    "铺叶工段数据记录_流量（kg/h)",
     "打叶工段数据记录_一打_打辊参数（hz）",
     "打叶工段数据记录_二打_打辊参数（hz）",
     "打叶工段数据记录_三打_打辊参数（hz）",
@@ -70,7 +69,7 @@ def extract_fixed_params_from_csv(file_path):
         "待加工原烟数据记录_质量属性（稍差、合格、稍强）"
     ]
 
-    # 定义要提取的固定数值参数列名
+    # 定义要提取的固定数值参数列名（包含铺叶工段流量）
     numeric_columns = [
         "待加工原烟数据记录_水份（%）",
         "待加工原烟数据记录_温度（℃）",
@@ -80,6 +79,7 @@ def extract_fixed_params_from_csv(file_path):
         "待加工原烟数据记录_环境湿度（%）",
         "铺叶工段数据记录_环境温度（℃）",
         "铺叶工段数据记录_环境湿度（%）",
+        "铺叶工段数据记录_流量（kg/h)",  # 保持在固定参数中
         "回潮工段数据记录_潮后水份（%）",
         "回潮工段数据记录_潮后温度（℃）",
         "回潮工段数据记录_环境温度（℃）",
@@ -212,8 +212,17 @@ def eval_func(individual, i, fixed_categorical_param_list, fixed_numeric_param_l
     leaf_in_stem_rate = y1.flatten()[0]
     stem_in_leaf_rate = y3.flatten()[0]
 
-    # 如果有目标值，根据与目标值的接近程度调整适应度
-     # 应用约束条件检查
+    # 应用大中片率约束条件检查 - 根据质量属性设置上限
+    quality_attribute = fixed_categorical_params['待加工原烟数据记录_质量属性（稍差、合格、稍强）']
+    
+    # 如果大中片率超过了质量属性对应的上限，则对适应度进行惩罚
+    if quality_attribute == '稍差' and large_medium_rate > 75:
+        # 对于稍差原烟，大中片率不应超过75
+        large_medium_rate = large_medium_rate - (large_medium_rate - 75) * 2  # 加重惩罚
+    elif quality_attribute == '合格' and large_medium_rate > 77:
+        # 对于合格原烟，大中片率不应超过77
+        large_medium_rate = large_medium_rate - (large_medium_rate - 77) * 2  # 加重惩罚
+    # 对于稍强原烟，不设置上限约束，允许更高的大中片率
    
     # 应用目标值调整（现有逻辑）
     if target_values:
@@ -246,12 +255,13 @@ def optimize_parameters():
                 "待加工原烟数据记录_水份（%）",
                 "待加工原烟数据记录_温度（℃）",
                 "待加工原烟数据记录_烟碱含量（%）",
-                "待加工原烟数据记录_质量属性（稍差、合格、稍强）",  # 添加质量属性验证
+                "待加工原烟数据记录_质量属性（稍差、合格、稍强）",
                 "待加工原烟数据记录_叶梗比（%）",
                 "待加工原烟数据记录_环境温度（℃）",
                 "待加工原烟数据记录_环境湿度（%）",
                 "铺叶工段数据记录_环境温度（℃）",
                 "铺叶工段数据记录_环境湿度（%）",
+                "铺叶工段数据记录_流量（kg/h)",  # 添加到必需参数中
                 "回潮工段数据记录_潮后水份（%）",
                 "回潮工段数据记录_潮后温度（℃）",
                 "回潮工段数据记录_环境温度（℃）",
@@ -396,8 +406,8 @@ def run_optimization(task_id, target_values, constraints, max_iterations, popula
         for var_name, var_values in categorical_vars.items():
             toolbox.register(var_name, random.choice, var_values)
 
-        # 注册数值型变量
-        toolbox.register("铺叶工段数据记录_流量（kg/h)", random.randint, 12000, 18000)
+        # 注册数值型变量（移除铺叶工段流量）
+        # toolbox.register("铺叶工段数据记录_流量（kg/h)", random.randint, 12000, 18000)  # 移除这行
         toolbox.register("打叶工段数据记录_一打_打辊参数（hz）", random.randint, 30, 50)
         toolbox.register("打叶工段数据记录_二打_打辊参数（hz）", random.randint, 30, 50)
         toolbox.register("打叶工段数据记录_三打_打辊参数（hz）", random.randint, 30, 50)
@@ -1260,6 +1270,8 @@ def save_optimization_result_to_database():
             existing_result.parameters = json.dumps(params_json, ensure_ascii=False)
             existing_result.modified_parameters = json.dumps(params_json, ensure_ascii=False)  # 同样的数据
             existing_result.metrics = json.dumps(metrics_json, ensure_ascii=False)
+            # 新增：初始化 modified_metrics 与 metrics 一致
+            existing_result.modified_metrics = json.dumps(metrics_json, ensure_ascii=False)  # <-- add
             existing_result.updated_at = datetime.now()
             existing_result.is_modified = False  # 标记为未修改状态
             existing_result.file_path = abs_file_path
@@ -1271,6 +1283,8 @@ def save_optimization_result_to_database():
                 parameters=json.dumps(params_json, ensure_ascii=False),
                 modified_parameters=json.dumps(params_json, ensure_ascii=False),  # 同样的数据
                 metrics=json.dumps(metrics_json, ensure_ascii=False),
+                # 新增：初始化 modified_metrics 与 metrics 一致
+                modified_metrics=json.dumps(metrics_json, ensure_ascii=False),   # <-- add
                 file_path=abs_file_path,
                 created_at=datetime.now(),
                 is_modified=False
@@ -1290,6 +1304,7 @@ def save_optimization_result_to_database():
         # 回滚数据库事务
         db.session.rollback()
         return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
+
 @parameter_optimization.route('/api/save_modified_result_to_database', methods=['POST'])
 @user_or_admin_required
 def save_modified_result_to_database():
@@ -1300,7 +1315,8 @@ def save_modified_result_to_database():
             return jsonify({'success': False, 'message': '未接收到请求数据'})
 
         file_path_from_request = data.get('file_path')
-        modified_data = data.get('modified_data')
+        modified_data = data.get('modified_data', {})
+        modified_metrics = data.get('modified_metrics', {})  # 新增：获取修改后的质量指标
 
         if not file_path_from_request or not isinstance(modified_data, dict):
             return jsonify({'success': False, 'message': '参数不完整或格式不正确'})
@@ -1322,6 +1338,8 @@ def save_modified_result_to_database():
             return jsonify({'success': False, 'message': '原始文件中没有数据'})
 
         best_result = df.iloc[-1].to_dict()
+        
+        # 应用参数修改
         for key, value in modified_data.items():
             if key in best_result:
                 best_result[key] = value
@@ -1330,10 +1348,12 @@ def save_modified_result_to_database():
         modified_params_json = {}
         modified_metrics_json = {}
 
+        # 处理分类参数
         for key in categorical_vars.keys():
             if key in best_result:
                 modified_params_json[key] = best_result[key]
 
+        # 处理数值参数
         for key in numeric_vars:
             if key in best_result:
                 try:
@@ -1344,10 +1364,15 @@ def save_modified_result_to_database():
                     modified_params_json[key] = None
                     best_result[key] = None
 
-        # 指标数据 - 使用中文键
+        # 处理质量指标 - 如果前端传来了修改后的指标，使用前端的值；否则使用文件中的值
         metric_keys = ['大中片率', '叶含梗率', '梗含叶率', '综合得分']
         for key in metric_keys:
-            if key in best_result:
+            if key in modified_metrics:
+                # 使用前端传来的修改后的指标值
+                modified_metrics_json[key] = modified_metrics[key]
+                best_result[key] = modified_metrics[key]
+            elif key in best_result:
+                # 使用原始文件中的值
                 try:
                     float_val = float(best_result[key])
                     modified_metrics_json[key] = float_val
@@ -1368,9 +1393,9 @@ def save_modified_result_to_database():
         existing_result = OptimizationResult.query.filter_by(task_id=task_id).first()
         
         if existing_result:
-            # 保持原始参数不变，只更新修改后的参数列
+            # 保持原始参数不变，只更新修改后的参数和指标列
             existing_result.modified_parameters = json.dumps(modified_params_json, ensure_ascii=False)
-            existing_result.modified_metrics = json.dumps(modified_metrics_json, ensure_ascii=False)
+            existing_result.modified_metrics = json.dumps(modified_metrics_json, ensure_ascii=False)  # 新增：保存修改后的质量指标
             existing_result.updated_at = datetime.now()
             existing_result.is_modified = True
             existing_result.file_path = modified_file_path
@@ -1382,14 +1407,16 @@ def save_modified_result_to_database():
         
         return jsonify({
             'success': True,
-            'message': '修改后的优化结果已保存到新列',
+            'message': '修改后的结果已成功保存到数据库（包含质量指标修改）',
             'task_id': task_id,
             'modified_file_path': modified_file_path
         })
         
     except Exception as e:
+        # 回滚数据库事务
         db.session.rollback()
         return jsonify({'success': False, 'message': f'保存失败: {str(e)}'})
+
 
 @parameter_optimization.route('/api/predict_parameter_impact', methods=['POST'])
 @user_or_admin_required
@@ -1546,7 +1573,7 @@ def get_default_parameters_for_prediction():
         "二润工段数据记录_润叶方式（蒸汽、加水、混合）": "混合"
     })
     
-    # 默认数值参数
+    # 默认数值参数（包含铺叶工段流量）
     default_params.update({
         "待加工原烟数据记录_水份（%）": 20.2,
         "待加工原烟数据记录_温度（℃）": 25.0,
@@ -1556,6 +1583,7 @@ def get_default_parameters_for_prediction():
         "待加工原烟数据记录_环境湿度（%）": 60.0,
         "铺叶工段数据记录_环境温度（℃）": 23.0,
         "铺叶工段数据记录_环境湿度（%）": 65.0,
+        "铺叶工段数据记录_流量（kg/h)": 14000,  # 设置默认值
         "回潮工段数据记录_潮后水份（%）": 18.5,
         "回潮工段数据记录_潮后温度（℃）": 45.0,
         "回潮工段数据记录_环境温度（℃）": 24.0,
@@ -1576,7 +1604,7 @@ def get_default_parameters_for_prediction():
         "打叶工段数据记录_打前温度（℃）": 35.0,
         "打叶工段数据记录_环境湿度（%）": 65.0,
         "打叶工段数据记录_环境温度（℃）": 27.0,
-        "铺叶工段数据记录_流量（kg/h)": 12000,
+        # 可优化参数的默认值
         "打叶工段数据记录_一打_打辊参数（hz）": 42,
         "打叶工段数据记录_二打_打辊参数（hz）": 45,
         "打叶工段数据记录_三打_打辊参数（hz）": 48,
@@ -1712,6 +1740,23 @@ def predict_with_rbfnn_enhanced(parameters):
                 # 提供默认值
                 default_values = {'stem_leaf_rate': 0.6, 'big_medium_rate': 78.0, 'leaf_stem_rate': 1.4}
                 predictions[result_key] = default_values[result_key]
+        
+        # 应用大中片率约束条件检查 - 根据质量属性设置上限
+        quality_attribute = parameters.get('待加工原烟数据记录_质量属性（稍差、合格、稍强）', '合格')
+        
+        if 'big_medium_rate' in predictions:
+            original_rate = predictions['big_medium_rate']
+            
+            # 如果大中片率超过了质量属性对应的上限，则进行调整
+            if quality_attribute == '稍差' and original_rate > 75:
+                # 对于稍差原烟，大中片率不应超过75
+                predictions['big_medium_rate'] = min(original_rate, 75)
+                print(f"⚠️ 大中片率约束调整: {original_rate:.2f} -> {predictions['big_medium_rate']:.2f} (稍差原烟上限75)")
+            elif quality_attribute == '合格' and original_rate > 77:
+                # 对于合格原烟，大中片率不应超过77
+                predictions['big_medium_rate'] = min(original_rate, 77)
+                print(f"⚠️ 大中片率约束调整: {original_rate:.2f} -> {predictions['big_medium_rate']:.2f} (合格原烟上限77)")
+            # 对于稍强原烟，不设置上限约束，允许更高的大中片率
         
         print(f"🎯 RBFNN预测完成: {predictions}")
         return predictions

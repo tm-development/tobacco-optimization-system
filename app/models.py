@@ -23,6 +23,7 @@ class OptimizationResult(db.Model):
     parameters = db.Column(db.Text, nullable=False)  # 原始优化结果参数
     modified_parameters = db.Column(db.Text, nullable=True)  # 修改后的参数
     metrics = db.Column(db.Text, nullable=False)     # JSON字符串格式（包含原始指标）
+    modified_metrics = db.Column(db.Text, nullable=True)  # 修改后的指标
     file_path = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
