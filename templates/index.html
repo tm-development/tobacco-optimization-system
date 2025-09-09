@@ -143,6 +143,17 @@
         color: white;
       }
 
+      .param-label {
+          /* 限制标签最大宽度（根据布局调整，如 220px） */
+          max-width: 220px;
+          /* 强制长文本换行 */
+          word-wrap: break-word;
+          /* 或用 overflow-wrap: break-word; 效果一致 */
+          overflow-wrap: break-word;
+          /* 确保文本可换行（默认一般已为 normal，可显式声明） */
+          white-space: normal;
+      }
+
       .file-upload-area {
         border: 2px dashed var(--text-secondary);
         border-radius: 12px;
@@ -333,10 +344,19 @@
 
       /* 确保左侧输入区域正确显示在第一列 */
       .model-test-grid > div:first-child {
-        grid-column: 1 / span 1 !important; /* 明确指定在第一列 */
-        width: 100% !important;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px; /* 列之间的间距，可自定义 */
+        width: 102% !important;
         max-width: none !important;
         overflow: hidden; /* 防止内容溢出破坏布局 */
+      }
+
+      .input-grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 分成 2 列，等宽 */
+        gap: 16px; /* 列/行之间的间距，可自定义 */
+        margin-bottom: 16px; /* 与“运行预测”按钮的间距 */
       }
 
       /* 确保右侧预测结果区域正确显示在第二列 */
@@ -1308,7 +1328,8 @@
               <!-- 左侧：输入测试参数 -->
               <div>
                 <h3 class="text-lg font-bold mb-4">输入测试参数</h3>
-                <div class="input-params-container space-y-4">
+                  <div></div>
+{#                <div class="input-params-container space-y-4">#}
                   <div>
                     <label class="block text-sm font-medium mb-2"
                       >待加工原烟数据记录_水份（%）</label
@@ -1329,7 +1350,7 @@
                   </div>
                   <div>
                     <label class="block text-sm font-medium mb-2"
-                      >待加工原烟数据记录_质量属性（稍差、合格、稍强）</label
+                      >待加工原烟数据记录_质量属性</label
                     >
                     <select class="param-input">
                       <option value="稍差">较好</option>
@@ -1420,7 +1441,7 @@
                   </div>
                   <div>
                     <label class="block text-sm font-medium mb-2"
-                      >一润工段数据记录_润叶方式（蒸汽、加水、混合）</label
+                      >一润工段数据记录_润叶方式</label
                     >
                     <select class="param-input">
                       <option>混合</option>
@@ -1434,7 +1455,7 @@
                     >
                     <input type="number" class="param-input" value="17.2" />
                   </div>
-                </div>
+{#                </div>#}
                 <div>
                   <label class="block text-sm font-medium mb-2"
                     >一润工段数据记录_润后温度（℃）</label
@@ -1467,7 +1488,7 @@
                 </div>
                 <div>
                   <label class="block text-sm font-medium mb-2"
-                    >二润工段数据记录_润叶方式（蒸汽、加水、混合）</label
+                    >二润工段数据记录_润叶方式</label
                   >
                   <select class="param-input">
                     <option>混合</option>
