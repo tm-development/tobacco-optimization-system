@@ -339,6 +339,13 @@
         min-height: 600px;
       }
 
+      .space-y-4 {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          align-items: stretch; /* 或 align-items: stretch; 根据视觉需求选择 */
+          gap: 1rem; /* 可选：用 grid 的 gap 替代原 .space-y-4 的垂直间距逻辑，更符合网格布局语义 */
+      }
+
       /* 移除了 @media (min-width: 768px) 中重复的 .model-test-grid 规则，
            因为基础规则已经使用了 !important */
 
@@ -790,7 +797,8 @@
         border: 1px solid rgba(75, 85, 99, 0.5);
         border-radius: 8px;
         padding: 16px;
-        margin-bottom: 16px;
+        {#margin-bottom: 16px;#}
+          margin-top: 16px;
         transition: all 0.3s ease;
       }
 
@@ -2679,13 +2687,14 @@
                   <h4 class="text-lg font-bold mb-4">请输入以下参数值：</h4>
 
                   <!-- 参数输入网格 -->
-                  <div class="space-y-4">
+                  <div class="space-y-5">
                     <!-- 待加工原烟数据记录 -->
                     <div class="param-group">
                       <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         待加工原烟数据记录
                       </h4>
 
+                      <div class = "space-y-4">
                       <!-- 水份参数 -->
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
@@ -3105,6 +3114,7 @@
                         </button>
                       </div>
                     </div>
+                    </div>
 
                     <!-- 铺叶工段数据记录 -->
                     <div class="param-group">
@@ -3113,6 +3123,7 @@
                       </h4>
 
                       <!-- 环境温度参数 -->
+                        <div class="space-y-4">
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
                           <label
@@ -3315,13 +3326,14 @@
                         </button>
                       </div>
                     </div>
+                    </div>
 
                     <!-- 回潮工段数据记录 -->
                     <div class="param-group">
                       <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         回潮工段数据记录
                       </h4>
-
+                        <div class = "space-y-4">
                       <!-- 潮后水份参数 -->
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
@@ -3590,6 +3602,7 @@
                         </button>
                       </div>
                     </div>
+                    </div>
 
                     <!-- 一润工段数据记录 -->
                     <div class="param-group">
@@ -3598,6 +3611,7 @@
                       </h4>
 
                       <!-- 润前水份参数 -->
+                        <div class = "space-y-4">
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
                           <label
@@ -3999,6 +4013,7 @@
                         </button>
                       </div>
                     </div>
+                    </div>
 
                     <!-- 二润工段数据记录 -->
                     <div class="param-group">
@@ -4007,6 +4022,7 @@
                       </h4>
 
                       <!-- 润前水份参数 -->
+                        <div class = "space-y-4">
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
                           <label
@@ -4408,13 +4424,14 @@
                         </button>
                       </div>
                     </div>
+                    </div>
 
                     <!-- 打叶工段数据记录 -->
                     <div class="param-group">
                       <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         打叶工段数据记录
                       </h4>
-
+                        <div class = "space-y-4">
                       <!-- 打前水份参数 -->
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
@@ -4683,10 +4700,11 @@
                         </button>
                       </div>
                     </div>
+                    </div>
                   </div>
 
                   <!-- 添加全局更新范围控制按钮 -->
-                  <div class="mt-6 space-y-4">
+                  <div class="mt-6 space-y-5">
                     <div class="flex justify-center space-x-4">
                       <button
                         id="toggle-all-range-settings"
