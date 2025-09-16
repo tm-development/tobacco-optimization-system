@@ -346,6 +346,13 @@
           gap: 1rem; /* 可选：用 grid 的 gap 替代原 .space-y-4 的垂直间距逻辑，更符合网格布局语义 */
       }
 
+      .space-y-6 {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          align-items: stretch; /* 或 align-items: stretch; 根据视觉需求选择 */
+          gap: 1rem; /* 可选：用 grid 的 gap 替代原 .space-y-4 的垂直间距逻辑，更符合网格布局语义 */
+      }
+
       /* 移除了 @media (min-width: 768px) 中重复的 .model-test-grid 规则，
            因为基础规则已经使用了 !important */
 
@@ -801,6 +808,7 @@
           margin-top: 16px;
         transition: all 0.3s ease;
       }
+
 
       .param-with-range-setting:hover {
         border-color: rgba(59, 130, 246, 0.5);
@@ -2694,9 +2702,9 @@
                         待加工原烟数据记录
                       </h4>
 
-                      <div class = "space-y-4">
+                      <div class = "space-y-6" style="margin-bottom: -28px;margin-top: -25px;">
                       <!-- 水份参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-top: 22px;margin-bottom: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -2914,8 +2922,8 @@
                       </div>
 
                       <!-- 叶梗比参数 -->
-                      <div class="param-with-range-setting">
-                        <div class="param-main-input">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
+                        <div class="param-main-input" >
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
                           >
@@ -2981,7 +2989,7 @@
                       </div>
 
                       <!-- 环境温度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -3048,7 +3056,7 @@
                       </div>
 
                       <!-- 环境湿度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -3123,7 +3131,7 @@
                       </h4>
 
                       <!-- 环境温度参数 -->
-                        <div class="space-y-4">
+                        <div class="space-y-4" style="margin-bottom: -5px;margin-top: -20px;">
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
                           <label
@@ -3333,9 +3341,9 @@
                       <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         回潮工段数据记录
                       </h4>
-                        <div class = "space-y-4">
+                        <div class = "space-y-6" style="margin-bottom: -5px;margin-top: -25px;">
                       <!-- 潮后水份参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-top: 22px;margin-bottom: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -3611,7 +3619,7 @@
                       </h4>
 
                       <!-- 润前水份参数 -->
-                        <div class = "space-y-4">
+                        <div class = "space-y-4" style="margin-bottom: -28px;margin-top: -20px;">
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
                           <label
@@ -3813,7 +3821,7 @@
                       </div>
 
                       <!-- 润后温度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -3880,7 +3888,7 @@
                       </div>
 
                       <!-- 环境温度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -3947,7 +3955,7 @@
                       </div>
 
                       <!-- 环境湿度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -4022,7 +4030,7 @@
                       </h4>
 
                       <!-- 润前水份参数 -->
-                        <div class = "space-y-4">
+                        <div class = "space-y-4" style="margin-bottom: -28px;margin-top: -20px;">
                       <div class="param-with-range-setting">
                         <div class="param-main-input">
                           <label
@@ -4224,7 +4232,7 @@
                       </div>
 
                       <!-- 润后温度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -4291,7 +4299,7 @@
                       </div>
 
                       <!-- 环境温度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -4358,7 +4366,7 @@
                       </div>
 
                       <!-- 环境湿度参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-bottom: 25px;margin-top: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
@@ -4431,9 +4439,9 @@
                       <h4 class="text-lg font-semibold mb-3 text-blue-400">
                         打叶工段数据记录
                       </h4>
-                        <div class = "space-y-4">
+                        <div class = "space-y-6" style="margin-bottom: -5px;margin-top: -25px;">
                       <!-- 打前水份参数 -->
-                      <div class="param-with-range-setting">
+                      <div class="param-with-range-setting" style="margin-top: 22px;margin-bottom: 0px;">
                         <div class="param-main-input">
                           <label
                             class="block text-sm font-medium text-gray-300 mb-2"
