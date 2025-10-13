@@ -15,9 +15,10 @@ from ..utils import optimization_progress, ImprovedRBFNN
 from .user_management import user_or_admin_required
 from werkzeug.utils import secure_filename
 import json
+import warnings
+import joblib
 from ..models import db, OptimizationResult  # 导入数据库模型
 # 添加以下代码来忽略sklearn版本警告
-import warnings
 from sklearn.exceptions import InconsistentVersionWarning
 warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
@@ -434,6 +435,7 @@ def run_optimization(task_id, target_values, constraints, max_iterations, popula
 
         best_overall_solution = None
         best_overall_score = float('-inf')
+        best_index_overall = -1  # 新增：记录全局最优解对应的索引
 
         # 根据输入模式确定迭代次数
         iteration_count = len(fixed_categorical_param_list) if input_mode == 'file' else 1
@@ -504,6 +506,7 @@ def run_optimization(task_id, target_values, constraints, max_iterations, popula
             if best_score > best_overall_score:
                 best_overall_score = best_score
                 best_overall_solution = best_solution
+                best_index_overall = index  # 更新全局最优解的索引
 
             # 写入当前最优解到CSV
             if best_solution:
@@ -523,11 +526,148 @@ def run_optimization(task_id, target_values, constraints, max_iterations, popula
 
         # 更新优化结果
         if best_overall_solution:
-            large_medium_rate, leaf_in_stem_rate, stem_in_leaf_rate = best_overall_solution.fitness.values
+            # =================== 新增：使用 relearn_model.pkl 进行再学习 ===================
+            # 新的目标参数名称列表（与 relearn_model_new.py 中的 targets 一致）
+            new_targets_names = [
+                "打叶工段数据记录_一打_打辊参数（hz）", "打叶工段数据记录_二打_打辊参数（hz）",
+                "打叶工段数据记录_三打_打辊参数（hz）", "打叶工段数据记录_四打_打辊参数（hz）",
+                "打叶工段数据记录_风分参数（hz）_一分", "打叶工段数据记录_风分参数（hz）_二分",
+                "打叶工段数据记录_风分参数（hz）_三分", "打叶工段数据记录_风分参数（hz）_四分",
+                "打叶工段数据记录_风分参数（hz）_五分", "打叶工段数据记录_风分参数（hz）_六分",
+                "打叶工段数据记录_风分参数（hz）_七分", "打叶工段数据记录_风分参数（hz）_八分",
+                "打叶工段数据记录_风分参数（hz）_九分", "打叶工段数据记录_风分参数（hz）_十分",
+                "打叶工段数据记录_风分参数（hz）_十一分"
+            ]
+            
+            # 保存原始参数用于对比
+            original_ga_params = dict(zip(param_names, best_overall_solution))
+            
+            try:
+                print("🔄 开始使用 relearn_model.pkl 进行参数再学习...")
 
+                # 1. 加载模型
+                relearn_model = joblib.load('./uploads/models/relearn_model.pkl')
+                print("✅ 再学习模型加载成功。")
+
+                # 2. 准备模型输入数据
+                # 从优化结果中提取固定参数
+                if input_mode == 'manual':
+                    # 手动模式下，best_index_overall 始终为 0
+                    fixed_cat_params_for_relearn = fixed_categorical_param_list[0]
+                    fixed_num_params_for_relearn = fixed_numeric_param_list[0]
+                else:
+                    # 文件模式下，使用找到最优解时对应的索引
+                    fixed_cat_params_for_relearn = fixed_categorical_param_list[best_index_overall]
+                    fixed_num_params_for_relearn = fixed_numeric_param_list[best_index_overall]
+
+                # 整合所有输入特征到一个字典
+                model_input_data = {}
+                model_input_data.update(fixed_cat_params_for_relearn)
+                model_input_data.update(fixed_num_params_for_relearn)
+
+                # 添加遗传算法输出的参数（作为原始特征）
+                ga_output_params = dict(zip(numeric_vars, best_overall_solution[3:]))
+                for key, value in ga_output_params.items():
+                    model_input_data[f"{key}_原始"] = value
+                
+                # 转换为 DataFrame
+                input_df = pd.DataFrame([model_input_data])
+                print(f"📊 准备好的模型输入数据 (前5列): {input_df.iloc[:, :5].to_dict('records')}")
+
+                # 3. 进行预测
+                new_target_values = relearn_model.predict(input_df)
+                print("🎯 模型预测完成。")
+
+                # --- 新增日志：打印原始结果和模型预测结果 ---
+                print("\n" + "="*20 + " 参数更新对比 " + "="*20)
+                print("🧬 遗传算法原始输出:")
+                for name in new_targets_names:
+                    print(f"  - {name}: {original_ga_params.get(name, 'N/A'):.4f}")
+
+                predicted_params = dict(zip(new_targets_names, new_target_values[0]))
+                print("\n🤖 relearn_model.pkl 预测输出:")
+                for name, value in predicted_params.items():
+                    print(f"  - {name}: {value:.4f}")
+                print("="*54 + "\n")
+                # --- 日志结束 ---
+
+                # 创建新旧参数名到索引的映射
+                param_to_index = {name: i for i, name in enumerate(param_names)}
+
+                # 用新预测值覆盖 best_overall_solution 中的旧值
+                for i, new_name in enumerate(new_targets_names):
+                    if new_name in param_to_index:
+                        idx_to_update = param_to_index[new_name]
+                        best_overall_solution[idx_to_update] = new_target_values[0, i]
+
+                print("✅ 参数已使用再学习模型的结果进行更新。")
+                
+                # 重新计算更新后参数的质量指标
+                updated_fitness = eval_func(
+                    best_overall_solution, 
+                    best_index_overall if input_mode != 'manual' else 0,
+                    fixed_categorical_param_list, 
+                    fixed_numeric_param_list, 
+                    target_values, 
+                    constraints
+                )
+                print(f"🔄 重新计算质量指标: 大中片率={updated_fitness[0]:.2f}, 叶含梗率={updated_fitness[1]:.2f}, 梗含叶率={updated_fitness[2]:.2f}")
+                
+                # 更新fitness值
+                large_medium_rate, leaf_in_stem_rate, stem_in_leaf_rate = updated_fitness
+
+            except Exception as relearn_error:
+                print(f"❌ 在再学习过程中发生错误: {relearn_error}")
+                # 即使再学习失败，也继续使用原始优化结果
+                large_medium_rate, leaf_in_stem_rate, stem_in_leaf_rate = best_overall_solution.fitness.values
+
+            # =================== 再学习逻辑结束 ===================
+            
+            # 如果没有进行再学习（没有异常），使用原始fitness值
+            if 'large_medium_rate' not in locals():
+                large_medium_rate, leaf_in_stem_rate, stem_in_leaf_rate = best_overall_solution.fitness.values
+
+            # 构建最终参数字典 - 这里会包含更新后的参数
             best_params = {}
             for name, value in zip(param_names, best_overall_solution):
                 best_params[name] = value
+
+            # --- 新增日志：打印最终采纳的结果 ---
+            print("\n🏆 最终采纳的优化参数:")
+            for name in new_targets_names:
+                final_value = best_params.get(name, 'N/A')
+                original_value = original_ga_params.get(name, 'N/A')
+                if isinstance(final_value, (int, float)) and isinstance(original_value, (int, float)):
+                    status = "✅ 已更新" if abs(final_value - original_value) > 0.01 else "🔄 未变化"
+                    print(f"  - {name}: {final_value:.4f} {status}")
+                else:
+                    print(f"  - {name}: {final_value}")
+            print("="*54)
+            # --- 日志结束 ---
+
+            # =================== 新增：重新写入更新后的结果到CSV文件 ===================
+            try:
+                print("📝 重新写入最终优化结果到CSV文件...")
+                
+                # 重新打开CSV文件并写入最终结果
+                with open(result_file_path, 'w', newline='', encoding='gbk') as final_file:
+                    final_writer = csv.writer(final_file)
+                    # 写入表头
+                    final_writer.writerow(param_names + ['大中片率', '叶含梗率', '梗含叶率', '综合得分'])
+                    
+                    # 写入最终的优化结果（经过relearn_model.pkl处理的）
+                    final_score = large_medium_rate - leaf_in_stem_rate - stem_in_leaf_rate
+                    final_writer.writerow(
+                        best_overall_solution +
+                        [large_medium_rate, leaf_in_stem_rate, stem_in_leaf_rate, final_score]
+                    )
+                
+                print(f"✅ 最终结果已写入CSV文件: {result_file_path}")
+                print(f"   最终质量指标 - 大中片率: {large_medium_rate:.2f}, 叶含梗率: {leaf_in_stem_rate:.2f}, 梗含叶率: {stem_in_leaf_rate:.2f}")
+                
+            except Exception as csv_error:
+                print(f"❌ 重新写入CSV文件时发生错误: {csv_error}")
+            # =================== CSV重写逻辑结束 ===================
 
             optimization_progress[task_id].update({
                 'status': 'completed',
